@@ -1,28 +1,15 @@
 [package]
 name = "alnwick"
 version = "0.0.0"
-authors = ["Laurence Elsdon <git@elsdon.me>"]
+authors = ["Laurence Elsdon <le@studiole.uk>"]
 edition = "2021"
 
 [dependencies]
-chrono = { version = "0.4.41", features = ["serde"] }
-csv = "1.3.1"
-dioxus = { version = "0.6.3", features = [] }
-itertools = "0.14.0"
-regex = "1.11.1"
-serde = "1.0.219"
-serde_json = "1.0.140"
-web-sys = { version = "0.3.77", features = ["Window", "Storage"] }
-
-[dev-dependencies]
-expect = "0.2.0"
-float_eq = "1.0.1"
+dioxus = { version = "0.6.3", features = ["fullstack"] }
 
 [features]
-default = ["web"]
 web = ["dioxus/web"]
-desktop = ["dioxus/desktop"]
-mobile = ["dioxus/mobile"]
+server = ["dioxus/server"]
 
 [profile]
 
