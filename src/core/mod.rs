@@ -1,1 +1,8 @@
 pub(crate) mod extensions;
+pub(crate) mod cover;
+pub(crate) mod download;
+pub(crate) mod emulate;
+pub(crate) mod schema;
+pub(crate) mod scrape;
+pub(crate) mod services;
+pub(crate) mod utils;
