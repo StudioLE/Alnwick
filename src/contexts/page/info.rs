@@ -1,9 +1,11 @@
+use crate::prelude::PageSelector;
+
 /// Details about a page.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct PageInfo {
     pub title: String,
     pub icon: String,
-    pub breadcrumbs: Vec<PageInfo>,
+    pub breadcrumbs: Vec<PageSelector>,
 }
 
 impl PageInfo {

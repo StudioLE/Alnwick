@@ -1,4 +1,4 @@
-mod podcasts;
-mod podcast;
-mod episode;
-mod settings;
+pub(crate) mod podcasts;
+pub(crate) mod podcast;
+pub(crate) mod episode;
+pub(crate) mod settings;

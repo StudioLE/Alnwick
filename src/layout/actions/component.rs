@@ -1,21 +1,21 @@
 use crate::prelude::*;
 
 #[component]
-pub(crate) fn FloatingActions() -> Element {
-    let state: NavigationState = use_context();
-    let actions = [Navigation::Settings, Navigation::Add];
+pub(crate) fn FloatingActionsComponent() -> Element {
+    let context: PageContext = use_context();
+    let actions = [PageSelector::Settings, PageSelector::AddPodcast];
     let actions: Vec<_> = actions
         .into_iter()
-        .filter(|&action| !state.is_active(action))
+        .filter(|&action| !context.is_active(action))
         .enumerate()
         .collect();
     let last = actions.len() - 1;
     rsx! {
         div { class: "fullscreen",
             div { class: "buttons",
-                for (i, action) in actions.into_iter() {
+                for (i, selector) in actions.into_iter() {
                     FloatingAction {
-                        action,
+                        selector,
                         is_large: i == last
                     },
                 }
@@ -25,15 +25,16 @@ pub(crate) fn FloatingActions() -> Element {
 }
 
 #[component]
-fn FloatingAction(action: Navigation, is_large: bool) -> Element {
-    let mut state: NavigationState = use_context();
+fn FloatingAction(selector: PageSelector, is_large: bool) -> Element {
+    let mut context: PageContext = use_context();
+    let info = selector.get_info();
     rsx! {
         button {
             class: get_button_classes(is_large),
-            onclick: move |_| state.set(action),
+            onclick: move |_| context.set(selector),
             span {
                 class: "icon",
-                i { class: action.get_icon_classes() }
+                i { class: info.get_icon_classes() }
             }
         }
     }

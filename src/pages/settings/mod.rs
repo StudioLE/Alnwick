@@ -1,2 +1,2 @@
 pub(crate) mod component;
-mod player;
+pub(crate) mod player;

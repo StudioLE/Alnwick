@@ -1,36 +1,45 @@
 use crate::contexts::page::context::PageContext;
+use crate::layout::actions::component::FloatingActionsComponent;
+use crate::layout::header::component::HeaderComponent;
+use crate::pages::settings::component::SettingsMenuComponent;
+use crate::pages::settings::player::component::FieldComponent;
 use crate::prelude::*;
 
 #[component]
 pub(super) fn App() -> Element {
     init_contexts();
-    let page: PageContext = use_context();
+    let context: PageContext = use_context();
+    let current = context.get();
+    let page = current.get_component();
     rsx! {
         document::Link { rel: "icon", href: asset!("/assets/favicon.ico") }
         document::Link { rel: "stylesheet", href: asset!("/node_modules/bulma/css/bulma.css") }
         document::Link { rel: "stylesheet", href: asset!("/node_modules/@fortawesome/fontawesome-free/css/fontawesome.css") }
         document::Link { rel: "stylesheet", href: asset!("/assets/fonts.css") }
         document::Link { rel: "stylesheet", href: asset!("/assets/app.css") }
-        FloatingActions {}
+        FloatingActionsComponent {}
         div { class: "container is-max-tablet",
-            Header {}
-            if nav.is_active(Navigation::Settings) {
-                Settings {}
+            HeaderComponent {}
+            if current == PageSelector::Home {
+                "home page"
             }
-            else if nav.is_active(Navigation::Import) {
-                Import {}
+            else if current == PageSelector::Podcasts {
+                "podcasts page"
             }
-            else if nav.is_active(Navigation::Chart) {
-                Chart {}
+            else if current == PageSelector::Podcast {
+                "podcast page"
             }
-            else if nav.is_active(Navigation::Table) {
-                Table {}
+            else if current == PageSelector::Settings {
+                SettingsMenuComponent {}
             }
-            else if nav.is_active(Navigation::Goals) {
-                Goals {}
+            else if current == PageSelector::PlayerSettings {
+                FieldComponent {}
+            }
+            else if current == PageSelector::AddPodcast {
+                "add podcast page"
             }
             else {
-                "Not Implemented"
+                "Page not found"
             }
         }
     }

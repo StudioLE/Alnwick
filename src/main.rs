@@ -1,9 +1,6 @@
 mod app;
-mod nav;
 mod prelude;
-mod settings;
 mod state;
-mod table;
 mod pages;
 mod layout;
 mod core;

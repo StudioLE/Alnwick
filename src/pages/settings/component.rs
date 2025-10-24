@@ -1,20 +1,20 @@
-use crate::contexts::page::context::PageContext;
 use crate::prelude::*;
+use PageSelector::*;
 
 #[component]
-pub(crate) fn SettingsComponent() -> Element {
+pub(crate) fn SettingsMenuComponent() -> Element {
     rsx! {
         section { class: "section",
             aside { class: "menu",
                 p { class: "menu-label", "Personal" }
                 ul { class: "menu-list",
-                    Item { item: Page::Podcasts }
+                    SettingsMenuItemComponent { selector: PlayerSettings }
                 }
                 p { class: "menu-label", "Entries" }
                 ul { class: "menu-list",
-                    Item { item: Page::Podcasts }
-                    Item { item: Page::Import }
-                    Item { item: Page::Export }
+                    SettingsMenuItemComponent { selector: PlayerSettings }
+                    SettingsMenuItemComponent { selector: PlayerSettings }
+                    SettingsMenuItemComponent { selector: PlayerSettings }
                 }
             }
         }
@@ -22,16 +22,17 @@ pub(crate) fn SettingsComponent() -> Element {
 }
 
 #[component]
-fn Item(item: Page) -> Element {
+fn SettingsMenuItemComponent(selector: PageSelector) -> Element {
     let mut context: PageContext = use_context();
+    let info = selector.get_info();
     rsx! {
         li {
             a {
-                onclick: move |_| context.set(item),
+                onclick: move |_| context.set(selector),
                 span { class: "icon has-text-grey-dark",
-                    i { class: item.get_icon_classes() }
+                    i { class: info.get_icon_classes() }
                 }
-                span { "{item.get_title()}" }
+                span { "{info.title}" }
             }
         }
     }
