@@ -22,8 +22,8 @@ pub(crate) fn SettingsMenuComponent() -> Element {
 }
 
 #[component]
-fn ItemComponent(selector: PageSelector) -> Element {
-    let mut context: PageContext = use_context();
+fn ItemComponent(selector: PageSelector) -> Element {    
+    let mut context: PageContext = consume_context();
     let info = selector.get_info();
     rsx! {
         li {
