@@ -1,14 +1,13 @@
 mod app;
-mod chart;
-mod entries;
-mod extensions;
-mod import;
 mod nav;
 mod prelude;
 mod settings;
 mod state;
-mod statistics;
 mod table;
+mod pages;
+mod layout;
+mod core;
+mod contexts;
 
 use crate::app::App;
 use dioxus::prelude::launch;

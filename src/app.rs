@@ -1,15 +1,10 @@
+use crate::contexts::page::context::PageContext;
 use crate::prelude::*;
 
-/// App is the main component of our app. Components are the building blocks of dioxus apps.
-/// Each component is a function that takes some props and returns an Element. In this case,
-/// App takes no props because it is the root of our app.
-///
-/// Components should be annotated with `#[component]` to support props, better error messages,
-/// and autocomplete
 #[component]
 pub(super) fn App() -> Element {
     init_contexts();
-    let nav: NavigationState = use_context();
+    let page: PageContext = use_context();
     rsx! {
         document::Link { rel: "icon", href: asset!("/assets/favicon.ico") }
         document::Link { rel: "stylesheet", href: asset!("/node_modules/bulma/css/bulma.css") }
@@ -42,11 +37,6 @@ pub(super) fn App() -> Element {
 }
 
 fn init_contexts() {
-    let entries = EntryState::init();
-    let is_entries_empty = entries.is_empty();
-    use_context_provider(|| entries);
-    let nav = NavigationState::init(is_entries_empty);
-    use_context_provider(|| nav);
-    let height = HeightState::init();
-    use_context_provider(|| height);
+    let page = PageContext::init();
+    use_context_provider(|| page);
 }
