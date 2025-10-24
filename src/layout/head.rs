@@ -1,8 +1,9 @@
-use crate::prelude::*;
 use crate::prelude::document::{Link, Stylesheet};
+use crate::prelude::*;
 
 static BULMA_CSS: Asset = asset!("/node_modules/bulma/css/bulma.css");
-static FONTAWESOME_CSS: Asset = asset!("/node_modules/@fortawesome/fontawesome-free/css/fontawesome.css");
+static FONTAWESOME_CSS: Asset =
+    asset!("/node_modules/@fortawesome/fontawesome-free/css/fontawesome.css");
 static FONTS_CSS: Asset = asset!("/assets/fonts.css");
 static APP_CSS: Asset = asset!("/assets/app.css");
 static FAVICON: Asset = asset!("/assets/favicon.ico");

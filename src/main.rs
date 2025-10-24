@@ -1,9 +1,8 @@
-mod prelude;
-mod state;
-mod pages;
-mod layout;
-mod core;
 mod contexts;
+mod core;
+mod layout;
+mod pages;
+mod prelude;
 
 use crate::layout::app::App;
 use dioxus::prelude::launch;

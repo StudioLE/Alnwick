@@ -9,7 +9,7 @@ pub struct PageContext {
 impl PageContext {
     /// Creates a new instance of the context.
     pub fn init() -> Self {
-        let signal = use_signal(|| PageSelector::default());
+        let signal = use_signal(PageSelector::default);
         Self { signal }
     }
 

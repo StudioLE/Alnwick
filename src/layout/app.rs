@@ -1,7 +1,7 @@
 use crate::contexts::page::context::PageContext;
 use crate::layout::actions::FloatingActionsComponent;
-use crate::layout::header::HeaderComponent;
 use crate::layout::head::HeadComponent;
+use crate::layout::header::HeaderComponent;
 use crate::pages::settings::component::SettingsMenuComponent;
 use crate::pages::settings::player::component::FieldComponent;
 use crate::prelude::*;

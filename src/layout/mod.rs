@@ -1,6 +1,6 @@
-mod player;
-mod drawer;
 mod actions;
-mod header;
-mod head;
 pub(super) mod app;
+mod drawer;
+mod head;
+mod header;
+mod player;

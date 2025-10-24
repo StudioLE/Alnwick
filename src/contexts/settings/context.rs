@@ -15,11 +15,11 @@ impl SettingsContext {
 
     /// Get the current settings.
     pub fn get(&self) -> Option<f32> {
-        self.signal.read().clone()
+        *self.signal.read()
     }
 
     /// Set the value.
-    pub fn set(&mut self, value: Option<f32>) {        
+    pub fn set(&mut self, value: Option<f32>) {
         self.signal.set(value);
         // TODO MUST Set value on server
     }
