@@ -48,10 +48,4 @@ impl PageSelector {
             },
         }
     }
-
-    pub(crate) fn get_component(self) -> Element {
-        match self {
-            _ => SettingsMenuComponent(),
-        }
-    }
 }
