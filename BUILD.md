@@ -5,13 +5,13 @@
 1. Build the docker container
 
 ```bash
-docker build . -t lineweights`
+docker build . -t alnwick`
 ```
 
 2. Run the docker container
 
 ```bash
-docker run --rm -it -p 8080:8080 --name lineweights lineweights
+docker run --rm -it -p 8080:8080 --name alnwick alnwick
 ```
 
 ## Without Docker
