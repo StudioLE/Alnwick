@@ -1,2 +1,1 @@
-mod result;
-pub(crate) use result::*;
+pub(crate) mod result;
