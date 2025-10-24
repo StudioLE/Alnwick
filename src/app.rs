@@ -47,5 +47,7 @@ pub(super) fn App() -> Element {
 
 fn init_contexts() {
     let page = PageContext::init();
+    let settings = PageContext::init();
     use_context_provider(|| page);
+    use_context_provider(|| settings);
 }

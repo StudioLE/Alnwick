@@ -8,13 +8,13 @@ pub(crate) fn SettingsMenuComponent() -> Element {
             aside { class: "menu",
                 p { class: "menu-label", "Personal" }
                 ul { class: "menu-list",
-                    SettingsMenuItemComponent { selector: PlayerSettings }
+                    ItemComponent { selector: PlayerSettings }
                 }
                 p { class: "menu-label", "Entries" }
                 ul { class: "menu-list",
-                    SettingsMenuItemComponent { selector: PlayerSettings }
-                    SettingsMenuItemComponent { selector: PlayerSettings }
-                    SettingsMenuItemComponent { selector: PlayerSettings }
+                    ItemComponent { selector: PlayerSettings }
+                    ItemComponent { selector: PlayerSettings }
+                    ItemComponent { selector: PlayerSettings }
                 }
             }
         }
@@ -22,7 +22,7 @@ pub(crate) fn SettingsMenuComponent() -> Element {
 }
 
 #[component]
-fn SettingsMenuItemComponent(selector: PageSelector) -> Element {
+fn ItemComponent(selector: PageSelector) -> Element {
     let mut context: PageContext = use_context();
     let info = selector.get_info();
     rsx! {

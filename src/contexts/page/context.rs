@@ -15,7 +15,7 @@ impl PageContext {
 
     /// Get the current page.
     pub fn get(&self) -> PageSelector {
-        self.signal.read().clone()
+        *self.signal.read()
     }
 
     /// Set the current page.

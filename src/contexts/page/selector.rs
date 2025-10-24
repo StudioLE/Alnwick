@@ -19,21 +19,21 @@ impl PageSelector {
             Home => PageInfo {
                 title: "Home".to_string(),
                 icon: "fa-house".to_string(),
-                breadcrumbs: vec![Home, Podcasts],
+                breadcrumbs: vec![Home],
             },
             Podcasts => PageInfo {
-                title: "Player".to_string(),
-                icon: "fa-play".to_string(),
+                title: "Podcasts".to_string(),
+                icon: "fa-users".to_string(),
                 breadcrumbs: vec![Home, Podcasts],
             },
             Podcast => PageInfo {
-                title: "Player".to_string(),
-                icon: "fa-play".to_string(),
+                title: "Podcast".to_string(),
+                icon: "fa-user".to_string(),
                 breadcrumbs: vec![Home, Podcasts, Podcast],
             },
             Settings => PageInfo {
-                title: "Player".to_string(),
-                icon: "fa-play".to_string(),
+                title: "Settings".to_string(),
+                icon: "fa-cog".to_string(),
                 breadcrumbs: vec![Home, Settings],
             },
             PlayerSettings => PageInfo {
