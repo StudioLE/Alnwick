@@ -2,8 +2,6 @@
 pub(crate) use assertions::*;
 pub(crate) use filter::*;
 pub(crate) use fs::*;
-pub use logging::*;
-pub(crate) use progress::*;
 pub(crate) use r#const::*;
 pub(crate) use resize::*;
 pub(crate) use sanitizer::*;
@@ -19,8 +17,6 @@ mod assertions;
 mod r#const;
 mod filter;
 mod fs;
-mod logging;
-mod progress;
 mod resize;
 mod sanitizer;
 mod tag;

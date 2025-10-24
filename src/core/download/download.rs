@@ -68,14 +68,11 @@ impl DownloadCommand {
             "Downloading".bold(),
             episodes.len()
         );
-        let progress = Progress::new(episodes.len());
         let results = stream::iter(episodes.into_iter().map(|episode| {
             let this = self;
             let podcast = podcast.clone();
-            let progress = progress.clone();
             async move {
                 let result = this.process_episode(&podcast, episode).await;
-                progress.update();
                 if let Err(e) = &result {
                     warn!("{e}");
                 }
@@ -85,7 +82,6 @@ impl DownloadCommand {
         .buffer_unordered(CONCURRENCY)
         .collect::<Vec<_>>()
         .await;
-        progress.finish();
         results
     }
 

@@ -108,10 +108,8 @@ impl ScrapeCommand {
             "Fetching".bold(),
             playlist.len()
         );
-        let progress = Progress::new(playlist.len());
         let result = stream::iter(playlist.iter().map(|episode| {
             let this = self;
-            let progress = progress.clone();
             async move {
                 let result = match this.get_episode(&episode.id).await {
                     Ok(ep) => Some(ep),
@@ -121,7 +119,6 @@ impl ScrapeCommand {
                         None
                     }
                 };
-                progress.update();
                 result
             }
         }))
@@ -131,7 +128,6 @@ impl ScrapeCommand {
         .into_iter()
         .flatten()
         .collect();
-        progress.finish();
         result
     }
 }

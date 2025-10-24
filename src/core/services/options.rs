@@ -29,7 +29,7 @@ pub struct AppOptions {
 }
 
 impl AppOptions {
-    pub(crate) fn get() -> Result<Self, ConfigError> {
-        EnvironmentOptionsProvider::get()
+    pub(crate) fn get() -> Result<Self, envy::Error> {
+        envy::from_env()
     }
 }

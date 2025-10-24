@@ -28,7 +28,7 @@ impl ServiceProvider {
 
 #[derive(Debug)]
 pub enum ServiceError {
-    GetConfig(ConfigError),
+    GetConfig(envy::Error),
     ValidatePaths(Vec<ValidationError>),
     CreateDirectories(CreateDirectoryError),
     ValidateIp(Vec<ValidationError>),
