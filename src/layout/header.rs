@@ -1,7 +1,7 @@
 use crate::prelude::*;
 
 #[component]
-pub(crate) fn HeaderComponent() -> Element {
+pub(super) fn HeaderComponent() -> Element {
     let context: PageContext = use_context();
     let current = context.get();
     let info = current.get_info();
