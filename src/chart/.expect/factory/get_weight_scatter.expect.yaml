@@ -1,0 +1,1136 @@
+- point:
+    x: 0.0
+    y: 1.3559718
+  size: 0.5
+  class: null
+  descender: null
+- point:
+    x: 3.0
+    y: 1.0170645
+  size: 0.5
+  class: null
+  descender:
+    x: 3.0
+    y: 2.0340147
+- point:
+    x: 5.0
+    y: 1.0170645
+  size: 0.5
+  class: null
+  descender:
+    x: 5.0
+    y: 1.6949933
+- point:
+    x: 6.0
+    y: 4.7457304
+  size: 0.5
+  class: null
+  descender:
+    x: 6.0
+    y: 1.6949933
+- point:
+    x: 7.0
+    y: 0.0
+  size: 0.5
+  class: null
+  descender:
+    x: 7.0
+    y: 1.9208935
+- point:
+    x: 11.0
+    y: 4.7457304
+  size: 0.5
+  class: null
+  descender:
+    x: 11.0
+    y: 4.576277
+- point:
+    x: 13.0
+    y: 4.406823
+  size: 0.5
+  class: null
+  descender:
+    x: 13.0
+    y: 6.864472
+- point:
+    x: 15.0
+    y: 7.7966957
+  size: 0.5
+  class: null
+  descender:
+    x: 15.0
+    y: 8.271303
+- point:
+    x: 16.0
+    y: 10.508525
+  size: 0.5
+  class: null
+  descender:
+    x: 16.0
+    y: 8.813646
+- point:
+    x: 17.0
+    y: 8.135603
+  size: 0.5
+  class: null
+  descender:
+    x: 17.0
+    y: 9.69501
+- point:
+    x: 18.0
+    y: 10.508525
+  size: 0.5
+  class: null
+  descender:
+    x: 18.0
+    y: 9.69501
+- point:
+    x: 19.0
+    y: 11.5254755
+  size: 0.75
+  class: shot d25
+  descender:
+    x: 19.0
+    y: 15.661127
+- point:
+    x: 22.0
+    y: 37.627163
+  size: 0.5
+  class: null
+  descender:
+    x: 22.0
+    y: 29.237381
+- point:
+    x: 23.0
+    y: 30.169489
+  size: 0.5
+  class: null
+  descender:
+    x: 23.0
+    y: 38.389935
+- point:
+    x: 25.0
+    y: 37.627163
+  size: 0.5
+  class: null
+  descender:
+    x: 25.0
+    y: 40.2261
+- point:
+    x: 26.0
+    y: 48.13569
+  size: 0.75
+  class: shot d25
+  descender:
+    x: 26.0
+    y: 43.728867
+- point:
+    x: 27.0
+    y: 40.678017
+  size: 0.5
+  class: null
+  descender:
+    x: 27.0
+    y: 47.231747
+- point:
+    x: 28.0
+    y: 47.118626
+  size: 0.5
+  class: null
+  descender:
+    x: 28.0
+    y: 48.958897
+- point:
+    x: 29.0
+    y: 58.6441
+  size: 0.5
+  class: null
+  descender:
+    x: 29.0
+    y: 51.62226
+- point:
+    x: 30.0
+    y: 51.186424
+  size: 0.5
+  class: null
+  descender:
+    x: 30.0
+    y: 53.220325
+- point:
+    x: 31.0
+    y: 59.32203
+  size: 0.5
+  class: null
+  descender:
+    x: 31.0
+    y: 56.174362
+- point:
+    x: 32.0
+    y: 56.27118
+  size: 0.5
+  class: null
+  descender:
+    x: 32.0
+    y: 58.547287
+- point:
+    x: 33.0
+    y: 59.32203
+  size: 0.75
+  class: shot d25
+  descender:
+    x: 33.0
+    y: 58.83784
+- point:
+    x: 34.0
+    y: 61.35593
+  size: 0.5
+  class: null
+  descender:
+    x: 34.0
+    y: 60.11308
+- point:
+    x: 35.0
+    y: 63.72885
+  size: 0.5
+  class: null
+  descender:
+    x: 35.0
+    y: 61.07358
+- point:
+    x: 36.0
+    y: 60.678
+  size: 0.5
+  class: null
+  descender:
+    x: 36.0
+    y: 62.542446
+- point:
+    x: 38.0
+    y: 65.08482
+  size: 0.5
+  class: null
+  descender:
+    x: 38.0
+    y: 66.7797
+- point:
+    x: 39.0
+    y: 65.08482
+  size: 0.5
+  class: null
+  descender:
+    x: 39.0
+    y: 67.38989
+- point:
+    x: 40.0
+    y: 71.864456
+  size: 0.75
+  class: shot d25
+  descender:
+    x: 40.0
+    y: 70.10172
+- point:
+    x: 41.0
+    y: 74.23727
+  size: 0.5
+  class: null
+  descender:
+    x: 41.0
+    y: 70.05657
+- point:
+    x: 43.0
+    y: 74.23727
+  size: 0.5
+  class: null
+  descender:
+    x: 43.0
+    y: 72.824844
+- point:
+    x: 44.0
+    y: 69.83055
+  size: 0.75
+  class: shot d50
+  descender:
+    x: 44.0
+    y: 73.728905
+- point:
+    x: 45.0
+    y: 74.915306
+  size: 0.5
+  class: null
+  descender:
+    x: 45.0
+    y: 74.85886
+- point:
+    x: 46.0
+    y: 71.864456
+  size: 0.5
+  class: null
+  descender:
+    x: 46.0
+    y: 74.23737
+- point:
+    x: 47.0
+    y: 77.28823
+  size: 0.5
+  class: null
+  descender:
+    x: 47.0
+    y: 76.464905
+- point:
+    x: 48.0
+    y: 81.01689
+  size: 0.5
+  class: null
+  descender:
+    x: 48.0
+    y: 79.32213
+- point:
+    x: 49.0
+    y: 70.5086
+  size: 0.5
+  class: null
+  descender:
+    x: 49.0
+    y: 81.1624
+- point:
+    x: 50.0
+    y: 89.83054
+  size: 0.75
+  class: shot d50
+  descender:
+    x: 50.0
+    y: 83.43839
+- point:
+    x: 51.0
+    y: 89.83054
+  size: 0.5
+  class: null
+  descender:
+    x: 51.0
+    y: 85.859665
+- point:
+    x: 52.0
+    y: 87.79664
+  size: 0.5
+  class: null
+  descender:
+    x: 52.0
+    y: 87.99038
+- point:
+    x: 53.0
+    y: 87.79664
+  size: 0.5
+  class: null
+  descender:
+    x: 53.0
+    y: 91.52542
+- point:
+    x: 54.0
+    y: 94.237366
+  size: 0.5
+  class: null
+  descender:
+    x: 54.0
+    y: 92.30039
+- point:
+    x: 55.0
+    y: 95.93224
+  size: 0.5
+  class: null
+  descender:
+    x: 55.0
+    y: 93.268875
+- point:
+    x: 56.0
+    y: 95.25431
+  size: 0.5
+  class: null
+  descender:
+    x: 56.0
+    y: 94.721664
+- point:
+    x: 57.0
+    y: 95.25431
+  size: 0.75
+  class: shot d50
+  descender:
+    x: 57.0
+    y: 96.51336
+- point:
+    x: 58.0
+    y: 96.61017
+  size: 0.5
+  class: null
+  descender:
+    x: 58.0
+    y: 97.385025
+- point:
+    x: 59.0
+    y: 97.96614
+  size: 0.5
+  class: null
+  descender:
+    x: 59.0
+    y: 97.82086
+- point:
+    x: 60.0
+    y: 100.339066
+  size: 0.5
+  class: null
+  descender:
+    x: 60.0
+    y: 99.27365
+- point:
+    x: 61.0
+    y: 100.339066
+  size: 0.5
+  class: null
+  descender:
+    x: 61.0
+    y: 100.53269
+- point:
+    x: 62.0
+    y: 98.98309
+  size: 0.5
+  class: null
+  descender:
+    x: 62.0
+    y: 101.59811
+- point:
+    x: 63.0
+    y: 105.423706
+  size: 0.5
+  class: null
+  descender:
+    x: 63.0
+    y: 103.34145
+- point:
+    x: 64.0
+    y: 104.06785
+  size: 0.75
+  class: shot d50
+  descender:
+    x: 64.0
+    y: 103.84183
+- point:
+    x: 65.0
+    y: 104.06785
+  size: 0.5
+  class: null
+  descender:
+    x: 65.0
+    y: 104.54245
+- point:
+    x: 66.0
+    y: 110.16955
+  size: 0.5
+  class: null
+  descender:
+    x: 66.0
+    y: 106.30518
+- point:
+    x: 69.0
+    y: 107.79674
+  size: 0.5
+  class: null
+  descender:
+    x: 69.0
+    y: 109.35603
+- point:
+    x: 70.0
+    y: 110.16955
+  size: 0.5
+  class: null
+  descender:
+    x: 70.0
+    y: 110.50857
+- point:
+    x: 71.0
+    y: 110.16955
+  size: 0.75
+  class: shot d66
+  descender:
+    x: 71.0
+    y: 111.92099
+- point:
+    x: 72.0
+    y: 108.474556
+  size: 0.5
+  class: null
+  descender:
+    x: 72.0
+    y: 111.92099
+- point:
+    x: 73.0
+    y: 115.93223
+  size: 0.5
+  class: null
+  descender:
+    x: 73.0
+    y: 112.745674
+- point:
+    x: 74.0
+    y: 118.98308
+  size: 0.5
+  class: null
+  descender:
+    x: 74.0
+    y: 114.50852
+- point:
+    x: 77.0
+    y: 118.98308
+  size: 0.5
+  class: null
+  descender:
+    x: 77.0
+    y: 120.4069
+- point:
+    x: 78.0
+    y: 118.98308
+  size: 0.75
+  class: shot d50
+  descender:
+    x: 78.0
+    y: 120.7628
+- point:
+    x: 79.0
+    y: 120.677956
+  size: 0.5
+  class: null
+  descender:
+    x: 79.0
+    y: 121.89846
+- point:
+    x: 80.0
+    y: 124.40685
+  size: 0.5
+  class: null
+  descender:
+    x: 80.0
+    y: 121.921036
+- point:
+    x: 82.0
+    y: 126.44075
+  size: 0.5
+  class: null
+  descender:
+    x: 82.0
+    y: 124.97166
+- point:
+    x: 83.0
+    y: 122.03393
+  size: 0.5
+  class: null
+  descender:
+    x: 83.0
+    y: 125.81916
+- point:
+    x: 84.0
+    y: 128.13564
+  size: 0.5
+  class: null
+  descender:
+    x: 84.0
+    y: 126.77966
+- point:
+    x: 85.0
+    y: 128.13564
+  size: 0.75
+  class: shot d50
+  descender:
+    x: 85.0
+    y: 127.409355
+- point:
+    x: 86.0
+    y: 125.76271
+  size: 0.5
+  class: null
+  descender:
+    x: 86.0
+    y: 127.50605
+- point:
+    x: 87.0
+    y: 130.16954
+  size: 0.5
+  class: null
+  descender:
+    x: 87.0
+    y: 128.47466
+- point:
+    x: 88.0
+    y: 131.18648
+  size: 0.5
+  class: null
+  descender:
+    x: 88.0
+    y: 127.89354
+- point:
+    x: 89.0
+    y: 127.11868
+  size: 0.5
+  class: null
+  descender:
+    x: 89.0
+    y: 128.13564
+- point:
+    x: 90.0
+    y: 128.81357
+  size: 0.75
+  class: shot d50
+  descender:
+    x: 90.0
+    y: 128.95885
+- point:
+    x: 91.0
+    y: 124.06783
+  size: 0.5
+  class: null
+  descender:
+    x: 91.0
+    y: 128.47466
+- point:
+    x: 92.0
+    y: 129.83063
+  size: 0.5
+  class: null
+  descender:
+    x: 92.0
+    y: 128.18398
+- point:
+    x: 93.0
+    y: 131.52551
+  size: 0.5
+  class: null
+  descender:
+    x: 93.0
+    y: 129.15259
+- point:
+    x: 94.0
+    y: 126.77966
+  size: 0.5
+  class: null
+  descender:
+    x: 94.0
+    y: 129.00731
+- point:
+    x: 95.0
+    y: 129.15259
+  size: 0.75
+  class: shot d50
+  descender:
+    x: 95.0
+    y: 129.29774
+- point:
+    x: 96.0
+    y: 133.89832
+  size: 0.5
+  class: null
+  descender:
+    x: 96.0
+    y: 129.44302
+- point:
+    x: 97.0
+    y: 127.79661
+  size: 0.5
+  class: null
+  descender:
+    x: 97.0
+    y: 128.95885
+- point:
+    x: 98.0
+    y: 126.10173
+  size: 0.5
+  class: null
+  descender:
+    x: 98.0
+    y: 128.47466
+- point:
+    x: 99.0
+    y: 130.84746
+  size: 0.5
+  class: null
+  descender:
+    x: 99.0
+    y: 128.37784
+- point:
+    x: 100.0
+    y: 128.13564
+  size: 0.75
+  class: shot d63.3
+  descender:
+    x: 100.0
+    y: 128.18398
+- point:
+    x: 101.0
+    y: 123.389786
+  size: 0.5
+  class: null
+  descender:
+    x: 101.0
+    y: 127.99047
+- point:
+    x: 102.0
+    y: 128.47453
+  size: 0.5
+  class: null
+  descender:
+    x: 102.0
+    y: 128.37784
+- point:
+    x: 103.0
+    y: 132.54245
+  size: 0.5
+  class: null
+  descender:
+    x: 103.0
+    y: 128.76521
+- point:
+    x: 104.0
+    y: 126.44075
+  size: 0.5
+  class: null
+  descender:
+    x: 104.0
+    y: 128.76509
+- point:
+    x: 105.0
+    y: 128.81357
+  size: 0.75
+  class: shot d50
+  descender:
+    x: 105.0
+    y: 129.29787
+- point:
+    x: 106.0
+    y: 133.5593
+  size: 0.5
+  class: null
+  descender:
+    x: 106.0
+    y: 129.44302
+- point:
+    x: 107.0
+    y: 128.13564
+  size: 0.5
+  class: null
+  descender:
+    x: 107.0
+    y: 128.76521
+- point:
+    x: 108.0
+    y: 127.11868
+  size: 0.5
+  class: null
+  descender:
+    x: 108.0
+    y: 129.53995
+- point:
+    x: 109.0
+    y: 129.49161
+  size: 0.5
+  class: null
+  descender:
+    x: 109.0
+    y: 129.10413
+- point:
+    x: 110.0
+    y: 127.79661
+  size: 0.75
+  class: shot d50
+  descender:
+    x: 110.0
+    y: 128.61981
+- point:
+    x: 111.0
+    y: 131.86441
+  size: 0.5
+  class: null
+  descender:
+    x: 111.0
+    y: 129.10413
+- point:
+    x: 112.0
+    y: 125.76271
+  size: 0.5
+  class: null
+  descender:
+    x: 112.0
+    y: 129.29787
+- point:
+    x: 113.0
+    y: 130.16954
+  size: 0.5
+  class: null
+  descender:
+    x: 113.0
+    y: 128.86203
+- point:
+    x: 114.0
+    y: 131.52551
+  size: 0.5
+  class: null
+  descender:
+    x: 114.0
+    y: 129.2494
+- point:
+    x: 115.0
+    y: 128.47453
+  size: 0.75
+  class: shot d50
+  descender:
+    x: 115.0
+    y: 129.1527
+- point:
+    x: 116.0
+    y: 126.44075
+  size: 0.5
+  class: null
+  descender:
+    x: 116.0
+    y: 129.49161
+- point:
+    x: 117.0
+    y: 130.50844
+  size: 0.5
+  class: null
+  descender:
+    x: 117.0
+    y: 129.20093
+- point:
+    x: 118.0
+    y: 131.18648
+  size: 0.5
+  class: null
+  descender:
+    x: 118.0
+    y: 128.32925
+- point:
+    x: 119.0
+    y: 128.13564
+  size: 0.5
+  class: null
+  descender:
+    x: 119.0
+    y: 128.52301
+- point:
+    x: 120.0
+    y: 128.13564
+  size: 0.75
+  class: shot d50
+  descender:
+    x: 120.0
+    y: 129.29787
+- point:
+    x: 121.0
+    y: 125.42369
+  size: 0.5
+  class: null
+  descender:
+    x: 121.0
+    y: 128.95895
+- point:
+    x: 122.0
+    y: 129.83063
+  size: 0.5
+  class: null
+  descender:
+    x: 122.0
+    y: 128.37773
+- point:
+    x: 123.0
+    y: 131.86441
+  size: 0.5
+  class: null
+  descender:
+    x: 123.0
+    y: 128.61993
+- point:
+    x: 124.0
+    y: 128.13564
+  size: 0.5
+  class: null
+  descender:
+    x: 124.0
+    y: 128.76521
+- point:
+    x: 125.0
+    y: 127.11868
+  size: 0.75
+  class: shot d75
+  descender:
+    x: 125.0
+    y: 129.54007
+- point:
+    x: 126.0
+    y: 129.83063
+  size: 0.5
+  class: null
+  descender:
+    x: 126.0
+    y: 130.07272
+- point:
+    x: 127.0
+    y: 129.15259
+  size: 0.5
+  class: null
+  descender:
+    x: 127.0
+    y: 130.7023
+- point:
+    x: 128.0
+    y: 130.84746
+  size: 0.5
+  class: null
+  descender:
+    x: 128.0
+    y: 131.23483
+- point:
+    x: 129.0
+    y: 133.5593
+  size: 0.5
+  class: null
+  descender:
+    x: 129.0
+    y: 132.30025
+- point:
+    x: 130.0
+    y: 136.27124
+  size: 0.5
+  class: null
+  descender:
+    x: 130.0
+    y: 132.97829
+- point:
+    x: 131.0
+    y: 131.86441
+  size: 0.75
+  class: shot d75
+  descender:
+    x: 131.0
+    y: 133.89832
+- point:
+    x: 132.0
+    y: 134.57635
+  size: 0.5
+  class: null
+  descender:
+    x: 132.0
+    y: 135.30275
+- point:
+    x: 133.0
+    y: 134.57635
+  size: 0.5
+  class: null
+  descender:
+    x: 133.0
+    y: 136.36806
+- point:
+    x: 134.0
+    y: 135.59319
+  size: 0.5
+  class: null
+  descender:
+    x: 134.0
+    y: 136.41652
+- point:
+    x: 135.0
+    y: 140.67795
+  size: 0.5
+  class: null
+  descender:
+    x: 135.0
+    y: 137.48193
+- point:
+    x: 136.0
+    y: 141.01697
+  size: 0.5
+  class: null
+  descender:
+    x: 136.0
+    y: 138.54723
+- point:
+    x: 137.0
+    y: 136.61026
+  size: 0.75
+  class: shot d75
+  descender:
+    x: 137.0
+    y: 139.37044
+- point:
+    x: 138.0
+    y: 139.32208
+  size: 0.5
+  class: null
+  descender:
+    x: 138.0
+    y: 140.43585
+- point:
+    x: 139.0
+    y: 142.03392
+  size: 0.5
+  class: null
+  descender:
+    x: 139.0
+    y: 140.53278
+- point:
+    x: 140.0
+    y: 140.33893
+  size: 0.5
+  class: null
+  descender:
+    x: 140.0
+    y: 140.58113
+- point:
+    x: 141.0
+    y: 143.05087
+  size: 0.5
+  class: null
+  descender:
+    x: 141.0
+    y: 141.64642
+- point:
+    x: 142.0
+    y: 141.35599
+  size: 0.5
+  class: null
+  descender:
+    x: 142.0
+    y: 142.71184
+- point:
+    x: 143.0
+    y: 141.35599
+  size: 0.75
+  class: shot d75
+  descender:
+    x: 143.0
+    y: 143.34143
+- point:
+    x: 144.0
+    y: 144.06781
+  size: 0.5
+  class: null
+  descender:
+    x: 144.0
+    y: 144.40685
+- point:
+    x: 145.0
+    y: 146.77975
+  size: 0.5
+  class: null
+  descender:
+    x: 145.0
+    y: 145.47226
+- point:
+    x: 146.0
+    y: 146.44073
+  size: 0.5
+  class: null
+  descender:
+    x: 146.0
+    y: 146.15018
+- point:
+    x: 147.0
+    y: 147.7966
+  size: 0.5
+  class: null
+  descender:
+    x: 147.0
+    y: 147.21548
+- point:
+    x: 148.0
+    y: 150.50842
+  size: 0.5
+  class: null
+  descender:
+    x: 148.0
+    y: 147.5545
+- point:
+    x: 149.0
+    y: 146.10172
+  size: 0.75
+  class: shot d100
+  descender:
+    x: 149.0
+    y: 147.21548
+- point:
+    x: 150.0
+    y: 148.81355
+  size: 0.5
+  class: null
+  descender:
+    x: 150.0
+    y: 148.08704
+- point:
+    x: 151.0
+    y: 146.44073
+  size: 0.5
+  class: null
+  descender:
+    x: 151.0
+    y: 149.15245
+- point:
+    x: 152.0
+    y: 144.40685
+  size: 0.5
+  class: null
+  descender:
+    x: 152.0
+    y: 149.20091
+- point:
+    x: 153.0
+    y: 152.54233
+  size: 0.5
+  class: null
+  descender:
+    x: 153.0
+    y: 150.26633
+- point:
+    x: 154.0
+    y: 155.25427
+  size: 0.5
+  class: null
+  descender:
+    x: 154.0
+    y: 151.33174
+- point:
+    x: 155.0
+    y: 150.84744
+  size: 0.75
+  class: shot d100
+  descender:
+    x: 155.0
+    y: 152.97816
+- point:
+    x: 156.0
+    y: 153.55939
+  size: 0.5
+  class: null
+  descender:
+    x: 156.0
+    y: 154.81844
+- point:
+    x: 157.0
+    y: 156.27122
+  size: 0.5
+  class: null
+  descender:
+    x: 157.0
+    y: 155.88374
+- point:
+    x: 158.0
+    y: 157.9661
+  size: 0.5
+  class: null
+  descender: null
+- point:
+    x: 159.0
+    y: 157.28818
+  size: 0.5
+  class: null
+  descender: null
+- point:
+    x: 160.0
+    y: 160.0
+  size: 0.5
+  class: null
+  descender: null

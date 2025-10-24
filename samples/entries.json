@@ -1,0 +1,866 @@
+[
+  {
+    "date": "2025-02-01",
+    "weight": 152.04416,
+    "shot": null
+  },
+  {
+    "date": "2025-02-04",
+    "weight": 152.08951,
+    "shot": null
+  },
+  {
+    "date": "2025-02-06",
+    "weight": 152.08951,
+    "shot": null
+  },
+  {
+    "date": "2025-02-07",
+    "weight": 151.59058,
+    "shot": null
+  },
+  {
+    "date": "2025-02-08",
+    "weight": 152.2256,
+    "shot": null
+  },
+  {
+    "date": "2025-02-12",
+    "weight": 151.59058,
+    "shot": null
+  },
+  {
+    "date": "2025-02-14",
+    "weight": 151.63593,
+    "shot": null
+  },
+  {
+    "date": "2025-02-16",
+    "weight": 151.18233,
+    "shot": null
+  },
+  {
+    "date": "2025-02-17",
+    "weight": 150.81946,
+    "shot": null
+  },
+  {
+    "date": "2025-02-18",
+    "weight": 151.13698,
+    "shot": null
+  },
+  {
+    "date": "2025-02-19",
+    "weight": 150.81946,
+    "shot": null
+  },
+  {
+    "date": "2025-02-20",
+    "weight": 150.68338,
+    "shot": {
+      "time": "19:00:00",
+      "medication": "Mounjaro",
+      "dose": 2.5,
+      "site": "Right Thigh",
+      "notes": null
+    }
+  },
+  {
+    "date": "2025-02-23",
+    "weight": 147.19072,
+    "shot": null
+  },
+  {
+    "date": "2025-02-24",
+    "weight": 148.18863,
+    "shot": null
+  },
+  {
+    "date": "2025-02-26",
+    "weight": 147.19072,
+    "shot": null
+  },
+  {
+    "date": "2025-02-27",
+    "weight": 145.78458,
+    "shot": {
+      "time": "09:20:00",
+      "medication": "Mounjaro",
+      "dose": 2.5,
+      "site": "Right Thigh",
+      "notes": null
+    }
+  },
+  {
+    "date": "2025-02-28",
+    "weight": 146.78249,
+    "shot": null
+  },
+  {
+    "date": "2025-03-01",
+    "weight": 145.92067,
+    "shot": null
+  },
+  {
+    "date": "2025-03-02",
+    "weight": 144.37845,
+    "shot": null
+  },
+  {
+    "date": "2025-03-03",
+    "weight": 145.37636,
+    "shot": null
+  },
+  {
+    "date": "2025-03-04",
+    "weight": 144.28773,
+    "shot": null
+  },
+  {
+    "date": "2025-03-05",
+    "weight": 144.69597,
+    "shot": null
+  },
+  {
+    "date": "2025-03-06",
+    "weight": 144.28773,
+    "shot": {
+      "time": "09:00:00",
+      "medication": "Mounjaro",
+      "dose": 2.5,
+      "site": "Left Thigh",
+      "notes": null
+    }
+  },
+  {
+    "date": "2025-03-07",
+    "weight": 144.01558,
+    "shot": null
+  },
+  {
+    "date": "2025-03-08",
+    "weight": 143.69806,
+    "shot": null
+  },
+  {
+    "date": "2025-03-09",
+    "weight": 144.1063,
+    "shot": null
+  },
+  {
+    "date": "2025-03-11",
+    "weight": 143.51662,
+    "shot": null
+  },
+  {
+    "date": "2025-03-12",
+    "weight": 143.51662,
+    "shot": null
+  },
+  {
+    "date": "2025-03-13",
+    "weight": 142.60944,
+    "shot": {
+      "time": "09:30:00",
+      "medication": "Mounjaro",
+      "dose": 2.5,
+      "site": "Right Thigh",
+      "notes": null
+    }
+  },
+  {
+    "date": "2025-03-14",
+    "weight": 142.29193,
+    "shot": null
+  },
+  {
+    "date": "2025-03-16",
+    "weight": 142.29193,
+    "shot": null
+  },
+  {
+    "date": "2025-03-17",
+    "weight": 142.88159,
+    "shot": {
+      "time": "08:00:00",
+      "medication": "Mounjaro",
+      "dose": 5.0,
+      "site": "Left Thigh",
+      "notes": null
+    }
+  },
+  {
+    "date": "2025-03-18",
+    "weight": 142.2012,
+    "shot": null
+  },
+  {
+    "date": "2025-03-19",
+    "weight": 142.60944,
+    "shot": null
+  },
+  {
+    "date": "2025-03-20",
+    "weight": 141.88368,
+    "shot": null
+  },
+  {
+    "date": "2025-03-21",
+    "weight": 141.38475,
+    "shot": null
+  },
+  {
+    "date": "2025-03-22",
+    "weight": 142.79086,
+    "shot": null
+  },
+  {
+    "date": "2025-03-23",
+    "weight": 140.2054,
+    "shot": {
+      "time": "19:10:00",
+      "medication": "Mounjaro",
+      "dose": 5.0,
+      "site": "Right Thigh",
+      "notes": null
+    }
+  },
+  {
+    "date": "2025-03-24",
+    "weight": 140.2054,
+    "shot": null
+  },
+  {
+    "date": "2025-03-25",
+    "weight": 140.47755,
+    "shot": null
+  },
+  {
+    "date": "2025-03-26",
+    "weight": 140.47755,
+    "shot": null
+  },
+  {
+    "date": "2025-03-27",
+    "weight": 139.61572,
+    "shot": null
+  },
+  {
+    "date": "2025-03-28",
+    "weight": 139.38893,
+    "shot": null
+  },
+  {
+    "date": "2025-03-29",
+    "weight": 139.47964,
+    "shot": null
+  },
+  {
+    "date": "2025-03-30",
+    "weight": 139.47964,
+    "shot": {
+      "time": "20:30:00",
+      "medication": "Mounjaro",
+      "dose": 5.0,
+      "site": "Left Thigh",
+      "notes": null
+    }
+  },
+  {
+    "date": "2025-03-31",
+    "weight": 139.29822,
+    "shot": null
+  },
+  {
+    "date": "2025-04-01",
+    "weight": 139.11678,
+    "shot": null
+  },
+  {
+    "date": "2025-04-02",
+    "weight": 138.79926,
+    "shot": null
+  },
+  {
+    "date": "2025-04-03",
+    "weight": 138.79926,
+    "shot": null
+  },
+  {
+    "date": "2025-04-04",
+    "weight": 138.9807,
+    "shot": null
+  },
+  {
+    "date": "2025-04-05",
+    "weight": 138.11888,
+    "shot": null
+  },
+  {
+    "date": "2025-04-06",
+    "weight": 138.30031,
+    "shot": {
+      "time": "09:25:00",
+      "medication": "Mounjaro",
+      "dose": 5.0,
+      "site": "Right Thigh",
+      "notes": null
+    }
+  },
+  {
+    "date": "2025-04-07",
+    "weight": 138.30031,
+    "shot": null
+  },
+  {
+    "date": "2025-04-08",
+    "weight": 137.48384,
+    "shot": null
+  },
+  {
+    "date": "2025-04-11",
+    "weight": 137.80135,
+    "shot": null
+  },
+  {
+    "date": "2025-04-12",
+    "weight": 137.48384,
+    "shot": null
+  },
+  {
+    "date": "2025-04-13",
+    "weight": 137.48384,
+    "shot": {
+      "time": "11:00:00",
+      "medication": "Mounjaro",
+      "dose": 6.6,
+      "site": "Left Thigh",
+      "notes": null
+    }
+  },
+  {
+    "date": "2025-04-14",
+    "weight": 137.71065,
+    "shot": null
+  },
+  {
+    "date": "2025-04-15",
+    "weight": 136.71274,
+    "shot": null
+  },
+  {
+    "date": "2025-04-16",
+    "weight": 136.3045,
+    "shot": null
+  },
+  {
+    "date": "2025-04-17",
+    "weight": null,
+    "shot": null
+  },
+  {
+    "date": "2025-04-19",
+    "weight": 136.3045,
+    "shot": null
+  },
+  {
+    "date": "2025-04-20",
+    "weight": 136.3045,
+    "shot": {
+      "time": "10:40:00",
+      "medication": "Mounjaro",
+      "dose": 5.0,
+      "site": "Right Thigh",
+      "notes": null
+    }
+  },
+  {
+    "date": "2025-04-21",
+    "weight": 136.07771,
+    "shot": null
+  },
+  {
+    "date": "2025-04-22",
+    "weight": 135.57875,
+    "shot": null
+  },
+  {
+    "date": "2025-04-24",
+    "weight": 135.3066,
+    "shot": null
+  },
+  {
+    "date": "2025-04-25",
+    "weight": 135.89627,
+    "shot": null
+  },
+  {
+    "date": "2025-04-26",
+    "weight": 135.0798,
+    "shot": null
+  },
+  {
+    "date": "2025-04-27",
+    "weight": 135.0798,
+    "shot": {
+      "time": "21:40:00",
+      "medication": "Mounjaro",
+      "dose": 5.0,
+      "site": "Right Thigh",
+      "notes": null
+    }
+  },
+  {
+    "date": "2025-04-28",
+    "weight": 135.39732,
+    "shot": null
+  },
+  {
+    "date": "2025-04-29",
+    "weight": 134.80765,
+    "shot": null
+  },
+  {
+    "date": "2025-04-30",
+    "weight": 134.67157,
+    "shot": null
+  },
+  {
+    "date": "2025-05-01",
+    "weight": 135.21588,
+    "shot": null
+  },
+  {
+    "date": "2025-05-02",
+    "weight": 134.98909,
+    "shot": {
+      "time": "09:15:00",
+      "medication": "Mounjaro",
+      "dose": 5.0,
+      "site": "Left Thigh",
+      "notes": null
+    }
+  },
+  {
+    "date": "2025-05-03",
+    "weight": 135.62411,
+    "shot": null
+  },
+  {
+    "date": "2025-05-04",
+    "weight": 134.853,
+    "shot": null
+  },
+  {
+    "date": "2025-05-05",
+    "weight": 134.6262,
+    "shot": null
+  },
+  {
+    "date": "2025-05-06",
+    "weight": 135.26125,
+    "shot": null
+  },
+  {
+    "date": "2025-05-07",
+    "weight": 134.94373,
+    "shot": {
+      "time": "20:00:00",
+      "medication": "Mounjaro",
+      "dose": 5.0,
+      "site": "Right Thigh",
+      "notes": null
+    }
+  },
+  {
+    "date": "2025-05-08",
+    "weight": 134.3087,
+    "shot": null
+  },
+  {
+    "date": "2025-05-09",
+    "weight": 135.12517,
+    "shot": null
+  },
+  {
+    "date": "2025-05-10",
+    "weight": 135.35196,
+    "shot": null
+  },
+  {
+    "date": "2025-05-11",
+    "weight": 134.71693,
+    "shot": null
+  },
+  {
+    "date": "2025-05-12",
+    "weight": 135.0798,
+    "shot": {
+      "time": "10:30:00",
+      "medication": "Mounjaro",
+      "dose": 6.33,
+      "site": "Left Thigh",
+      "notes": null
+    }
+  },
+  {
+    "date": "2025-05-13",
+    "weight": 135.71484,
+    "shot": null
+  },
+  {
+    "date": "2025-05-14",
+    "weight": 135.03445,
+    "shot": null
+  },
+  {
+    "date": "2025-05-15",
+    "weight": 134.49013,
+    "shot": null
+  },
+  {
+    "date": "2025-05-16",
+    "weight": 135.3066,
+    "shot": null
+  },
+  {
+    "date": "2025-05-17",
+    "weight": 134.98909,
+    "shot": {
+      "time": "19:45:00",
+      "medication": "Mounjaro",
+      "dose": 5.0,
+      "site": "Right Thigh",
+      "notes": null
+    }
+  },
+  {
+    "date": "2025-05-18",
+    "weight": 134.35406,
+    "shot": null
+  },
+  {
+    "date": "2025-05-19",
+    "weight": 135.0798,
+    "shot": null
+  },
+  {
+    "date": "2025-05-20",
+    "weight": 135.21588,
+    "shot": null
+  },
+  {
+    "date": "2025-05-21",
+    "weight": 134.89836,
+    "shot": null
+  },
+  {
+    "date": "2025-05-22",
+    "weight": 135.12517,
+    "shot": {
+      "time": "08:20:00",
+      "medication": "Mounjaro",
+      "dose": 5.0,
+      "site": "Left Thigh",
+      "notes": null
+    }
+  },
+  {
+    "date": "2025-05-23",
+    "weight": 134.58086,
+    "shot": null
+  },
+  {
+    "date": "2025-05-24",
+    "weight": 135.39732,
+    "shot": null
+  },
+  {
+    "date": "2025-05-25",
+    "weight": 134.80765,
+    "shot": null
+  },
+  {
+    "date": "2025-05-26",
+    "weight": 134.6262,
+    "shot": null
+  },
+  {
+    "date": "2025-05-27",
+    "weight": 135.03445,
+    "shot": {
+      "time": "21:10:00",
+      "medication": "Mounjaro",
+      "dose": 5.0,
+      "site": "Right Thigh",
+      "notes": null
+    }
+  },
+  {
+    "date": "2025-05-28",
+    "weight": 135.3066,
+    "shot": null
+  },
+  {
+    "date": "2025-05-29",
+    "weight": 134.7623,
+    "shot": null
+  },
+  {
+    "date": "2025-05-30",
+    "weight": 134.67157,
+    "shot": null
+  },
+  {
+    "date": "2025-05-31",
+    "weight": 135.0798,
+    "shot": null
+  },
+  {
+    "date": "2025-06-01",
+    "weight": 135.0798,
+    "shot": {
+      "time": "09:50:00",
+      "medication": "Mounjaro",
+      "dose": 5.0,
+      "site": "Left Thigh",
+      "notes": null
+    }
+  },
+  {
+    "date": "2025-06-02",
+    "weight": 135.44269,
+    "shot": null
+  },
+  {
+    "date": "2025-06-03",
+    "weight": 134.853,
+    "shot": null
+  },
+  {
+    "date": "2025-06-04",
+    "weight": 134.58086,
+    "shot": null
+  },
+  {
+    "date": "2025-06-05",
+    "weight": 135.0798,
+    "shot": null
+  },
+  {
+    "date": "2025-06-06",
+    "weight": 135.21588,
+    "shot": {
+      "time": "20:15:00",
+      "medication": "Mounjaro",
+      "dose": 7.5,
+      "site": "Right Thigh",
+      "notes": null
+    }
+  },
+  {
+    "date": "2025-06-07",
+    "weight": 134.853,
+    "shot": null
+  },
+  {
+    "date": "2025-06-08",
+    "weight": 134.94373,
+    "shot": null
+  },
+  {
+    "date": "2025-06-09",
+    "weight": 134.71693,
+    "shot": null
+  },
+  {
+    "date": "2025-06-10",
+    "weight": 134.35406,
+    "shot": null
+  },
+  {
+    "date": "2025-06-11",
+    "weight": 133.99118,
+    "shot": null
+  },
+  {
+    "date": "2025-06-12",
+    "weight": 134.58086,
+    "shot": {
+      "time": "10:10:00",
+      "medication": "Mounjaro",
+      "dose": 7.5,
+      "site": "Left Thigh",
+      "notes": null
+    }
+  },
+  {
+    "date": "2025-06-13",
+    "weight": 134.21797,
+    "shot": null
+  },
+  {
+    "date": "2025-06-14",
+    "weight": 134.21797,
+    "shot": null
+  },
+  {
+    "date": "2025-06-15",
+    "weight": 134.08191,
+    "shot": null
+  },
+  {
+    "date": "2025-06-16",
+    "weight": 133.40152,
+    "shot": null
+  },
+  {
+    "date": "2025-06-17",
+    "weight": 133.35616,
+    "shot": null
+  },
+  {
+    "date": "2025-06-18",
+    "weight": 133.94582,
+    "shot": {
+      "time": "19:30:00",
+      "medication": "Mounjaro",
+      "dose": 7.5,
+      "site": "Right Thigh",
+      "notes": null
+    }
+  },
+  {
+    "date": "2025-06-19",
+    "weight": 133.58295,
+    "shot": null
+  },
+  {
+    "date": "2025-06-20",
+    "weight": 133.22008,
+    "shot": null
+  },
+  {
+    "date": "2025-06-21",
+    "weight": 133.44688,
+    "shot": null
+  },
+  {
+    "date": "2025-06-22",
+    "weight": 133.084,
+    "shot": null
+  },
+  {
+    "date": "2025-06-23",
+    "weight": 133.31079,
+    "shot": null
+  },
+  {
+    "date": "2025-06-24",
+    "weight": 133.31079,
+    "shot": {
+      "time": "08:45:00",
+      "medication": "Mounjaro",
+      "dose": 7.5,
+      "site": "Left Thigh",
+      "notes": null
+    }
+  },
+  {
+    "date": "2025-06-25",
+    "weight": 132.94792,
+    "shot": null
+  },
+  {
+    "date": "2025-06-26",
+    "weight": 132.58504,
+    "shot": null
+  },
+  {
+    "date": "2025-06-27",
+    "weight": 132.6304,
+    "shot": null
+  },
+  {
+    "date": "2025-06-28",
+    "weight": 132.44897,
+    "shot": null
+  },
+  {
+    "date": "2025-06-29",
+    "weight": 132.0861,
+    "shot": null
+  },
+  {
+    "date": "2025-06-30",
+    "weight": 132.67577,
+    "shot": {
+      "time": "21:20:00",
+      "medication": "Mounjaro",
+      "dose": 10.0,
+      "site": "Right Thigh",
+      "notes": null
+    }
+  },
+  {
+    "date": "2025-07-01",
+    "weight": 132.3129,
+    "shot": null
+  },
+  {
+    "date": "2025-07-02",
+    "weight": 132.6304,
+    "shot": null
+  },
+  {
+    "date": "2025-07-03",
+    "weight": 132.90256,
+    "shot": null
+  },
+  {
+    "date": "2025-07-04",
+    "weight": 131.81395,
+    "shot": null
+  },
+  {
+    "date": "2025-07-05",
+    "weight": 131.45107,
+    "shot": null
+  },
+  {
+    "date": "2025-07-06",
+    "weight": 132.04074,
+    "shot": {
+      "time": "09:35:00",
+      "medication": "Mounjaro",
+      "dose": 10.0,
+      "site": "Left Thigh",
+      "notes": null
+    }
+  },
+  {
+    "date": "2025-07-07",
+    "weight": 131.67786,
+    "shot": null
+  },
+  {
+    "date": "2025-07-08",
+    "weight": 131.31499,
+    "shot": null
+  },
+  {
+    "date": "2025-07-09",
+    "weight": 131.0882,
+    "shot": null
+  },
+  {
+    "date": "2025-07-10",
+    "weight": 131.17891,
+    "shot": null
+  },
+  {
+    "date": "2025-07-11",
+    "weight": 130.81604,
+    "shot": null
+  }
+]

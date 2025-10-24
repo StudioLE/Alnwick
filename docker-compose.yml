@@ -1,0 +1,10 @@
+services:
+
+  alnwick:
+    container_name: alnwick
+    network_mode: host
+    build: .
+    volumes:
+    - ./assets:/app/assets
+    - ./src:/app/src
+    - ./node_modules:/app/node_modules

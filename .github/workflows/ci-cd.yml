@@ -1,0 +1,20 @@
+name: CI/CD
+
+on:
+  push:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+
+  ci-cd:
+    name: CI/CD
+    uses: StudioLE/Actions/.github/workflows/rust-ci-cd.yml@v7
+    with:
+      dioxus_name: lineweights
+      dioxus_artifact: WebAssembly
+      dioxus_repo: StudioLE/LineweightsWeb
+    secrets:
+      dioxus_repo_token: ${{ secrets.WEB_REPO_TOKEN }}
