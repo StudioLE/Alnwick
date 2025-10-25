@@ -1,4 +1,5 @@
-pub use emulate::*;
-pub use options::*;
-mod emulate;
-mod options;
+#[cfg(feature = "server")]
+pub(crate) mod emulate;
+#[cfg(feature = "server")]
+pub(crate) mod options;
+mod error;

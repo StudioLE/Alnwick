@@ -1,5 +1,10 @@
 use crate::prelude::*;
 use crate::core::scrape::simplecast::*;
+use super::scrape::ScrapeCommand;
+use super::error::ScrapeError;
+use super::error::ScrapeSimplecastError;
+use super::error::ScrapeRssError;
+use super::options::ScrapeOptions;
 
 const CONCURRENCY: usize = 8;
 
@@ -170,28 +175,4 @@ fn convert(
     podcast.id = podcast_id.to_owned();
     podcast.episodes = episodes.into_iter().map(Into::into).collect();
     podcast
-}
-
-#[derive(Debug)]
-pub enum ScrapeSimplecastError {
-    GetPage(HttpError),
-    PlayerNotFound(Url),
-    GetEpisode(String, HttpError),
-    GetPlaylist(String, HttpError),
-}
-
-impl Display for ScrapeSimplecastError {
-    fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
-        let reason = match self {
-            ScrapeSimplecastError::GetPage(e) => format!("Unable to get page\n{e}"),
-            ScrapeSimplecastError::PlayerNotFound(url) => {
-                format!("Page does not contain a Simplecast Player\nURL: {url}")
-            }
-            ScrapeSimplecastError::GetEpisode(id, e) => format!("Unable to get episode: {id}\n{e}"),
-            ScrapeSimplecastError::GetPlaylist(id, e) => {
-                format!("Unable to get playlist: {id}\n{e}")
-            }
-        };
-        write!(f, "{} to scrape\n{reason}", "Failed".bold())
-    }
 }

@@ -1,5 +1,4 @@
-pub use cover::*;
-pub use options::*;
-
-mod cover;
-mod options;
+#[cfg(feature = "server")]
+pub(crate) mod cover;
+pub(crate) mod options;
+pub(crate) mod error;

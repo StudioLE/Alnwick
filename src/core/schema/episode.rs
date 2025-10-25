@@ -2,6 +2,9 @@ use crate::prelude::*;
 use rss::extension::itunes::ITunesItemExtension;
 use std::fmt::Write as _;
 use strum_macros::AsRefStr;
+use crate::core::services::MP3_EXTENSION;
+use crate::core::utils::{Sanitizer, UrlExtensions};
+use super::error::PodcastConvertError;
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[allow(clippy::struct_field_names)]

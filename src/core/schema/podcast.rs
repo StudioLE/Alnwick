@@ -2,9 +2,8 @@ use crate::prelude::*;
 #[cfg(test)]
 use chrono::Utc;
 use rss::extension::itunes::ITunesChannelExtension;
-use std::error::Error;
-use std::num::ParseIntError;
 use strum_macros::AsRefStr;
+use super::error::PodcastConvertError;
 
 /// Podcast or Channel
 ///
@@ -179,22 +178,6 @@ impl TryFrom<RssChannel> for Podcast {
         })
     }
 }
-
-#[derive(Debug)]
-pub enum PodcastConvertError {
-    Required(String),
-    Url(String, url::ParseError),
-    Date(String, chrono::ParseError),
-    Integer(String, ParseIntError),
-}
-
-impl Display for PodcastConvertError {
-    fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
-        write!(f, "{self:?}")
-    }
-}
-
-impl Error for PodcastConvertError {}
 
 #[cfg(test)]
 mod tests {

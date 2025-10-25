@@ -1,5 +1,5 @@
-use std::str::FromStr;
 use crate::prelude::*;
+use super::error::ListError;
 
 const CONCURRENCY: usize = 8;
 const IMAGE_SIZE: u32 = 720;
@@ -30,31 +30,6 @@ impl ListCommand {
                     .get(id)
                     .map_err(|e| ListError::GetPodcast(e)))
             .collect::<Result<_, _>>()
-    }
-}
-
-#[allow(clippy::absolute_paths)]
-#[derive(Debug)]
-pub enum ListError {
-    GetPodcast(DatabaseError),
-}
-
-impl FromStr for ListError {
-    type Err = ();
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        todo!()
-    }
-}
-
-impl Error for ListError {}
-
-impl Display for ListError {
-    fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
-        let reason = match self {
-            ListError::GetPodcast(e) => format!("Unable to get podcast\n{e}"),
-        };
-        write!(f, "{} to download\n{reason}", "Failed".bold())
     }
 }
 

@@ -1,5 +1,4 @@
-pub use download::*;
-pub use options::*;
 
-mod download;
-mod options;
+#[cfg(feature = "server")]
+pub(crate) mod download;
+pub(crate) mod options;

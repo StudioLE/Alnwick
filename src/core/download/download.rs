@@ -1,6 +1,7 @@
 use crate::prelude::*;
 use lofty::picture::Picture;
 use tokio::task::{spawn_blocking, JoinError};
+use super::options::DownloadOptions;
 
 const CONCURRENCY: usize = 8;
 const IMAGE_SIZE: u32 = 720;
