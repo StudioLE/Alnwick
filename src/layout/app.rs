@@ -2,6 +2,7 @@ use crate::contexts::page::context::PageContext;
 use crate::layout::actions::FloatingActionsComponent;
 use crate::layout::head::HeadComponent;
 use crate::layout::header::HeaderComponent;
+use crate::pages::podcasts::component::PodcastsPage;
 use crate::pages::settings::component::SettingsMenuComponent;
 use crate::pages::settings::player::component::FieldComponent;
 use crate::prelude::*;
@@ -20,7 +21,7 @@ pub fn App() -> Element {
                 "home page"
             }
             else if current == PageSelector::Podcasts {
-                "podcasts page"
+                PodcastsPage {}
             }
             else if current == PageSelector::Podcast {
                 "podcast page"

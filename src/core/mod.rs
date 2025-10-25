@@ -1,15 +1,9 @@
 pub(crate) mod extensions;
-#[cfg(feature = "server")]
 pub(crate) mod cover;
-#[cfg(feature = "server")]
 pub(crate) mod download;
-#[cfg(feature = "server")]
 pub(crate) mod emulate;
-#[cfg(feature = "server")]
 pub(crate) mod schema;
-#[cfg(feature = "server")]
 pub(crate) mod scrape;
-#[cfg(feature = "server")]
 pub(crate) mod services;
-#[cfg(feature = "server")]
 pub(crate) mod utils;
+pub(crate) mod list;
