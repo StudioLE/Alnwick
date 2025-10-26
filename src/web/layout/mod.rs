@@ -7,7 +7,7 @@ mod player;
 
 
 pub(crate) use actions::*;
-pub(crate) use app::*;
+pub use app::*;
 pub(crate) use drawer::*;
 pub(crate) use head::*;
 pub(crate) use header::*;

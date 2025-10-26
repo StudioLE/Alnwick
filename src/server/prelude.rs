@@ -1,4 +1,3 @@
-pub(crate) use clap::{ArgAction::SetTrue, Args, Parser, Subcommand};
 pub(crate) use futures::{stream, StreamExt};
 pub(crate) use reqwest::{Client as ReqwestClient, StatusCode};
 pub(crate) use scraper::{Html, Selector};
