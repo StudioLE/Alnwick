@@ -1,12 +1,4 @@
-mod contexts;
-mod core;
-mod layout;
-mod pages;
-mod prelude;
-
-use crate::layout::app::App;
-use dioxus::prelude::launch;
-
+#[cfg(feature = "web")]
 fn main() {
-    launch(App);
+    dioxus::prelude::launch(alnwick::prelude::App);
 }
