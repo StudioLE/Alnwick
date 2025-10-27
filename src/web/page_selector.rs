@@ -54,7 +54,7 @@ impl PageSelector {
             Podcasts => rsx! { PodcastsPage {} },
             Podcast => rsx! { "podcast page" },
             Settings => rsx! { SettingsPage {} },
-            PlayerSettings => rsx! { FieldComponent {} },
+            PlayerSettings => rsx! { PlayerSettingsPage {} },
             AddPodcast => rsx! { "add podcast page" },
         }
     }

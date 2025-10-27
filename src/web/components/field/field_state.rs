@@ -3,22 +3,26 @@ use crate::prelude::*;
 /// Local state of the input field.
 #[derive(Copy, Clone)]
 pub(super) struct FieldState {
-    /// Global settings context
-    context: SettingsContext,
+    /// Global value
+    global_value: Signal<Option<f32>>,
+    /// Convert from input text to a value value to a
+    from_string: fn(String) -> Result<f32, String>,
+    /// Convert from a value to input text
+    to_string: fn(Option<f32>) -> String,
     /// Current field value
-    value: Signal<String>,
+    field_value: Signal<String>,
     /// Validation messages
     message: Signal<Option<String>>,
 }
 
 impl FieldState {
-    pub(super) fn init() -> Self {
-        let context: SettingsContext = use_context();
-        let value = context.get();
-        let value = to_string(value);
+    pub(super) fn new(props: FieldProps) -> Self {
+        let value = (props.to_string)(*props.global_value.read());
         Self {
-            context,
-            value: use_signal(|| value),
+            global_value: props.global_value,
+            from_string: props.from_string,
+            to_string: props.to_string,
+            field_value: use_signal(|| value),
             message: use_signal(|| None),
         }
     }
@@ -36,7 +40,7 @@ impl FieldState {
     }
 
     pub(super) fn get_value(&self) -> String {
-        self.value.read().clone()
+        self.field_value.read().clone()
     }
 
     pub(super) fn get_message(&self) -> String {
@@ -46,33 +50,16 @@ impl FieldState {
     pub(super) fn oninput(&mut self, event: Event<FormData>) {
         event.prevent_default();
         let input_value = event.value();
-        self.value.set(input_value.clone());
-        match from_string(input_value) {
+        self.field_value.set(input_value.clone());
+        match (self.from_string)(input_value) {
             Ok(height) => {
-                self.context.set(Some(height));
+                self.global_value.set(Some(height));
                 self.message.set(None);
             }
             Err(message) => {
-                self.context.set(None);
+                self.global_value.set(None);
                 self.message.set(Some(message));
             }
         }
     }
-}
-
-fn from_string(input: String) -> Result<f32, String> {
-    let Ok(cm) = input.parse::<f32>() else {
-        return Err("Height must be a number".to_owned());
-    };
-    if !(50.0..=300.0).contains(&cm) {
-        return Err("Height must be between 50 and 300 cm".to_owned());
-    }
-    Ok(cm / 100.0)
-}
-
-fn to_string(value: Option<f32>) -> String {
-    let Some(height) = value else {
-        return String::new();
-    };
-    (height * 100.0).to_string()
 }
