@@ -47,4 +47,15 @@ impl PageSelector {
             },
         }
     }
+
+    pub(crate) fn get_component(self) -> Element {
+        match self {
+            Home => rsx! { "home page" },
+            Podcasts => rsx! { PodcastsPage {} },
+            Podcast => rsx! { "podcast page" },
+            Settings => rsx! { SettingsPage {} },
+            PlayerSettings => rsx! { FieldComponent {} },
+            AddPodcast => rsx! { "add podcast page" },
+        }
+    }
 }

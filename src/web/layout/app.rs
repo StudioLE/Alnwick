@@ -18,27 +18,7 @@ pub fn App() -> Element {
             main { style: "flex: 1;",
                 div { class: "container is-max-tablet",
                     HeaderComponent {}
-                    if current == PageSelector::Home {
-                        "home page"
-                    }
-                    else if current == PageSelector::Podcasts {
-                        PodcastsPage {}
-                    }
-                    else if current == PageSelector::Podcast {
-                        "podcast page"
-                    }
-                    else if current == PageSelector::Settings {
-                        SettingsPage {}
-                    }
-                    else if current == PageSelector::PlayerSettings {
-                        FieldComponent {}
-                    }
-                    else if current == PageSelector::AddPodcast {
-                        "add podcast page"
-                    }
-                    else {
-                        "Page not found"
-                    }
+                    {current.get_component()}
                 }
             }
         }
