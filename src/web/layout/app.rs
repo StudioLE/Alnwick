@@ -7,7 +7,12 @@ pub fn App() -> Element {
     let current = context.get();
     rsx! {
         HeadComponent {}
-        FloatingActionsComponent {}
+        FloatingActions {
+            FloatingAction {
+                selector: PageSelector::AddPodcast,
+                is_large: true,
+            }
+        }
         div { style: "display: flex; height: 100vh;",
             DrawerComponent {},
             main { style: "flex: 1;",
