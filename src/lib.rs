@@ -1,7 +1,7 @@
 pub mod prelude;
-mod shared;
-mod web;
 #[cfg(feature = "server")]
 mod server;
+mod shared;
 #[cfg(test)]
 mod tests;
+mod web;

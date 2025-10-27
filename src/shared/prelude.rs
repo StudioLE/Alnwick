@@ -1,9 +1,10 @@
 #![allow(unused_imports)]
-pub(crate) use clap::{ArgAction::SetTrue, Args, Parser, Subcommand};
 pub(crate) use chrono::{DateTime, Datelike, FixedOffset, NaiveDateTime, Utc};
+pub(crate) use clap::{ArgAction::SetTrue, Args, Parser, Subcommand};
 pub(crate) use colored::Colorize;
 pub(crate) use dioxus::logger::tracing::{debug, error, info, trace, warn};
 pub(crate) use dioxus::prelude::*;
+pub(crate) use reqwest::{Client as ReqwestClient, StatusCode};
 pub(crate) use rss::{
     Channel as RssChannel, Enclosure as RssEnclosure, Guid as RssGuid, Item as RssItem,
 };
@@ -21,8 +22,5 @@ pub(crate) use std::mem::take;
 pub(crate) use std::path::{Path, PathBuf};
 pub(crate) use url::Url;
 
-
 pub(crate) use rss::extension::itunes::ITunesChannelExtension;
 pub(crate) use strum_macros::AsRefStr;
-
-pub(crate) use reqwest::StatusCode;

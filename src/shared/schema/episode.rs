@@ -3,6 +3,8 @@ use rss::extension::itunes::ITunesItemExtension;
 use std::fmt::Write as _;
 use strum_macros::AsRefStr;
 
+const MP3_EXTENSION: &str = "mp3";
+
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[allow(clippy::struct_field_names)]
 pub struct Episode {
@@ -72,7 +74,7 @@ impl Episode {
         }
         if self.episode_type != EpisodeType::Full {
             output.push(' ');
-            output.push_str(&self.episode_type.as_ref().to_uppercase());
+            output.push_str(&self.get_episode_type().to_uppercase());
         }
         if self.number.is_none() && self.episode_type == EpisodeType::Full {
             warn!(
@@ -91,6 +93,10 @@ impl Episode {
 
     pub(crate) fn format_season(season: Option<usize>) -> String {
         format!("S{:02}", season.unwrap_or(0))
+    }
+
+    fn get_episode_type(&self) -> String {
+        self.episode_type.as_ref().to_owned()
     }
 
     fn get_formatted_date(&self) -> String {
@@ -163,7 +169,7 @@ impl From<&Episode> for ITunesItemExtension {
             image: episode.image_url.as_ref().map(ToString::to_string),
             episode: episode.number.map(|n| n.to_string()),
             season: episode.season.map(|s| s.to_string()),
-            episode_type: Some(episode.episode_type.as_ref().to_lowercase()),
+            episode_type: Some(episode.get_episode_type().to_lowercase()),
             summary: Some(episode.description.clone()),
             ..Default::default()
         }

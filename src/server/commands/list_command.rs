@@ -21,13 +21,8 @@ impl ListCommand {
 
     pub async fn execute(&self) -> Result<Vec<Podcast>, ListError> {
         let ids = vec!["irl"];
-        ids
-            .into_iter()
-            .map(|id|
-                self
-                    .metadata
-                    .get(id)
-                    .map_err(|e| ListError::GetPodcast(e)))
+        ids.into_iter()
+            .map(|id| self.metadata.get(id).map_err(|e| ListError::GetPodcast(e)))
             .collect::<Result<_, _>>()
     }
 }
