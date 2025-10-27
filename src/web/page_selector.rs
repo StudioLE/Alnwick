@@ -41,7 +41,7 @@ impl PageSelector {
                 breadcrumbs: vec![Home, Settings, PlayerSettings],
             },
             AddPodcast => PageInfo {
-                title: "Add".to_owned(),
+                title: "Add Podcast".to_owned(),
                 icon: "fa-plus".to_owned(),
                 breadcrumbs: vec![Home],
             },

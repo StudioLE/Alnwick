@@ -8,7 +8,7 @@ pub(crate) fn DrawerComponent() -> Element {
         aside { style: "width: 250px; padding: 1.375em 1.5em;",
             Menu {
                 MenuList { label: "Menu",
-                    MenuItem { selector: PageSelector::Home },
+                    MenuItem { selector: PageSelector::Podcasts },
                     MenuItem { selector: PageSelector::AddPodcast },
                     MenuItem { selector: PageSelector::Settings },
                 }
