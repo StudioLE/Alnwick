@@ -8,28 +8,33 @@ pub fn App() -> Element {
     rsx! {
         HeadComponent {}
         FloatingActionsComponent {}
-        div { class: "container is-max-tablet",
-            HeaderComponent {}
-            if current == PageSelector::Home {
-                "home page"
-            }
-            else if current == PageSelector::Podcasts {
-                PodcastsPage {}
-            }
-            else if current == PageSelector::Podcast {
-                "podcast page"
-            }
-            else if current == PageSelector::Settings {
-                SettingsMenuComponent {}
-            }
-            else if current == PageSelector::PlayerSettings {
-                FieldComponent {}
-            }
-            else if current == PageSelector::AddPodcast {
-                "add podcast page"
-            }
-            else {
-                "Page not found"
+        div { style: "display: flex; height: 100vh;",
+            DrawerComponent {},
+            main { style: "flex: 1;",
+                div { class: "container is-max-tablet",
+                    HeaderComponent {}
+                    if current == PageSelector::Home {
+                        "home page"
+                    }
+                    else if current == PageSelector::Podcasts {
+                        PodcastsPage {}
+                    }
+                    else if current == PageSelector::Podcast {
+                        "podcast page"
+                    }
+                    else if current == PageSelector::Settings {
+                        SettingsPage {}
+                    }
+                    else if current == PageSelector::PlayerSettings {
+                        FieldComponent {}
+                    }
+                    else if current == PageSelector::AddPodcast {
+                        "add podcast page"
+                    }
+                    else {
+                        "Page not found"
+                    }
+                }
             }
         }
     }
