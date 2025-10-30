@@ -3,8 +3,8 @@ use crate::prelude::*;
 /// Global settings [context](https://dioxuslabs.com/learn/0.6/reference/context/).
 #[derive(Clone, Copy, Debug)]
 pub struct SettingsContext {
-    pub skip_forward: Signal<Option<f32>>,
-    pub skip_back: Signal<Option<f32>>,
+    pub skip_forward: Signal<Option<u32>>,
+    pub skip_back: Signal<Option<u32>>,
 }
 
 impl SettingsContext {

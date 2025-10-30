@@ -5,7 +5,7 @@ pub(crate) fn PlayerSettingsPage() -> Element {
     let context: SettingsContext = consume_context();
     rsx! {
         section { class: "section",
-            Field::<f32> {
+            Field::<u32> {
                 label: "Skip forward time",
                 unit: "s",
                 placeholder: "20",
@@ -13,7 +13,7 @@ pub(crate) fn PlayerSettingsPage() -> Element {
                 from_string: from_string,
                 to_string: to_string,
             },
-            Field::<f32> {
+            Field::<u32> {
                 label: "Skip back time",
                 unit: "s",
                 placeholder: "20",
@@ -25,16 +25,16 @@ pub(crate) fn PlayerSettingsPage() -> Element {
     }
 }
 
-fn from_string(input: String) -> Result<f32, String> {
-    let Ok(cm) = input.parse::<f32>() else {
-        return Err("Height must be a number".to_owned());
+fn from_string(input: String) -> Result<u32, String> {
+    let Ok(value) = input.parse::<u32>() else {
+        return Err("Must be a positive integer".to_owned());
     };
-    if !(50.0..=300.0).contains(&cm) {
-        return Err("Height must be between 50 and 300 cm".to_owned());
+    if value > 60 * 60 {
+        return Err("Must be less than 3600".to_owned());
     }
-    Ok(cm / 100.0)
+    Ok(value)
 }
 
-fn to_string(value: Option<f32>) -> String {
+fn to_string(value: Option<u32>) -> String {
     value.map(|value| value.to_string()).unwrap_or_default()
 }
