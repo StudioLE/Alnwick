@@ -2,21 +2,26 @@ use crate::prelude::*;
 
 /// Local state of the input field.
 #[derive(Copy, Clone)]
-pub(super) struct FieldState {
+pub(super) struct FieldState<T>
+where
+    T: 'static + Clone + Copy + PartialEq,
+{
     /// Global value
-    global_value: Signal<Option<f32>>,
+    global_value: Signal<Option<T>>,
     /// Convert from input text to a value value to a
-    from_string: fn(String) -> Result<f32, String>,
+    from_string: fn(String) -> Result<T, String>,
     /// Convert from a value to input text
-    to_string: fn(Option<f32>) -> String,
+    to_string: fn(Option<T>) -> String,
     /// Current field value
     field_value: Signal<String>,
     /// Validation messages
     message: Signal<Option<String>>,
 }
 
-impl FieldState {
-    pub(super) fn new(props: FieldProps) -> Self {
+impl<T> FieldState<T>
+where
+    T: 'static + Clone + Copy + PartialEq, {
+    pub(super) fn new(props: FieldProps<T>) -> Self {
         let value = (props.to_string)(*props.global_value.read());
         Self {
             global_value: props.global_value,

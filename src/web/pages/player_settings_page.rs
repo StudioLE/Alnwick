@@ -5,7 +5,7 @@ pub(crate) fn PlayerSettingsPage() -> Element {
     let context: SettingsContext = consume_context();
     rsx! {
         section { class: "section",
-            Field {
+            Field::<f32> {
                 label: "Skip forward time",
                 unit: "s",
                 placeholder: "20",
@@ -13,7 +13,7 @@ pub(crate) fn PlayerSettingsPage() -> Element {
                 from_string: from_string,
                 to_string: to_string,
             },
-            Field {
+            Field::<f32> {
                 label: "Skip back time",
                 unit: "s",
                 placeholder: "20",
