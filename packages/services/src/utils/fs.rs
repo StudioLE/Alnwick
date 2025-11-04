@@ -6,9 +6,7 @@ pub async fn create_parent_dir_if_not_exist(path: &Path) -> Result<(), Report<Er
     let dir = path.parent().expect("path should have parent directory");
     if !dir.exists() {
         trace!(dir = %dir.display(), "Creating directory");
-        create_dir_all(&dir)
-            .await
-            .attach(format!("Path: {}", dir.display()))?;
+        create_dir_all(&dir).await.attach_path(dir)?;
     }
     Ok(())
 }

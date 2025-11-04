@@ -46,7 +46,9 @@ impl Resize {
             .first()
             .expect("should be at least one image extension");
         let path = path.with_extension(extension);
-        write(&path, bytes).change_context(ResizeError::Write)?;
+        write(&path, bytes)
+            .change_context(ResizeError::Write)
+            .attach_path(&path)?;
         Ok(path)
     }
 

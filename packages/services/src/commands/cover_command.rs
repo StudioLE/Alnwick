@@ -34,6 +34,9 @@ impl CoverCommand {
             .attach_url(&url)?;
         let banner = self.paths.get_banner_path(&options.podcast_id);
         let cover = self.paths.get_cover_path(&options.podcast_id);
+        create_parent_dir_if_not_exist(&banner)
+            .await
+            .change_context(CoverError::CreateDirectory)?;
         let resize = Resize::new(&src)
             .change_context(CoverError::CreateImage)
             .attach_path(src)?;

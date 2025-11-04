@@ -10,4 +10,6 @@ pub enum CoverError {
     GetImage,
     #[error("Unable to create image")]
     CreateImage,
+    #[error("Unable to create directory")]
+    CreateDirectory,
 }
