@@ -15,7 +15,7 @@ jobs:
     with:
       package_name: alnwick
       binary_name: alnwick
-      run_before: |
+      run_before_test: |
         mkdir -p "${HOME}/.cache/alnwick"
         mkdir -p "${HOME}/.local/share/alnwick"
         cargo run --target "${MATRIX_TARGET}" --package alnwick scrape irl https://irlpodcast.org
