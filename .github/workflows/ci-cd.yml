@@ -18,8 +18,7 @@ jobs:
       run_before_test: |
         mkdir -p "${HOME}/.cache/alnwick"
         mkdir -p "${HOME}/.local/share/alnwick"
-        cargo run --target "${MATRIX_TARGET}" --package alnwick scrape irl https://irlpodcast.org
-        cargo run --target "${MATRIX_TARGET}" --package alnwick download irl --year 2019
+        target/${MATRIX_TARGET}/release/alnwick scrape irl https://irlpodcast.org
         cd packages/dioxus
         npm install
       docker_name: alnwick
