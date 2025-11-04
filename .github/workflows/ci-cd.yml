@@ -18,7 +18,8 @@ jobs:
       run_before: |
         mkdir -p "${HOME}/.cache/alnwick"
         mkdir -p "${HOME}/.local/share/alnwick"
-        cargo test --release --color=always --no-fail-fast --target ${{ matrix.target }} scrape_command_simplecast
+        cargo run --package alnwick scrape irl
+        cargo run --package alnwick download irl --year 2019
       docker_name: alnwick
       docker_path: docker/cli
     secrets:
