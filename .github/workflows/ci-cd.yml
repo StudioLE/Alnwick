@@ -18,8 +18,8 @@ jobs:
       run_before: |
         mkdir -p "${HOME}/.cache/alnwick"
         mkdir -p "${HOME}/.local/share/alnwick"
-        cargo run --package alnwick scrape irl
-        cargo run --package alnwick download irl --year 2019
+        cargo run --target "${MATRIX_TARGET}" --package alnwick scrape irl https://irlpodcast.org
+        cargo run --target "${MATRIX_TARGET}" --package alnwick download irl --year 2019
       docker_name: alnwick
       docker_path: docker/cli
     secrets:
