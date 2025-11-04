@@ -1,10 +1,10 @@
 use std::io::stderr;
 use tracing::level_filters::LevelFilter;
+use tracing_subscriber::Layer;
 use tracing_subscriber::filter::Targets;
 use tracing_subscriber::fmt::layer;
 use tracing_subscriber::layer::SubscriberExt;
 use tracing_subscriber::util::SubscriberInitExt;
-use tracing_subscriber::Layer;
 
 const DEFAULT_LOG_LEVEL: LevelFilter = LevelFilter::TRACE;
 

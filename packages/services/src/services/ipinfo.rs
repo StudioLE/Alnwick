@@ -70,7 +70,7 @@ impl IpInfo {
             let Some(expected) = expected else {
                 continue;
             };
-            let Err(e) = Validate::expect(&expected, &actual) else {
+            let Err(e) = Validate::expect(&expected, actual) else {
                 continue;
             };
             errors.push(ValidationError::String(name.to_owned(), e));
@@ -132,6 +132,5 @@ mod tests {
 
         // Assert
         let _report = result.assert_err_debug();
-        
     }
 }

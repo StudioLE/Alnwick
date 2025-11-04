@@ -53,7 +53,6 @@ impl Route {
     }
 }
 
-
 #[component]
 fn Podcasts() -> Element {
     PodcastsPage()
