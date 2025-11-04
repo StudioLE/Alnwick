@@ -1,0 +1,120 @@
+use crate::prelude::*;
+
+#[derive(Default)]
+pub struct IpInfoProvider {
+    options: AppOptions,
+    http: HttpClient,
+}
+
+impl IpInfoProvider {
+    #[must_use]
+    pub fn new(options: AppOptions, http: HttpClient) -> Self {
+        Self { options, http }
+    }
+
+    pub async fn validate(&self) -> Result<(), Vec<ValidationError>> {
+        if self.options.expect_ip.is_none() && self.options.expect_country.is_none() {
+            return Ok(());
+        }
+        let info = self
+            .get()
+            .await
+            .map_err(|e| vec![ValidationError::Http(e)])?;
+        let mut errors = Vec::new();
+        let values = vec![
+            ("IP address", self.options.expect_ip.clone(), info.ip),
+            (
+                "Geolocated country",
+                self.options.expect_country.clone(),
+                info.country,
+            ),
+        ];
+        for (name, expected, actual) in values {
+            let Some(expected) = expected else {
+                continue;
+            };
+            let Err(e) = Validate::expect(&expected, &actual) else {
+                continue;
+            };
+            errors.push(ValidationError::String(name.to_owned(), e));
+        }
+        errors.to_result()
+    }
+
+    async fn get(&self) -> Result<IpInfo, Report<HttpError>> {
+        let ip_url = Url::parse("https://ipinfo.io").expect("URL should be valid");
+        self.http.remove(&ip_url, Some(JSON_EXTENSION)).await;
+        self.http.get_json(&ip_url).await
+    }
+}
+
+#[allow(dead_code)]
+#[derive(Debug, Deserialize)]
+struct IpInfo {
+    ip: String,
+    hostname: String,
+    city: String,
+    region: String,
+    country: String,
+    loc: String,
+    org: String,
+    postal: String,
+    timezone: String,
+}
+
+impl Display for IpInfo {
+    fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
+        write!(
+            f,
+            "{} ({}, {}, {})",
+            self.ip, self.city, self.region, self.country
+        )
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[tokio::test]
+    #[ignore = "uses ipinfo.io"]
+    async fn validate_env() {
+        // Arrange
+        // Act
+        let result = ServiceProvider::create().await;
+
+        // Assert
+        let _services = result.assert_ok();
+    }
+
+    #[tokio::test]
+    #[ignore = "uses ipinfo.io"]
+    async fn validate_none() {
+        // Arrange
+        let mut ipinfo = IpInfoProvider::default();
+        ipinfo.options.expect_ip = None;
+        ipinfo.options.expect_country = None;
+
+        // Act
+        let result = ipinfo.validate().await;
+
+        // Assert
+        assert!(result.is_ok());
+    }
+
+    #[tokio::test]
+    #[ignore = "uses ipinfo.io"]
+    async fn validate_invalid() {
+        // Arrange
+        let mut ipinfo = IpInfoProvider::default();
+        ipinfo.options.expect_ip = Some("203.0.113.1".to_owned());
+        ipinfo.options.expect_country = Some("INVALID".to_owned());
+
+        // Act
+        let result = ipinfo.validate().await;
+
+        // Assert
+        let errors = result.assert_err_debug();
+        assert_eq!(errors.len(), 2);
+    }
+}

@@ -1,0 +1,19 @@
+[package]
+name = "alnwick_dioxus"
+edition = "2024"
+version.workspace = true
+authors.workspace = true
+description.workspace = true
+documentation.workspace = true
+
+[features]
+web = ["dioxus/web"]
+server = ["dioxus/server", "dep:alnwick_services"]
+
+[dependencies]
+alnwick_core = { path = "../core" }
+alnwick_services = { path = "../services", optional = true }
+dioxus = { workspace = true }
+
+[lints]
+workspace = true
