@@ -131,6 +131,7 @@ mod tests {
         let result = ipinfo.validate().await;
 
         // Assert
-        let errors = result.assert_err_debug();
+        let _report = result.assert_err_debug();
+        
     }
 }
