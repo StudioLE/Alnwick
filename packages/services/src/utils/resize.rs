@@ -138,10 +138,10 @@ mod tests {
                 .expect("get image should not fail");
 
             // Act
-            let result = Resize::new(&path).assert_ok().to_bytes(100, 100);
+            let result = Resize::new(&path).assert_ok_debug().to_bytes(100, 100);
 
             // Assert
-            let bytes = result.assert_ok();
+            let bytes = result.assert_ok_debug();
             assert!(!bytes.is_empty());
         }
     }

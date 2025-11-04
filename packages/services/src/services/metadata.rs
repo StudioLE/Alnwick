@@ -65,11 +65,11 @@ mod tests {
         let podcast = Podcast::example();
 
         // Act
-        metadata.put(&podcast).assert_ok();
+        metadata.put(&podcast).assert_ok_debug();
         let result = metadata.get(&podcast.id);
 
         // Assert
-        let result = result.assert_ok();
+        let result = result.assert_ok_debug();
         assert_eq!(podcast, result);
     }
 

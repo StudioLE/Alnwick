@@ -75,7 +75,7 @@ mod tests {
         let result = command.execute(options).await;
 
         // Assert
-        let podcast = result.assert_ok();
+        let podcast = result.assert_ok_debug();
         assert!(podcast.episodes.len() > 30);
     }
 
@@ -96,7 +96,7 @@ mod tests {
         let result = command.execute(options).await;
 
         // Assert
-        let podcast = result.assert_ok();
+        let podcast = result.assert_ok_debug();
         assert!(podcast.episodes.len() > 30);
     }
 }

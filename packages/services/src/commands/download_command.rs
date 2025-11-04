@@ -207,7 +207,7 @@ mod tests {
         let result = command.execute(options).await;
 
         // Assert
-        result.assert_ok();
+        result.assert_ok_debug();
     }
 
     #[tokio::test]
@@ -229,6 +229,6 @@ mod tests {
         let result = command.process_episode(&podcast, episode).await;
 
         // Assert
-        result.assert_ok();
+        result.assert_ok_debug();
     }
 }

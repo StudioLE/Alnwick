@@ -199,6 +199,6 @@ mod tests {
 
         // Assert
         let result = channel.validate();
-        result.assert_ok();
+        result.assert_ok_debug();
     }
 }

@@ -216,7 +216,7 @@ mod tests {
         let result = http.head(&url).await;
 
         // Assert
-        let content_type = result.assert_ok();
+        let content_type = result.assert_ok_debug();
         assert_eq!(content_type, "text/html");
     }
 
@@ -233,7 +233,7 @@ mod tests {
         let result = http.head(&url).await;
 
         // Assert
-        let content_type = result.assert_ok();
+        let content_type = result.assert_ok_debug();
         assert_eq!(content_type, "application/xml");
     }
 
@@ -250,7 +250,7 @@ mod tests {
         let result = http.get(&url, Some(HTML_EXTENSION)).await;
 
         // Assert
-        let path = result.assert_ok();
+        let path = result.assert_ok_debug();
         assert_eq!(path, expected);
         assert!(path.exists());
     }
@@ -267,7 +267,7 @@ mod tests {
         let result = http.get_html(&url).await;
 
         // Assert
-        let _html = result.assert_ok();
+        let _html = result.assert_ok_debug();
     }
 
     #[tokio::test]
@@ -283,6 +283,6 @@ mod tests {
         let result = http.get_json::<Value>(&url).await;
 
         // Assert
-        let _json = result.assert_ok();
+        let _json = result.assert_ok_debug();
     }
 }

@@ -101,7 +101,7 @@ mod tests {
         let result = ServiceProvider::create().await;
 
         // Assert
-        let _services = result.assert_ok();
+        let _services = result.assert_ok_debug();
     }
 
     #[tokio::test]
