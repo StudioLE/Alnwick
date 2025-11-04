@@ -13,6 +13,7 @@ pub fn init_logger() {
         .with_target("cookie", LevelFilter::OFF)
         .with_target("html5ever", LevelFilter::OFF)
         .with_target("hyper_uti", LevelFilter::OFF)
+        .with_target("lofty", LevelFilter::OFF)
         .with_target("reqwest", LevelFilter::OFF)
         .with_target("selectors", LevelFilter::OFF)
         .with_default(DEFAULT_LOG_LEVEL);
