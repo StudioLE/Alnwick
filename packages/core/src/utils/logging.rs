@@ -10,12 +10,12 @@ const DEFAULT_LOG_LEVEL: LevelFilter = LevelFilter::TRACE;
 
 pub fn init_logger() {
     let targets = Targets::new()
-        .with_target("cookie", LevelFilter::OFF)
-        .with_target("html5ever", LevelFilter::OFF)
-        .with_target("hyper_uti", LevelFilter::OFF)
-        .with_target("lofty", LevelFilter::OFF)
-        .with_target("reqwest", LevelFilter::OFF)
-        .with_target("selectors", LevelFilter::OFF)
+        .with_target("cookie", LevelFilter::INFO)
+        .with_target("html5ever", LevelFilter::INFO)
+        .with_target("hyper_uti", LevelFilter::INFO)
+        .with_target("lofty", LevelFilter::INFO)
+        .with_target("reqwest", LevelFilter::INFO)
+        .with_target("selectors", LevelFilter::INFO)
         .with_default(DEFAULT_LOG_LEVEL);
     let layer = layer()
         .compact()
