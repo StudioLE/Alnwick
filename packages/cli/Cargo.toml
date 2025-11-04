@@ -1,0 +1,15 @@
+[package]
+name = "alnwick"
+edition = "2024"
+version.workspace = true
+authors.workspace = true
+description.workspace = true
+documentation.workspace = true
+
+[dependencies]
+alnwick_services = { path = "../services" }
+clap = { workspace = true }
+tokio = { workspace = true }
+
+[lints]
+workspace = true

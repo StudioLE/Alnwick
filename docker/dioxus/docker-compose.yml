@@ -1,0 +1,13 @@
+services:
+
+  alnwick:
+    container_name: alnwick
+    network_mode: host
+    build:
+      context: ../../
+      dockerfile: docker/dioxus/Dockerfile
+    volumes:
+    - ../../packages:/app/packages
+    - ../../Cargo.toml:/app/Cargo.toml
+    - ~/.cache/alnwick:/root/.cache/alnwick
+    - ~/.local/share/alnwick:/root/.local/share/alnwick

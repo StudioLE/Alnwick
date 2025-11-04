@@ -1,0 +1,234 @@
+use crate::prelude::*;
+use lofty::picture::Picture;
+use tokio::task::{JoinError, spawn_blocking};
+
+const CONCURRENCY: usize = 8;
+const IMAGE_SIZE: u32 = 720;
+
+pub struct DownloadCommand {
+    paths: PathProvider,
+    http: HttpClient,
+    metadata: MetadataStore,
+}
+
+impl DownloadCommand {
+    #[must_use]
+    pub fn new(paths: PathProvider, http: HttpClient, metadata: MetadataStore) -> Self {
+        Self {
+            paths,
+            http,
+            metadata,
+        }
+    }
+
+    pub async fn execute(&self, options: DownloadOptions) -> Result<(), Report<DownloadError>> {
+        let mut podcast = self
+            .metadata
+            .get(&options.podcast_id)
+            .change_context(DownloadError::GetPodcast)?;
+        podcast.filter(&options.filter);
+        let results = self.process_episodes(podcast.clone()).await;
+        let mut episodes = Vec::new();
+        let mut errors = Vec::new();
+        for result in results {
+            match result {
+                Ok(episode) => episodes.push(episode),
+                Err(e) => errors.push(e),
+            }
+        }
+        info!("Downloaded audio files for {} episodes", episodes.len());
+        if !errors.is_empty() {
+            warn!("Skipped {} episodes due to failures", errors.len());
+        }
+        Ok(())
+    }
+
+    #[allow(clippy::as_conversions)]
+    async fn process_episodes(
+        &self,
+        mut podcast: Podcast,
+    ) -> Vec<Result<Episode, Report<ProcessError>>> {
+        let episodes: Vec<_> = take(&mut podcast.episodes)
+            .into_iter()
+            .filter(|episode| {
+                let exists = self.paths.get_audio_path(&podcast.id, episode).exists();
+                if exists {
+                    trace!(%episode, "Skipping existing");
+                }
+                !exists
+            })
+            .collect();
+        debug!("Downloading audio files for {} episodes", episodes.len());
+
+        stream::iter(episodes.into_iter().map(|episode| {
+            let this = self;
+            let podcast = podcast.clone();
+            async move {
+                let result = this
+                    .process_episode(&podcast, episode.clone())
+                    .await
+                    .attach_episode(&episode);
+                if let Err(e) = &result {
+                    warn!("{e}");
+                }
+                result
+            }
+        }))
+        .buffer_unordered(CONCURRENCY)
+        .collect::<Vec<_>>()
+        .await
+    }
+
+    async fn process_episode(
+        &self,
+        podcast: &Podcast,
+        episode: Episode,
+    ) -> Result<Episode, Report<ProcessError>> {
+        let path = self.download_episode(&episode).await?;
+        let audio_path = self.copy_episode(&podcast.id, &episode, &path).await?;
+        let cover = self.download_image(&episode).await?;
+        trace!(%episode, "Setting tags");
+        Tag::execute(podcast, &episode, cover, &audio_path)
+            .change_context(ProcessError::Tag)
+            .attach_path(audio_path)?;
+        Ok(episode)
+    }
+
+    async fn download_episode(&self, episode: &Episode) -> Result<PathBuf, Report<ProcessError>> {
+        self.http
+            .get(&episode.audio_url, Some(MP3_EXTENSION))
+            .await
+            .change_context(ProcessError::DownloadAudio)
+    }
+
+    async fn copy_episode(
+        &self,
+        podcast_id: &str,
+        episode: &Episode,
+        source_path: &PathBuf,
+    ) -> Result<PathBuf, Report<ProcessError>> {
+        let destination_path = self.paths.get_audio_path(podcast_id, episode);
+        create_parent_dir_if_not_exist(&destination_path)
+            .await
+            .change_context(ProcessError::CreateDirectory)?;
+        trace!(
+            %episode,
+            source = %source_path.display(),
+            target = %destination_path.display(),
+            "Copying audio"
+        );
+        copy(&source_path, &destination_path)
+            .await
+            .change_context(ProcessError::CopyAudio)
+            .attach_with(|| {
+                format!(
+                    "Source: {}\nDestination: {}",
+                    source_path.display(),
+                    destination_path.display()
+                )
+            })?;
+        Ok(destination_path)
+    }
+
+    async fn download_image(
+        &self,
+        episode: &Episode,
+    ) -> Result<Option<Picture>, Report<ProcessError>> {
+        let Some(url) = &episode.image_url else {
+            return Ok(None);
+        };
+        trace!(%episode, "Downloading image");
+        let extension = url.get_extension();
+        let path = self
+            .http
+            .get(url, extension.as_deref())
+            .await
+            .change_context(ProcessError::DownloadImage)?;
+        trace!(%episode, "Resizing image");
+        let picture = spawn_blocking(move || -> Result<Picture, Report<ResizeError>> {
+            Resize::new(&path)
+                .attach_path(path)?
+                .to_picture(IMAGE_SIZE, IMAGE_SIZE)
+        })
+        .await
+        .change_context(ProcessError::Task)?
+        .change_context(ProcessError::ResizeImage)?;
+        trace!(%episode, "Resized image");
+        Ok(Some(picture))
+    }
+}
+
+#[derive(Clone, Debug, Error)]
+pub enum DownloadError {
+    #[error("Unable to get podcast")]
+    GetPodcast,
+}
+
+#[derive(Clone, Debug, Error)]
+pub enum ProcessError {
+    #[error("Unable to download audio")]
+    DownloadAudio,
+    #[error("Unable to create directory")]
+    CreateDirectory,
+    #[error("Unable to copy audio file")]
+    CopyAudio,
+    #[error("Unable to download image")]
+    DownloadImage,
+    #[error("Failed to execute resize task")]
+    Task,
+    #[error("Unable to resize image")]
+    ResizeImage,
+    #[error("Unable to tag audio file")]
+    Tag,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[tokio::test]
+    #[traced_test]
+    pub async fn download_command() {
+        // Arrange
+        let services = ServiceProvider::create()
+            .await
+            .expect("ServiceProvider should not fail");
+        let command = DownloadCommand::new(services.paths, services.http, services.metadata);
+        let options = DownloadOptions {
+            podcast_id: "irl".to_owned(),
+            filter: FilterOptions {
+                from_year: Some(2019),
+                to_year: Some(2019),
+                ..FilterOptions::default()
+            },
+        };
+
+        // Act
+        let result = command.execute(options).await;
+
+        // Assert
+        result.assert_ok_debug();
+    }
+
+    #[tokio::test]
+    #[traced_test]
+    pub async fn process_episode() {
+        // Arrange
+        let services = ServiceProvider::create()
+            .await
+            .expect("ServiceProvider should not fail");
+        let podcast = services.metadata.get("irl").expect("podcast should exist");
+        let command = DownloadCommand::new(services.paths, services.http, services.metadata);
+        let episode = podcast
+            .episodes
+            .get(1)
+            .expect("should be at least one episode")
+            .clone();
+
+        // Act
+        let result = command.process_episode(&podcast, episode).await;
+
+        // Assert
+        result.assert_ok_debug();
+    }
+}
