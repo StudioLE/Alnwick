@@ -12,21 +12,58 @@ impl IpInfoProvider {
         Self { options, http }
     }
 
-    pub async fn validate(&self) -> Result<(), Vec<ValidationError>> {
+    pub async fn validate(&self) -> Result<(), Report<ServiceError>> {
         if self.options.expect_ip.is_none() && self.options.expect_country.is_none() {
             return Ok(());
         }
-        let info = self
-            .get()
+        let info = self.get().await?;
+        let validation = info.validate(&self.options);
+        if validation.is_empty() {
+            return Ok(());
+        }
+        let report = validation
+            .into_iter()
+            .fold(Report::new(ServiceError::ValidateIp), |report, error| {
+                report.attach(error)
+            });
+        Err(report)
+    }
+
+    async fn get(&self) -> Result<IpInfo, Report<ServiceError>> {
+        let ip_url = Url::parse("https://ipinfo.io").expect("URL should be valid");
+        self.http.remove(&ip_url, Some(JSON_EXTENSION)).await;
+        self.http
+            .get_json(&ip_url)
             .await
-            .map_err(|e| vec![ValidationError::Http(e)])?;
+            .change_context(ServiceError::IpRequest)
+    }
+}
+
+#[derive(Debug, Deserialize)]
+struct IpInfo {
+    ip: String,
+    hostname: Option<String>,
+    city: String,
+    region: String,
+    country: String,
+    loc: String,
+    org: String,
+    postal: String,
+    timezone: String,
+}
+
+impl IpInfo {
+    pub fn validate(&self, options: &AppOptions) -> Vec<ValidationError> {
+        if options.expect_ip.is_none() && options.expect_country.is_none() {
+            return Vec::new();
+        }
         let mut errors = Vec::new();
         let values = vec![
-            ("IP address", self.options.expect_ip.clone(), info.ip),
+            ("IP address", options.expect_ip.clone(), &self.ip),
             (
                 "Geolocated country",
-                self.options.expect_country.clone(),
-                info.country,
+                options.expect_country.clone(),
+                &self.country,
             ),
         ];
         for (name, expected, actual) in values {
@@ -38,28 +75,8 @@ impl IpInfoProvider {
             };
             errors.push(ValidationError::String(name.to_owned(), e));
         }
-        errors.to_result()
+        errors
     }
-
-    async fn get(&self) -> Result<IpInfo, Report<HttpError>> {
-        let ip_url = Url::parse("https://ipinfo.io").expect("URL should be valid");
-        self.http.remove(&ip_url, Some(JSON_EXTENSION)).await;
-        self.http.get_json(&ip_url).await
-    }
-}
-
-#[allow(dead_code)]
-#[derive(Debug, Deserialize)]
-struct IpInfo {
-    ip: String,
-    hostname: String,
-    city: String,
-    region: String,
-    country: String,
-    loc: String,
-    org: String,
-    postal: String,
-    timezone: String,
 }
 
 impl Display for IpInfo {
@@ -115,6 +132,5 @@ mod tests {
 
         // Assert
         let errors = result.assert_err_debug();
-        assert_eq!(errors.len(), 2);
     }
 }

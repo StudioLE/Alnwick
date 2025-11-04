@@ -3,12 +3,12 @@ use crate::prelude::*;
 pub struct Validate;
 
 impl Validate {
-    pub fn directory(dir: PathBuf) -> Result<(), PathValidationError> {
+    pub fn directory(dir: &Path) -> Result<(), PathValidationError> {
         if dir == PathBuf::new() {
             return Err(PathValidationError::Required);
         }
         if !dir.is_dir() {
-            return Err(PathValidationError::NotDirectory(dir.clone()));
+            return Err(PathValidationError::NotDirectory(dir.to_path_buf()));
         }
         Ok(())
     }
@@ -28,7 +28,6 @@ impl Validate {
 pub enum ValidationError {
     String(String, StringValidationError),
     Path(String, PathValidationError),
-    Http(Report<HttpError>),
 }
 
 #[derive(Debug)]
@@ -54,12 +53,11 @@ impl Display for ValidationError {
             ValidationError::String(name, error) => {
                 write!(f, "{name} {}", error.log())
             }
-            ValidationError::Http(e) => {
-                write!(f, "{e}")
-            }
         }
     }
 }
+
+impl Error for ValidationError {}
 
 impl StringValidationError {
     fn log(&self) -> String {

@@ -188,8 +188,12 @@ impl PathProvider {
     }
 
     /// Create all the cache and data directories.
-    pub fn create(&self) -> Result<(), CreateDirectoryError> {
+    pub fn create(&self) -> Result<(), Report<ServiceError>> {
+        let cache_dir = self.get_cache_dir();
+        let data_dir = self.get_data_dir();
         let dirs = vec![
+            ("Cache directory", cache_dir),
+            ("Data directory", data_dir),
             ("HTTP cache directory", self.get_http_dir()),
             ("Metadata directory", self.get_metadata_dir()),
             ("Podcasts directory", self.get_podcasts_dir()),
@@ -199,25 +203,12 @@ impl PathProvider {
         ];
         for (name, dir) in dirs {
             if !dir.exists() {
-                create_dir(&dir).map_err(|e| CreateDirectoryError::Io(name.to_owned(), dir, e))?;
+                create_dir(&dir)
+                    .change_context(ServiceError::CreateDirectory(name.to_owned()))
+                    .attach_path(dir)?;
             }
         }
         Ok(())
-    }
-
-    /// Validate the cache and data directories exist.
-    pub fn validate(&self) -> Result<(), Vec<ValidationError>> {
-        let mut errors = Vec::new();
-        let dirs = vec![
-            ("Cache directory", self.get_cache_dir()),
-            ("Data directory", self.get_data_dir()),
-        ];
-        for (name, dir) in dirs {
-            if let Err(e) = Validate::directory(dir) {
-                errors.push(ValidationError::Path(name.to_owned(), e));
-            }
-        }
-        errors.to_result()
     }
 }
 
@@ -235,44 +226,9 @@ fn get_sub_path_for_audio(podcast_id: &str, episode: &Episode) -> PathBuf {
         .join(filename)
 }
 
-#[allow(clippy::absolute_paths)]
-#[derive(Debug)]
-pub enum CreateDirectoryError {
-    Io(String, PathBuf, std::io::Error),
-}
-
-impl Display for CreateDirectoryError {
-    fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
-        let message = match self {
-            CreateDirectoryError::Io(name, path, e) => {
-                format!(
-                    "Unable to create directory: {name}\nPath: {}\n{e}",
-                    path.display()
-                )
-            }
-        };
-        write!(f, "{message}")
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    #[test]
-    fn validate() {
-        // Arrange
-        let paths = PathProvider::default();
-
-        // Act
-        let result = paths.validate();
-
-        // Assert
-        if let Err(errors) = &result {
-            eprintln!("{}", errors.log());
-        }
-        result.assert_ok_debug();
-    }
 
     #[test]
     fn get_audio_path() {

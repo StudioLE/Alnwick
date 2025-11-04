@@ -29,7 +29,7 @@ pub struct AppOptions {
 }
 
 impl AppOptions {
-    pub fn get() -> Result<Self, envy::Error> {
-        envy::from_env()
+    pub fn get() -> Result<Self, Report<ServiceError>> {
+        envy::from_env().change_context(ServiceError::EnvConfig)
     }
 }

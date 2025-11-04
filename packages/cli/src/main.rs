@@ -8,6 +8,7 @@ async fn main() {
     let services = match ServiceProvider::create().await {
         Ok(services) => services,
         Err(e) => {
+            error!("An error occured during service creation");
             eprintln!("{e:?}");
             exit(1);
         }
