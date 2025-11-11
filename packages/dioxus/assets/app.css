@@ -1,3 +1,17 @@
+:root {
+  --bulma-size-1: 2rem;
+  --bulma-size-2: 1.5rem;
+  --bulma-size-3: 1.25rem;
+  --bulma-size-4: 1rem;
+  --bulma-size-5: .9rem;
+  --bulma-size-6: .75rem;
+  --bulma-size-7: .6rem;
+}
+
+.title, .subtitle {
+  --bulma-title-weight: normal;
+}
+
 .fullscreen {
   pointer-events: none;
   position: fixed;

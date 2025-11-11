@@ -60,9 +60,7 @@ fn Podcasts() -> Element {
 
 #[component]
 fn Podcast(id: String) -> Element {
-    rsx! {
-        "Podcast {id}"
-    }
+    PodcastPage(PodcastPageProps { id })
 }
 
 #[component]

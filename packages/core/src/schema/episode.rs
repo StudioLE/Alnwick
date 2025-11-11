@@ -1,7 +1,7 @@
 use crate::prelude::*;
 use rss::extension::itunes::ITunesItemExtension;
 use std::fmt::Write as _;
-use strum_macros::AsRefStr;
+use strum_macros::{AsRefStr, Display};
 
 const MP3_EXTENSION: &str = "mp3";
 
@@ -40,7 +40,7 @@ pub struct Episode {
 }
 
 /// Episode type
-#[derive(AsRefStr, Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
+#[derive(AsRefStr, Clone, Debug, Default, Deserialize, Display, PartialEq, Serialize)]
 pub enum EpisodeType {
     /// Complete content
     #[default]
