@@ -4,7 +4,7 @@ use crate::prelude::*;
 pub enum Route {
     #[layout(Layout)]
     #[route("/")]
-    Podcasts,
+    Index,
     #[route("/podcasts/:id")]
     Podcast { id: String },
     #[route("/settings")]
@@ -19,16 +19,16 @@ impl Route {
     #[must_use]
     pub fn get_info(&self) -> RouteInfo {
         match self {
-            Route::Podcasts => RouteInfo {
+            Route::Index => RouteInfo {
                 title: "Podcasts".to_owned(),
                 icon: "fa-podcast".to_owned(),
-                breadcrumbs: vec![Route::Podcasts],
+                breadcrumbs: vec![Route::Index],
                 path: "/".to_owned(),
             },
             Route::Podcast { id } => RouteInfo {
                 title: "Podcast".to_owned(),
                 icon: "fa-user".to_owned(),
-                breadcrumbs: vec![Route::Podcasts, Route::Podcast { id: id.clone() }],
+                breadcrumbs: vec![Route::Index, Route::Podcast { id: id.clone() }],
                 path: format!("/podcasts/{id}"),
             },
             Route::Settings => RouteInfo {
@@ -54,8 +54,8 @@ impl Route {
 }
 
 #[component]
-fn Podcasts() -> Element {
-    PodcastsPage()
+fn Index() -> Element {
+    IndexPage()
 }
 
 #[component]

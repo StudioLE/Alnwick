@@ -8,7 +8,7 @@ pub fn DrawerComponent() -> Element {
         aside { style: "width: 250px; padding: 1.375em 1.5em;",
             Menu {
                 MenuList { label: "Menu",
-                    MenuItem { route: Route::Podcasts },
+                    MenuItem { route: Route::Index },
                     MenuItem { route: Route::AddPodcast },
                     MenuItem { route: Route::Settings },
                 }

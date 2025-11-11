@@ -1,7 +1,7 @@
 use crate::prelude::*;
 
 #[component]
-pub fn PodcastsPage() -> Element {
+pub fn IndexPage() -> Element {
     let context = PodcastsContext::consume();
     if *context.loading.read() {
         return rsx! {
