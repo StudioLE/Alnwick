@@ -28,9 +28,26 @@ pub fn Field<T>(mut props: FieldProps<T>) -> Element
 where
     T: 'static + Clone + Copy + PartialEq,
 {
-    let initial_value = (props.to_string)(*props.global_value.read());
+    let initial_value = (props.to_string)(props.global_value.cloned());
     let mut field_value = use_signal(|| initial_value);
     let mut message = use_signal(|| None);
+    use_effect(move || {
+        let field_value = field_value.cloned();
+        if field_value.is_empty() {
+            props.global_value.set(None);
+            return;
+        }
+        match (props.from_string)(field_value) {
+            Ok(value) => {
+                props.global_value.set(Some(value));
+                message.set(None);
+            }
+            Err(e) => {
+                props.global_value.set(None);
+                message.set(Some(e));
+            }
+        }
+    });
     rsx! {
         div { class: "field",
             label { class: "label", "{props.label}" }
@@ -41,16 +58,6 @@ where
                             event.prevent_default();
                             let input_value = event.value();
                             field_value.set(input_value.clone());
-                            match (props.from_string)(input_value) {
-                                Ok(height) => {
-                                    props.global_value.set(Some(height));
-                                    message.set(None);
-                                }
-                                Err(e) => {
-                                    props.global_value.set(None);
-                                    message.set(Some(e));
-                                }
-                            }
                         },
                         class: get_class(message),
                         r#type: "text",
