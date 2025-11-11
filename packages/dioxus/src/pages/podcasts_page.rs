@@ -21,7 +21,7 @@ pub fn PodcastsPage() -> Element {
                     to: Route::Podcast { id: podcast.id.clone() },
                     article { class: "media",
                         figure { class: "media-left",
-                            p { class: "image is-96x96",
+                            p { class: "image is-64x64",
                                 if let Some(url) = &podcast.image_url {
                                     img { src: "{url}" }
                                 }
@@ -30,15 +30,11 @@ pub fn PodcastsPage() -> Element {
                         div {
                             class: "media-content",
                             style: "align-self: center;",
-                            p { class: "subtitle is-5",
+                            p { class: "title",
                                 "{podcast.title} "
-                                span { class: "tag",
-                                    "{podcast.episodes.len()}"
-                                }
-                                " "
-                                span { class: "tag",
-                                    "{podcast.id}"
-                                }
+                            }
+                            p { class: "subtitle",
+                                "{podcast.episodes.len()} episodes · {podcast.id}"
                             }
                         }
                     }
