@@ -2,7 +2,7 @@ use crate::prelude::*;
 
 #[component]
 pub fn PlayerSettingsPage() -> Element {
-    let context: SettingsContext = consume_context();
+    let context = SettingsContext::consume();
     rsx! {
         section { class: "section",
             Field::<u32> {
