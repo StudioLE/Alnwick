@@ -4,7 +4,7 @@ use crate::prelude::*;
 #[derive(Clone, Copy, Debug)]
 pub struct PodcastsContext {
     pub loading: Signal<bool>,
-    pub podcasts: Signal<Vec<Podcast>>,
+    pub podcasts: Signal<HashMap<String, Podcast>>,
 }
 
 impl PodcastsContext {
@@ -14,7 +14,7 @@ impl PodcastsContext {
     pub fn create() {
         let context = Self {
             loading: use_signal(|| true),
-            podcasts: use_signal(Vec::new),
+            podcasts: use_signal(HashMap::new),
         };
         let mut context = use_context_provider(|| context);
         context.update();
@@ -38,7 +38,7 @@ impl PodcastsContext {
 }
 
 #[get("/api/podcasts")]
-async fn get_podcasts() -> Result<Vec<Podcast>, ServerFnError> {
+async fn get_podcasts() -> Result<HashMap<String, Podcast>, ServerFnError> {
     let services = ServiceProvider::create()
         .await
         .expect("ServiceProvider should not fail");

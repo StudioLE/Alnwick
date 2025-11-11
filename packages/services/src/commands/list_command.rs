@@ -11,13 +11,13 @@ impl ListCommand {
         Self { paths, metadata }
     }
 
-    pub async fn execute(&self) -> Result<Vec<Podcast>, Report<ListError>> {
+    pub async fn execute(&self) -> Result<HashMap<String, Podcast>, Report<ListError>> {
         let path = self.paths.get_metadata_dir();
         let mut dir = read_dir(&path)
             .await
             .change_context(ListError::ReadDirectory)
             .attach_path(&path)?;
-        let mut podcasts = Vec::new();
+        let mut podcasts = HashMap::new();
         while let Some(entry) = dir
             .next_entry()
             .await
@@ -37,7 +37,13 @@ impl ListCommand {
                 .get(&id)
                 .change_context(ListError::GetPodcast)
                 .attach_with(|| format!("Podcast ID: {id}"))?;
-            podcasts.push(podcast);
+            if id != podcast.id {
+                warn!(
+                    "Incorrect podcast ID in file\nExpected: {id}\nActual: {}",
+                    podcast.id
+                );
+            }
+            podcasts.insert(id, podcast);
         }
         Ok(podcasts)
     }

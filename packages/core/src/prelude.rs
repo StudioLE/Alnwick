@@ -14,6 +14,7 @@ pub use rss::{Channel as RssChannel, Enclosure as RssEnclosure, Guid as RssGuid,
 pub use serde::de::DeserializeOwned;
 pub use serde::{Deserialize, Serialize};
 pub use std::any::Any;
+pub use std::collections::HashMap;
 pub use std::error::Error;
 pub use std::fmt::Result as FmtResult;
 pub use std::fmt::{Display, Formatter};
