@@ -11,7 +11,10 @@ impl ScrapeCommand {
         Self { http, metadata }
     }
 
-    pub async fn execute(&self, options: ScrapeOptions) -> Result<Podcast, Report<ScrapeError>> {
+    pub async fn execute(
+        &self,
+        options: ScrapeOptions,
+    ) -> Result<PodcastFeed, Report<ScrapeError>> {
         let content_type = self
             .http
             .head(&options.url)
@@ -41,7 +44,7 @@ impl ScrapeCommand {
     pub(super) async fn execute_rss(
         &self,
         options: &ScrapeOptions,
-    ) -> Result<Podcast, Report<ScrapeRssError>> {
+    ) -> Result<PodcastFeed, Report<ScrapeRssError>> {
         let path = self
             .http
             .get(&options.url, Some(RSS_EXTENSION))
@@ -52,9 +55,8 @@ impl ScrapeCommand {
             .attach_path(path)?;
         let reader = BufReader::new(file);
         let channel = RssChannel::read_from(reader).change_context(ScrapeRssError::Parse)?;
-        let mut podcast: Podcast = channel.try_into().change_context(ScrapeRssError::Convert)?;
-        podcast.id.clone_from(&options.podcast_id);
-        Ok(podcast)
+        PodcastFromRss::execute(channel, &options.podcast_id)
+            .change_context(ScrapeRssError::Convert)
     }
 }
 

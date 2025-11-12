@@ -2,6 +2,7 @@ use crate::prelude::*;
 use dirs::{cache_dir, data_dir};
 use std::fs::create_dir;
 
+// TODO: Move constants to separate module.
 const APP_NAME: &str = "alnwick";
 const HTTP_DIR: &str = "http";
 const METADATA_DIR: &str = "metadata";
@@ -103,7 +104,7 @@ impl PathProvider {
     ///
     /// Example: `$HOME/.local/share/alnwick/podcasts/irl/S00/1970/1970-01-01 001 Hello World.mp3`
     #[must_use]
-    pub fn get_audio_path(&self, podcast_id: &str, episode: &Episode) -> PathBuf {
+    pub fn get_audio_path(&self, podcast_id: &str, episode: &EpisodeInfo) -> PathBuf {
         self.get_podcasts_dir()
             .join(get_sub_path_for_audio(podcast_id, episode))
     }
@@ -116,7 +117,7 @@ impl PathProvider {
     /// - `https://example.com/irl/S00/1970/1970-01-01 001 Hello World.mp3`
     /// - `file://$HOME/.local/share/alnwick/podcasts/irl/S00/1970/1970-01-01 001 Hello World.mp3`
     #[must_use]
-    pub fn get_audio_url(&self, podcast_id: &str, episode: &Episode) -> Option<Url> {
+    pub fn get_audio_url(&self, podcast_id: &str, episode: &EpisodeInfo) -> Option<Url> {
         if let Some(base) = &self.options.server_base {
             let path = get_sub_path_for_audio(podcast_id, episode);
             base.join(path.to_string_lossy().as_ref()).ok()
@@ -144,7 +145,7 @@ impl PathProvider {
         if season.is_none() && year.is_none() {
             return path.join(RSS_FILE_NAME);
         }
-        let season = Episode::format_season(season);
+        let season = EpisodeInfo::format_season(season);
         let year = year.map(|s| s.to_string()).unwrap_or_default();
         path.join(season).join(year).join(RSS_FILE_NAME)
     }
@@ -156,7 +157,11 @@ impl PathProvider {
     /// - `S00/1970-01-01 001 Hello World.mp3`
     /// - `1970/1970-01-01 001 Hello World.mp3`
     #[must_use]
-    pub fn get_torrent_sub_path(season_dirs: bool, year_dirs: bool, episode: &Episode) -> PathBuf {
+    pub fn get_torrent_sub_path(
+        season_dirs: bool,
+        year_dirs: bool,
+        episode: &EpisodeInfo,
+    ) -> PathBuf {
         let mut path = PathBuf::new();
         if season_dirs {
             path.push(episode.get_formatted_season());
@@ -215,7 +220,7 @@ impl PathProvider {
 /// Sub path for an episodes's audio file.
 ///
 /// Example: `irl/S00/1970/1970-01-01 001 Hello World.mp3`
-fn get_sub_path_for_audio(podcast_id: &str, episode: &Episode) -> PathBuf {
+fn get_sub_path_for_audio(podcast_id: &str, episode: &EpisodeInfo) -> PathBuf {
     let season = episode.get_formatted_season();
     let year = episode.published_at.year().to_string();
     let filename = episode.get_filename();
@@ -235,8 +240,8 @@ mod tests {
         // Arrange
         let paths = PathProvider::default();
         let data_dir = paths.get_data_dir();
-        let example = Episode::example();
-        let mut seasonless = Episode::example();
+        let example = EpisodeInfo::example();
+        let mut seasonless = EpisodeInfo::example();
         seasonless.season = None;
 
         // Act
@@ -262,7 +267,7 @@ mod tests {
 
         // Act
         let result = paths
-            .get_audio_url("abc", &Episode::example())
+            .get_audio_url("abc", &EpisodeInfo::example())
             .expect("should be valid");
 
         // Assert
@@ -280,7 +285,7 @@ mod tests {
 
         // Act
         let result = paths
-            .get_audio_url("abc", &Episode::example())
+            .get_audio_url("abc", &EpisodeInfo::example())
             .expect("should be valid");
 
         // Assert

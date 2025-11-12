@@ -21,13 +21,13 @@ impl EmulateCommand {
         Ok(())
     }
 
-    async fn save_feeds(&self, podcast: &Podcast) -> Result<Vec<PathBuf>, Report<EmulateError>> {
+    async fn save_feeds(&self, feed: &PodcastFeed) -> Result<Vec<PathBuf>, Report<EmulateError>> {
         let mut paths = Vec::new();
-        paths.push(self.save_feed(podcast, None, None).await?);
-        let mut podcast = podcast.clone();
-        let groups = group_by_season(take(&mut podcast.episodes));
+        paths.push(self.save_feed(feed, None, None).await?);
+        let mut feed = feed.clone();
+        let groups = group_by_season(take(&mut feed.episodes));
         for (season, episodes) in groups {
-            let mut p = podcast.clone();
+            let mut p = feed.clone();
             p.episodes = episodes;
             paths.push(self.save_feed(&p, season, None).await?);
             let year_groups = group_by_year(take(&mut p.episodes));
@@ -41,16 +41,17 @@ impl EmulateCommand {
 
     async fn save_feed(
         &self,
-        podcast: &Podcast,
+        feed: &PodcastFeed,
         season: Option<usize>,
         year: Option<i32>,
     ) -> Result<PathBuf, Report<EmulateError>> {
-        let mut channel: RssChannel = podcast.into();
+        let mut channel =
+            PodcastToRss::execute(feed.clone());
         for item in &mut channel.items {
-            self.replace_enclosure(podcast, item);
+            self.replace_enclosure(feed, item);
         }
         let xml = channel.to_string();
-        let path = self.paths.get_rss_path(&podcast.id, season, year);
+        let path = self.paths.get_rss_path(&feed.podcast.id, season, year);
         create_parent_dir_if_not_exist(&path)
             .await
             .change_context(EmulateError::CreateDirectory)?;
@@ -69,20 +70,23 @@ impl EmulateCommand {
         Ok(path)
     }
 
-    fn replace_enclosure(&self, podcast: &Podcast, item: &mut RssItem) -> Option<()> {
+    fn replace_enclosure(&self, feed: &PodcastFeed, item: &mut RssItem) -> Option<()> {
         let guid = item.guid.clone()?;
-        let episode = podcast
+        let episode = feed
             .episodes
             .iter()
             .find(|episode| episode.id == guid.value)?;
         let enclosure = item.enclosure.as_mut()?;
-        enclosure.url = self.paths.get_audio_url(&podcast.id, episode)?.to_string();
+        enclosure.url = self
+            .paths
+            .get_audio_url(&feed.podcast.id, episode)?
+            .to_string();
         Some(())
     }
 }
 
-fn group_by_season(episodes: Vec<Episode>) -> HashMap<Option<usize>, Vec<Episode>> {
-    let mut groups: HashMap<Option<usize>, Vec<Episode>> = HashMap::new();
+fn group_by_season(episodes: Vec<EpisodeInfo>) -> HashMap<Option<usize>, Vec<EpisodeInfo>> {
+    let mut groups: HashMap<Option<usize>, Vec<EpisodeInfo>> = HashMap::new();
     for episode in episodes {
         let group = groups.entry(episode.season).or_default();
         group.push(episode);
@@ -90,8 +94,8 @@ fn group_by_season(episodes: Vec<Episode>) -> HashMap<Option<usize>, Vec<Episode
     groups
 }
 
-fn group_by_year(episodes: Vec<Episode>) -> HashMap<i32, Vec<Episode>> {
-    let mut groups: HashMap<i32, Vec<Episode>> = HashMap::new();
+fn group_by_year(episodes: Vec<EpisodeInfo>) -> HashMap<i32, Vec<EpisodeInfo>> {
+    let mut groups: HashMap<i32, Vec<EpisodeInfo>> = HashMap::new();
     for episode in episodes {
         let year = episode.published_at.year();
         let group = groups.entry(year).or_default();

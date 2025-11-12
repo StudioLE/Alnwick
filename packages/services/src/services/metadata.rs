@@ -11,7 +11,7 @@ impl MetadataStore {
         Self { dir }
     }
 
-    pub fn get(&self, id: &str) -> Result<Podcast, Report<GetMetadataError>> {
+    pub fn get(&self, id: &str) -> Result<PodcastFeed, Report<GetMetadataError>> {
         let path = self.get_path(id);
         if !path.exists() {
             let report = Report::new(GetMetadataError::NotFound)
@@ -28,13 +28,13 @@ impl MetadataStore {
             .attach_path(&path)
     }
 
-    pub fn put(&self, podcast: &Podcast) -> Result<(), Report<PutMetadataError>> {
-        let path = self.get_path(&podcast.id);
+    pub fn put(&self, feed: &PodcastFeed) -> Result<(), Report<PutMetadataError>> {
+        let path = self.get_path(&feed.podcast.id);
         let file = File::create(&path)
             .change_context(PutMetadataError::Create)
             .attach_path(&path)?;
         let writer = BufWriter::new(file);
-        serde_yaml::to_writer(writer, podcast)
+        serde_yaml::to_writer(writer, feed)
             .change_context(PutMetadataError::Serialize)
             .attach_path(&path)
     }
@@ -62,15 +62,15 @@ mod tests {
     pub fn put_then_get() {
         // Arrange
         let metadata = MetadataStore::default();
-        let podcast = Podcast::example();
+        let feed = PodcastFeed::example();
 
         // Act
-        metadata.put(&podcast).assert_ok_debug();
-        let result = metadata.get(&podcast.id);
+        metadata.put(&feed).assert_ok_debug();
+        let result = metadata.get(&feed.podcast.id);
 
         // Assert
         let result = result.assert_ok_debug();
-        assert_eq!(podcast, result);
+        assert_eq!(feed, result);
     }
 
     #[tokio::test]

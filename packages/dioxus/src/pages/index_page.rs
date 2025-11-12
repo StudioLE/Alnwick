@@ -15,14 +15,14 @@ pub fn IndexPage() -> Element {
         };
     }
     rsx! {
-        for podcast in podcasts.values() {
+        for feed in podcasts.values() {
             div { class: "block item",
                 Link {
-                    to: Route::Podcast { id: podcast.id.clone() },
+                    to: Route::Podcast { id: feed.podcast.id.clone() },
                     article { class: "media",
                         figure { class: "media-left",
                             p { class: "image is-64x64",
-                                if let Some(url) = &podcast.image_url {
+                                if let Some(url) = &feed.podcast.image {
                                     img { src: "{url}" }
                                 }
                             }
@@ -31,10 +31,10 @@ pub fn IndexPage() -> Element {
                             class: "media-content",
                             style: "align-self: center;",
                             p { class: "title",
-                                "{podcast.title} "
+                                "{feed.podcast.title} "
                             }
                             p { class: "subtitle",
-                                "{podcast.episodes.len()} episodes · {podcast.id}"
+                                "{feed.episodes.len()} episodes · {feed.podcast.id}"
                             }
                         }
                     }

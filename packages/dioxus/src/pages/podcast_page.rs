@@ -8,7 +8,7 @@ pub fn PodcastPage(id: String) -> Element {
             "Loading..."
         };
     }
-    let Some(podcast) = context.podcasts.get(&id) else {
+    let Some(feed) = context.podcasts.get(&id) else {
         return rsx! {
             "Unable to find podcast: {id}"
         };
@@ -17,7 +17,7 @@ pub fn PodcastPage(id: String) -> Element {
         header { class: "media",
             figure { class: "media-left",
                 p { class: "image is-128x128",
-                    if let Some(url) = &podcast.image_url {
+                    if let Some(url) = &feed.podcast.image {
                         img { src: "{url}" }
                     }
                 }
@@ -26,24 +26,24 @@ pub fn PodcastPage(id: String) -> Element {
                 class: "media-content",
                 style: "align-self: center;",
                 p { class: "title",
-                    "{podcast.title} "
+                    "{feed.podcast.title} "
                 }
                 p { class: "subtitle",
-                    "{podcast.episodes.len()} episodes · {podcast.id}"
+                    "{feed.episodes.len()} episodes · {feed.podcast.id}"
                 }
             }
         }
-        for episode in podcast.episodes.iter() {
+        for episode in feed.episodes.iter() {
             div { class: "block item",
                 Link {
-                    to: Route::Episode { podcast_id: podcast.id.clone(), episode_id: episode.id.clone() },
+                    to: Route::Episode { podcast_id: feed.podcast.id.clone(), episode_id: episode.id.clone() },
                     article { class: "media",
                         figure { class: "media-left",
                             p { class: "image is-64x64",
-                                if let Some(url) = &episode.image_url {
+                                if let Some(url) = &episode.image {
                                     img { src: "{url}" }
                                 } else {
-                                    if let Some(url) = &podcast.image_url {
+                                    if let Some(url) = &feed.podcast.image {
                                         img { src: "{url}" }
                                     }
                                 }
@@ -57,20 +57,22 @@ pub fn PodcastPage(id: String) -> Element {
                             }
                             p { class: "subtitle",
                                 "{episode.published_at.format(\"%-d %B %Y\")}"
-                                if episode.season.is_some() || episode.number.is_some() {
+                                if episode.season.is_some() || episode.episode.is_some() {
                                     " · "
                                 }
                                 if let Some(season) = &episode.season {
                                     "S{season:02}"
                                 }
-                                if let Some(number) = &episode.number {
+                                if let Some(number) = &episode.episode {
                                     "E{number:02}"
                                 }
-                                if let Some(duration) = &episode.duration {
+                                if let Some(duration) = &episode.source_duration {
                                     " · {duration}s"
                                 }
-                                if episode.episode_type != EpisodeType::Full {
-                                    " · {episode.episode_type}"
+                                if let Some(kind) = episode.kind {
+                                    if kind != EpisodeKind::Full {
+                                        " · {kind}"
+                                    }
                                 }
                             }
                         }

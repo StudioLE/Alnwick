@@ -11,7 +11,7 @@ impl ListCommand {
         Self { paths, metadata }
     }
 
-    pub async fn execute(&self) -> Result<HashMap<String, Podcast>, Report<ListError>> {
+    pub async fn execute(&self) -> Result<HashMap<String, PodcastFeed>, Report<ListError>> {
         let path = self.paths.get_metadata_dir();
         let mut dir = read_dir(&path)
             .await
@@ -32,18 +32,18 @@ impl ListCommand {
                 .expect("should have a file stem")
                 .to_string_lossy()
                 .to_string();
-            let podcast = self
+            let feed = self
                 .metadata
                 .get(&id)
                 .change_context(ListError::GetPodcast)
                 .attach_with(|| format!("Podcast ID: {id}"))?;
-            if id != podcast.id {
+            if id != feed.podcast.id {
                 warn!(
                     "Incorrect podcast ID in file\nExpected: {id}\nActual: {}",
-                    podcast.id
+                    feed.podcast.id
                 );
             }
-            podcasts.insert(id, podcast);
+            podcasts.insert(id, feed);
         }
         Ok(podcasts)
     }

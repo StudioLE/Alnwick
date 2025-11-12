@@ -10,8 +10,8 @@ pub struct Tag;
 
 impl Tag {
     pub fn execute(
-        podcast: &Podcast,
-        episode: &Episode,
+        podcast: &PodcastInfo,
+        episode: &EpisodeInfo,
         cover: Option<Picture>,
         path: &PathBuf,
     ) -> Result<(), LoftyError> {
@@ -24,7 +24,7 @@ impl Tag {
         clippy::cast_possible_truncation,
         clippy::cast_sign_loss
     )]
-    fn create(podcast: &Podcast, episode: &Episode, cover: Option<Picture>) -> Id3v2Tag {
+    fn create(podcast: &PodcastInfo, episode: &EpisodeInfo, cover: Option<Picture>) -> Id3v2Tag {
         let mut tag = Id3v2Tag::default();
         tag.set_title(episode.title.trim().to_owned());
         tag.set_artist(podcast.title.clone());
@@ -34,10 +34,12 @@ impl Tag {
         tag.set_disk(episode.season.unwrap_or_default() as u32);
         let year = episode.published_at.year() as u32;
         tag.set_year(year);
-        if let Some(number) = episode.number {
+        if let Some(number) = episode.episode {
             tag.set_track(number as u32);
         }
-        tag.set_comment(episode.description.clone());
+        if let Some(description) = &episode.description {
+            tag.set_comment(description.clone());
+        }
         if let Some(cover) = cover {
             tag.insert_picture(cover);
         }

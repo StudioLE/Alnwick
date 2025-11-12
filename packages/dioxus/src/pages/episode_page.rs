@@ -8,12 +8,12 @@ pub fn EpisodePage(podcast_id: String, episode_id: String) -> Element {
             "Loading..."
         };
     }
-    let Some(podcast) = context.podcasts.get(&podcast_id) else {
+    let Some(feed) = context.podcasts.get(&podcast_id) else {
         return rsx! {
             "Unable to find podcast: {podcast_id}"
         };
     };
-    let Some(episode) = podcast
+    let Some(episode) = feed
         .episodes
         .iter()
         .find(|episode| episode.id == episode_id)
@@ -27,10 +27,10 @@ pub fn EpisodePage(podcast_id: String, episode_id: String) -> Element {
             header { class: "media",
                 figure { class: "media-left",
                     p { class: "image is-128x128",
-                        if let Some(url) = &episode.image_url {
+                        if let Some(url) = &episode.image {
                             img { src: "{url}" }
                         } else {
-                            if let Some(url) = &podcast.image_url {
+                            if let Some(url) = &feed.podcast.image {
                                 img { src: "{url}" }
                             }
                         }
@@ -44,27 +44,31 @@ pub fn EpisodePage(podcast_id: String, episode_id: String) -> Element {
                     }
                     p { class: "subtitle",
                         "{episode.published_at.format(\"%-d %B %Y\")}"
-                        if episode.season.is_some() || episode.number.is_some() {
+                        if episode.season.is_some() || episode.episode.is_some() {
                             " · "
                         }
                         if let Some(season) = &episode.season {
                             "S{season:02}"
                         }
-                        if let Some(number) = &episode.number {
+                        if let Some(number) = &episode.episode {
                             "E{number:02}"
                         }
-                        if let Some(duration) = &episode.duration {
+                        if let Some(duration) = &episode.source_duration {
                             " · {duration}s"
                         }
-                        if episode.episode_type != EpisodeType::Full {
-                            " · {episode.episode_type}"
+                        if let Some(kind) = episode.kind {
+                            if kind != EpisodeKind::Full {
+                                " · {kind}"
+                            }
                         }
                     }
                 }
             }
-            article {
-                pre {
-                    "{episode.description}"
+            if let Some(description) = &episode.description {
+                article {
+                    pre {
+                        "{description}"
+                    }
                 }
             }
         }

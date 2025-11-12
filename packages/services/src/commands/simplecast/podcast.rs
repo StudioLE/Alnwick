@@ -20,24 +20,22 @@ pub struct SimplecastPodcast {
     pub external_feed_url: Option<Url>,
 }
 
-impl From<SimplecastPodcast> for Podcast {
+impl From<SimplecastPodcast> for PodcastInfo {
     fn from(podcast: SimplecastPodcast) -> Self {
-        Podcast {
-            id: podcast.id.clone(),
-            guid: podcast.id,
+        PodcastInfo {
+            id: podcast.id,
             title: podcast.title,
             description: podcast.description,
-            image_url: podcast.image_url,
-            language: podcast.language,
-            category: None,
-            sub_category: None,
+            image: podcast.image_url,
+            language: Some(podcast.language),
+            categories: Vec::new(),
             explicit: podcast.is_explicit,
             author: podcast.authors.collection.first().map(|a| a.name.clone()),
-            link: podcast.site.external_website,
-            podcast_type: podcast.podcast_type.into(),
+            link: Some(podcast.site.external_website),
+            kind: (&podcast.podcast_type).try_into().ok(),
             copyright: podcast.copyright,
-            created_at: Some(podcast.created_at),
-            episodes: vec![],
+            new_feed_url: None,
+            generator: None,
         }
     }
 }

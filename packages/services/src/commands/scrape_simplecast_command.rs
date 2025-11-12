@@ -148,9 +148,9 @@ fn convert(
     podcast_id: &str,
     podcast: SimplecastPodcast,
     episodes: Vec<SimplecastEpisode>,
-) -> Podcast {
-    let mut podcast: Podcast = podcast.into();
+) -> PodcastFeed {
+    let mut podcast: PodcastInfo = podcast.into();
     podcast_id.clone_into(&mut podcast.id);
-    podcast.episodes = episodes.into_iter().map(Into::into).collect();
-    podcast
+    let episodes = episodes.into_iter().map(Into::into).collect();
+    PodcastFeed { podcast, episodes }
 }

@@ -22,12 +22,12 @@ impl DownloadCommand {
     }
 
     pub async fn execute(&self, options: DownloadOptions) -> Result<(), Report<DownloadError>> {
-        let mut podcast = self
+        let mut feed = self
             .metadata
             .get(&options.podcast_id)
             .change_context(DownloadError::GetPodcast)?;
-        podcast.filter(&options.filter);
-        let results = self.process_episodes(podcast.clone()).await;
+        feed.filter(&options.filter);
+        let results = self.process_episodes(feed).await;
         let mut episodes = Vec::new();
         let mut errors = Vec::new();
         for result in results {
@@ -46,12 +46,15 @@ impl DownloadCommand {
     #[allow(clippy::as_conversions)]
     async fn process_episodes(
         &self,
-        mut podcast: Podcast,
-    ) -> Vec<Result<Episode, Report<ProcessError>>> {
-        let episodes: Vec<_> = take(&mut podcast.episodes)
+        mut feed: PodcastFeed,
+    ) -> Vec<Result<EpisodeInfo, Report<ProcessError>>> {
+        let episodes: Vec<_> = take(&mut feed.episodes)
             .into_iter()
             .filter(|episode| {
-                let exists = self.paths.get_audio_path(&podcast.id, episode).exists();
+                let exists = self
+                    .paths
+                    .get_audio_path(&feed.podcast.id, episode)
+                    .exists();
                 if exists {
                     trace!(%episode, "Skipping existing");
                 }
@@ -59,10 +62,9 @@ impl DownloadCommand {
             })
             .collect();
         debug!("Downloading audio files for {} episodes", episodes.len());
-
         stream::iter(episodes.into_iter().map(|episode| {
             let this = self;
-            let podcast = podcast.clone();
+            let podcast = feed.podcast.clone();
             async move {
                 let result = this
                     .process_episode(&podcast, episode.clone())
@@ -81,9 +83,9 @@ impl DownloadCommand {
 
     async fn process_episode(
         &self,
-        podcast: &Podcast,
-        episode: Episode,
-    ) -> Result<Episode, Report<ProcessError>> {
+        podcast: &PodcastInfo,
+        episode: EpisodeInfo,
+    ) -> Result<EpisodeInfo, Report<ProcessError>> {
         let path = self.download_episode(&episode).await?;
         let audio_path = self.copy_episode(&podcast.id, &episode, &path).await?;
         let cover = self.download_image(&episode).await?;
@@ -94,9 +96,12 @@ impl DownloadCommand {
         Ok(episode)
     }
 
-    async fn download_episode(&self, episode: &Episode) -> Result<PathBuf, Report<ProcessError>> {
+    async fn download_episode(
+        &self,
+        episode: &EpisodeInfo,
+    ) -> Result<PathBuf, Report<ProcessError>> {
         self.http
-            .get(&episode.audio_url, Some(MP3_EXTENSION))
+            .get(&episode.source_url, Some(MP3_EXTENSION))
             .await
             .change_context(ProcessError::DownloadAudio)
     }
@@ -104,7 +109,7 @@ impl DownloadCommand {
     async fn copy_episode(
         &self,
         podcast_id: &str,
-        episode: &Episode,
+        episode: &EpisodeInfo,
         source_path: &PathBuf,
     ) -> Result<PathBuf, Report<ProcessError>> {
         let destination_path = self.paths.get_audio_path(podcast_id, episode);
@@ -132,9 +137,9 @@ impl DownloadCommand {
 
     async fn download_image(
         &self,
-        episode: &Episode,
+        episode: &EpisodeInfo,
     ) -> Result<Option<Picture>, Report<ProcessError>> {
-        let Some(url) = &episode.image_url else {
+        let Some(url) = &episode.image else {
             return Ok(None);
         };
         trace!(%episode, "Downloading image");
@@ -217,16 +222,16 @@ mod tests {
         let services = ServiceProvider::create()
             .await
             .expect("ServiceProvider should not fail");
-        let podcast = services.metadata.get("irl").expect("podcast should exist");
+        let feed = services.metadata.get("irl").expect("podcast should exist");
         let command = DownloadCommand::new(services.paths, services.http, services.metadata);
-        let episode = podcast
+        let episode = feed
             .episodes
             .get(1)
             .expect("should be at least one episode")
             .clone();
 
         // Act
-        let result = command.process_episode(&podcast, episode).await;
+        let result = command.process_episode(&feed.podcast, episode).await;
 
         // Assert
         result.assert_ok_debug();

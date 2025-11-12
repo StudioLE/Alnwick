@@ -21,11 +21,11 @@ impl CoverCommand {
     }
 
     pub async fn execute(&self, options: CoverOptions) -> Result<(), Report<CoverError>> {
-        let podcast = self
+        let feed = self
             .metadata
             .get(&options.podcast_id)
             .change_context(CoverError::GetPodcast)?;
-        let url = podcast.image_url.ok_or(CoverError::NoImage)?;
+        let url = feed.podcast.image.ok_or(CoverError::NoImage)?;
         let src = self
             .http
             .get(&url, None)

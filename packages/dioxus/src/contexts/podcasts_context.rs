@@ -4,7 +4,7 @@ use crate::prelude::*;
 #[derive(Clone, Copy, Debug)]
 pub struct PodcastsContext {
     pub loading: Signal<bool>,
-    pub podcasts: Signal<HashMap<String, Podcast>>,
+    pub podcasts: Signal<HashMap<String, PodcastFeed>>,
 }
 
 impl PodcastsContext {
@@ -38,7 +38,7 @@ impl PodcastsContext {
 }
 
 #[get("/api/podcasts")]
-async fn get_podcasts() -> Result<HashMap<String, Podcast>, ServerFnError> {
+async fn get_podcasts() -> Result<HashMap<String, PodcastFeed>, ServerFnError> {
     let services = ServiceProvider::create()
         .await
         .expect("ServiceProvider should not fail");

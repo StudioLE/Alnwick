@@ -6,7 +6,7 @@ pub trait CustomResultExt {
     type Context: ?Sized;
     type Ok;
 
-    fn attach_episode(self, episode: &Episode) -> Result<Self::Ok, Report<Self::Context>>;
+    fn attach_episode(self, episode: &EpisodeInfo) -> Result<Self::Ok, Report<Self::Context>>;
 
     fn attach_path<P>(self, path: P) -> Result<Self::Ok, Report<Self::Context>>
     where
@@ -22,7 +22,7 @@ where
     type Context = E::Context;
     type Ok = T;
 
-    fn attach_episode(self, episode: &Episode) -> Result<T, Report<E::Context>> {
+    fn attach_episode(self, episode: &EpisodeInfo) -> Result<T, Report<E::Context>> {
         self.attach_with(|| format!("Episode: {episode}"))
     }
 

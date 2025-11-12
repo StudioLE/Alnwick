@@ -64,22 +64,24 @@ impl Display for SimplecastEpisode {
     }
 }
 
-impl From<SimplecastEpisode> for Episode {
+impl From<SimplecastEpisode> for EpisodeInfo {
     fn from(episode: SimplecastEpisode) -> Self {
-        Episode {
+        EpisodeInfo {
+            source_id: episode.id.clone(),
             id: episode.id,
             title: episode.title,
-            description: episode.description,
-            image_url: episode.image_url,
-            audio_url: episode.enclosure_url,
-            episode_type: episode.episode_type.into(),
+            description: Some(episode.description),
+            image: episode.image_url,
+            source_url: episode.enclosure_url,
+            kind: (&episode.episode_type).try_into().ok(),
             season: Some(episode.season.number),
-            number: episode.number,
-            audio_file_size: episode.audio_file_size,
-            audio_content_type: episode.audio_content_type,
+            episode: episode.number,
+            source_file_size: episode.audio_file_size,
+            source_content_type: episode.audio_content_type,
             published_at: episode.published_at,
-            duration: episode.duration,
-            explicit: episode.is_explicit,
+            source_duration: episode.duration,
+            explicit: Some(episode.is_explicit),
+            itunes_title: None,
         }
     }
 }

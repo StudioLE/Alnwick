@@ -36,7 +36,7 @@ impl Display for FilterOptions {
     }
 }
 
-impl Podcast {
+impl PodcastFeed {
     pub fn filter(&mut self, options: &FilterOptions) {
         let before = self.episodes.len();
         self.episodes.retain(|episode| {
