@@ -197,3 +197,29 @@ pub enum EpisodeFromRssError {
     #[error("Unable to parse episode type")]
     ParseKind,
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn round_trip_conversion() {
+        // Arrange
+        let source = PodcastFeed::example();
+
+        // Act
+        let rss = PodcastToRss::execute(source.clone());
+
+        // Assert
+        let xml = rss.to_string();
+        assert_snapshot!(xml);
+
+        // Act
+        let result = PodcastFromRss::execute(rss, "test");
+
+        // Assert
+        let feed = result.assert_ok();
+        assert_yaml_snapshot!(feed);
+        assert_eq!(feed, source);
+    }
+}
