@@ -96,7 +96,7 @@ fn episode_from_rss(item: RssItem) -> Result<EpisodeInfo, Report<EpisodeFromRssE
         published_at,
         description: item.description,
         source_duration: if let Some(duration) = itunes.duration {
-            Some(try_parse(&duration, EpisodeFromRssError::ParseDuration)?)
+            Some(try_parse_duration(&duration)?)
         } else {
             None
         },
@@ -124,6 +124,26 @@ fn episode_from_rss(item: RssItem) -> Result<EpisodeInfo, Report<EpisodeFromRssE
         },
     };
     Ok(episode)
+}
+
+#[allow(clippy::indexing_slicing)]
+fn try_parse_duration(duration: &str) -> Result<u64, Report<EpisodeFromRssError>> {
+    let parts: Vec<&str> = duration.split(':').collect();
+    match parts.len() {
+        1 => try_parse(parts[0], EpisodeFromRssError::ParseDuration),
+        2 => {
+            let minutes: u64 = try_parse(parts[0], EpisodeFromRssError::ParseDuration)?;
+            let seconds: u64 = try_parse(parts[1], EpisodeFromRssError::ParseDuration)?;
+            Ok(minutes * 60 + seconds)
+        }
+        3 => {
+            let hours: u64 = try_parse(parts[0], EpisodeFromRssError::ParseDuration)?;
+            let minutes: u64 = try_parse(parts[1], EpisodeFromRssError::ParseDuration)?;
+            let seconds: u64 = try_parse(parts[2], EpisodeFromRssError::ParseDuration)?;
+            Ok(hours * 60 * 60 + minutes * 60 + seconds)
+        }
+        count => Err(Report::new(EpisodeFromRssError::ParseDuration).attach(format!("Parts: {count}"))),
+    }
 }
 
 fn parse_explicit(option: Option<String>) -> Option<bool> {
