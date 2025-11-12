@@ -46,9 +46,10 @@ impl DownloadCommand {
     #[allow(clippy::as_conversions)]
     async fn process_episodes(
         &self,
-        mut feed: PodcastFeed,
+        feed: PodcastFeed,
     ) -> Vec<Result<EpisodeInfo, Report<ProcessError>>> {
-        let episodes: Vec<_> = take(&mut feed.episodes)
+        let episodes: Vec<_> = feed
+            .episodes
             .into_iter()
             .filter(|episode| {
                 let exists = self
@@ -61,10 +62,11 @@ impl DownloadCommand {
                 !exists
             })
             .collect();
+        let podcast = feed.podcast;
         debug!("Downloading audio files for {} episodes", episodes.len());
         stream::iter(episodes.into_iter().map(|episode| {
             let this = self;
-            let podcast = feed.podcast.clone();
+            let podcast = podcast.clone();
             async move {
                 let result = this
                     .process_episode(&podcast, episode.clone())
