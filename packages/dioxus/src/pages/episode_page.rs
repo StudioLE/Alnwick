@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use html2text::config::plain;
 
 #[component]
 pub fn EpisodePage(podcast_id: String, episode_id: Uuid) -> Element {
@@ -21,6 +22,20 @@ pub fn EpisodePage(podcast_id: String, episode_id: Uuid) -> Element {
         return rsx! {
             "Unable to find episode: {episode_id}"
         };
+    };
+    let description = if let Some(description) = &episode.description {
+        if description.starts_with('<') {
+            plain()
+                .no_link_wrapping()
+                .do_decorate()
+                .link_footnotes(true)
+                .string_from_read(description.as_bytes(), 1000)
+                .ok()
+        } else {
+            Some(description.clone())
+        }
+    } else {
+        None
     };
     rsx! {
         div { class: "block",
@@ -64,7 +79,7 @@ pub fn EpisodePage(podcast_id: String, episode_id: Uuid) -> Element {
                     }
                 }
             }
-            if let Some(description) = &episode.description {
+            if let Some(description) = description {
                 article {
                     pre {
                         "{description}"
