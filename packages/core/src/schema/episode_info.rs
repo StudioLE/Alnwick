@@ -1,8 +1,6 @@
 use crate::prelude::*;
 use std::fmt::Write as _;
 
-const MP3_EXTENSION: &str = "mp3";
-
 /// Information about a podcast episode
 ///
 /// - <https://help.apple.com/itc/podcasts_connect/#/itcb54353390>

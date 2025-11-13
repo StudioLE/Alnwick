@@ -1,6 +1,8 @@
 use crate::prelude::*;
 use reqwest::header::CONTENT_TYPE;
 
+const HEAD_EXTENSION: &str = "head";
+
 /// A client for making HTTP requests and caching responses
 #[derive(Clone, Debug)]
 pub struct HttpClient {

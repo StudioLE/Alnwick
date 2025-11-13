@@ -2,19 +2,12 @@ use crate::prelude::*;
 use dirs::{cache_dir, data_dir};
 use std::fs::create_dir;
 
-// TODO: Move constants to separate module.
-const APP_NAME: &str = "alnwick";
 const HTTP_DIR: &str = "http";
 const METADATA_DIR: &str = "metadata";
 const PODCASTS_DIR: &str = "podcasts";
 const TORRENT_DIR: &str = "torrent";
 const TORRENT_CONTENT_DIR: &str = "content";
 const TORRENT_FILES_DIR: &str = "files";
-pub const HEAD_EXTENSION: &str = "head";
-pub const HTML_EXTENSION: &str = "html";
-pub const JSON_EXTENSION: &str = "json";
-pub const MP3_EXTENSION: &str = "mp3";
-pub const RSS_EXTENSION: &str = "rss";
 const RSS_FILE_NAME: &str = "feed.rss";
 const BANNER_FILE_NAME: &str = "banner.jpg";
 const COVER_FILE_NAME: &str = "cover.jpg";
