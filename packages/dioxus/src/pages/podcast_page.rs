@@ -60,14 +60,14 @@ pub fn PodcastPage(id: String) -> Element {
                                 if episode.season.is_some() || episode.episode.is_some() {
                                     " · "
                                 }
-                                if let Some(season) = &episode.season {
+                                if let Some(season) = episode.season {
                                     "S{season:02}"
                                 }
-                                if let Some(number) = &episode.episode {
+                                if let Some(number) = episode.episode {
                                     "E{number:02}"
                                 }
-                                if let Some(duration) = &episode.source_duration {
-                                    " · {duration}s"
+                                if let Some(duration) = episode.source_duration {
+                                    " · {format_duration_human(duration)}"
                                 }
                                 if let Some(kind) = episode.kind {
                                     if kind != EpisodeKind::Full {

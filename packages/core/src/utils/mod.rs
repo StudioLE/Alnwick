@@ -1,10 +1,12 @@
 pub use errors::*;
+pub use format::*;
 pub use logging::*;
 pub use sanitizer::*;
 pub use url::*;
 pub use validator::*;
 pub use vec_helpers::*;
 mod errors;
+mod format;
 mod logging;
 mod sanitizer;
 mod url;
