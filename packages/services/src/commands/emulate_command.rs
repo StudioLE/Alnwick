@@ -45,8 +45,7 @@ impl EmulateCommand {
         season: Option<usize>,
         year: Option<i32>,
     ) -> Result<PathBuf, Report<EmulateError>> {
-        let mut channel =
-            PodcastToRss::execute(feed.clone());
+        let mut channel = PodcastToRss::execute(feed.clone());
         for item in &mut channel.items {
             self.replace_enclosure(feed, item);
         }

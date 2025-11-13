@@ -1,6 +1,6 @@
 use crate::prelude::*;
-use rss::extension::itunes::{ITunesCategory, ITunesItemExtension};
 use rss::extension::ExtensionMap;
+use rss::extension::itunes::{ITunesCategory, ITunesItemExtension};
 
 pub struct PodcastToRss;
 

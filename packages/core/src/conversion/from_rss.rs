@@ -142,7 +142,9 @@ fn try_parse_duration(duration: &str) -> Result<u64, Report<EpisodeFromRssError>
             let seconds: u64 = try_parse(parts[2], EpisodeFromRssError::ParseDuration)?;
             Ok(hours * 60 * 60 + minutes * 60 + seconds)
         }
-        count => Err(Report::new(EpisodeFromRssError::ParseDuration).attach(format!("Parts: {count}"))),
+        count => {
+            Err(Report::new(EpisodeFromRssError::ParseDuration).attach(format!("Parts: {count}")))
+        }
     }
 }
 
