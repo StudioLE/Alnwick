@@ -1,9 +1,11 @@
 pub use actions::*;
+pub use breadcrumbs::*;
 pub use drawer::*;
 pub use field::*;
 pub use menu::*;
 pub use tabs::*;
 mod actions;
+mod breadcrumbs;
 mod drawer;
 mod field;
 mod menu;
