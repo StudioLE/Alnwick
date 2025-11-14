@@ -1,16 +1,23 @@
 use crate::prelude::*;
 
+/// A stack of [Material Design 3 floating action button](https://m3.material.io/components/floating-action-button/overview).
 #[component]
-pub fn FloatingActions(children: Element) -> Element {
+pub fn FloatingActions(routes: Vec<Route>) -> Element {
     rsx! {
         div { class: "fullscreen",
             div { class: "buttons",
-                {children}
+                for (index, route) in routes.iter().enumerate() {
+                    FloatingAction {
+                        route: route.clone(),
+                        is_large: index == 0
+                    }
+                }
             }
         }
     }
 }
 
+/// A [Material Design 3 floating action button](https://m3.material.io/components/floating-action-button/overview).
 #[component]
 pub fn FloatingAction(route: Route, is_large: bool) -> Element {
     let info = route.get_info();

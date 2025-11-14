@@ -14,10 +14,7 @@ pub fn Layout() -> Element {
     rsx! {
         HeadComponent {}
         FloatingActions {
-            FloatingAction {
-                route: Route::AddPodcast,
-                is_large: true,
-            }
+            routes: vec![Route::AddPodcast]
         }
         div { style: "display: flex; height: 100vh;",
             DrawerComponent {},
