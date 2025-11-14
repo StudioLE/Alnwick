@@ -13,66 +13,55 @@ pub fn PodcastPage(id: String) -> Element {
             "Unable to find podcast: {id}"
         };
     };
+    let subtitle = format!("{} episodes · {}", feed.episodes.len(), feed.podcast.id);
     rsx! {
-        header { class: "media",
-            figure { class: "media-left",
-                p { class: "image is-128x128",
-                    if let Some(url) = &feed.podcast.image {
-                        img { src: "{url}" }
+        Main {
+            title: feed.podcast.title.clone(),
+            subtitle: subtitle.clone(),
+
+            header { class: "media",
+                figure { class: "media-left",
+                    p { class: "image is-128x128",
+                        if let Some(url) = &feed.podcast.image {
+                            img { src: "{url}" }
+                        }
+                    }
+                }
+                div {
+                    class: "media-content",
+                    style: "align-self: center;",
+                    p { class: "title",
+                        "{feed.podcast.title} "
+                    }
+                    p { class: "subtitle",
+                        "{subtitle}"
                     }
                 }
             }
-            div {
-                class: "media-content",
-                style: "align-self: center;",
-                p { class: "title",
-                    "{feed.podcast.title} "
-                }
-                p { class: "subtitle",
-                    "{feed.episodes.len()} episodes · {feed.podcast.id}"
-                }
-            }
-        }
-        for episode in feed.episodes.iter() {
-            div { class: "block item",
-                Link {
-                    to: Route::Episode { podcast_id: feed.podcast.id.clone(), episode_id: episode.id },
-                    article { class: "media",
-                        figure { class: "media-left",
-                            p { class: "image is-64x64",
-                                if let Some(url) = &episode.image {
-                                    img { src: "{url}" }
-                                } else {
-                                    if let Some(url) = &feed.podcast.image {
+            for episode in feed.episodes.iter() {
+                div { class: "block item",
+                    Link {
+                        to: Route::Episode { podcast_id: feed.podcast.id.clone(), episode_id: episode.id },
+                        article { class: "media",
+                            figure { class: "media-left",
+                                p { class: "image is-64x64",
+                                    if let Some(url) = &episode.image {
                                         img { src: "{url}" }
+                                    } else {
+                                        if let Some(url) = &feed.podcast.image {
+                                            img { src: "{url}" }
+                                        }
                                     }
                                 }
                             }
-                        }
-                        div {
-                            class: "media-content",
-                            style: "align-self: center;",
-                            p { class: "title",
-                                "{episode.title} "
-                            }
-                            p { class: "subtitle",
-                                "{episode.published_at.format(\"%-d %B %Y\")}"
-                                if episode.season.is_some() || episode.episode.is_some() {
-                                    " · "
+                            div {
+                                class: "media-content",
+                                style: "align-self: center;",
+                                p { class: "title",
+                                    "{episode.title} "
                                 }
-                                if let Some(season) = episode.season {
-                                    "S{season:02}"
-                                }
-                                if let Some(number) = episode.episode {
-                                    "E{number:02}"
-                                }
-                                if let Some(duration) = episode.source_duration {
-                                    " · {format_duration_human(duration)}"
-                                }
-                                if let Some(kind) = episode.kind {
-                                    if kind != EpisodeKind::Full {
-                                        " · {kind}"
-                                    }
+                                p { class: "subtitle",
+                                    "{episode.get_subtitle()}"
                                 }
                             }
                         }

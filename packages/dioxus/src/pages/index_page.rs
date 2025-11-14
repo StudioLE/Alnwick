@@ -15,26 +15,31 @@ pub fn IndexPage() -> Element {
         };
     }
     rsx! {
-        for feed in podcasts.values() {
-            div { class: "block item",
-                Link {
-                    to: Route::Podcast { id: feed.podcast.id.clone() },
-                    article { class: "media",
-                        figure { class: "media-left",
-                            p { class: "image is-64x64",
-                                if let Some(url) = &feed.podcast.image {
-                                    img { src: "{url}" }
+
+        Main {
+            title: "Hello, world!",
+            subtitle: "This is a subtitle!",
+            for feed in podcasts.values() {
+                div { class: "block item",
+                    Link {
+                        to: Route::Podcast { id: feed.podcast.id.clone() },
+                        article { class: "media",
+                            figure { class: "media-left",
+                                p { class: "image is-64x64",
+                                    if let Some(url) = &feed.podcast.image {
+                                        img { src: "{url}" }
+                                    }
                                 }
                             }
-                        }
-                        div {
-                            class: "media-content",
-                            style: "align-self: center;",
-                            p { class: "title",
-                                "{feed.podcast.title} "
-                            }
-                            p { class: "subtitle",
-                                "{feed.episodes.len()} episodes · {feed.podcast.id}"
+                            div {
+                                class: "media-content",
+                                style: "align-self: center;",
+                                p { class: "title",
+                                    "{feed.podcast.title} "
+                                }
+                                p { class: "subtitle",
+                                    "{feed.episodes.len()} episodes · {feed.podcast.id}"
+                                }
                             }
                         }
                     }

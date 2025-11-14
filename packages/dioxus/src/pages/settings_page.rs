@@ -3,7 +3,8 @@ use crate::prelude::*;
 #[component]
 pub fn SettingsPage() -> Element {
     rsx! {
-        section { class: "section",
+        Main {
+            title: "Settings",
             Menu {
                 lists: vec![
                     MenuListProps {

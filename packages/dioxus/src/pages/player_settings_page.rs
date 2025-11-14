@@ -4,7 +4,8 @@ use crate::prelude::*;
 pub fn PlayerSettingsPage() -> Element {
     let context = SettingsContext::consume();
     rsx! {
-        section { class: "section",
+        Main {
+            title: "Player Settings",
             Field::<u32> {
                 label: "Skip forward time",
                 unit: "s",

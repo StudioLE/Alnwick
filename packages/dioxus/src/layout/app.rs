@@ -21,11 +21,7 @@ pub fn Layout() -> Element {
                 }
             ]
         },
-        Bar {}
-        main { class: "container is-max-tablet",
-            style: "margin: 90px auto;",
-            Outlet::<Route> {}
-        }
+        Outlet::<Route> {}
         FloatingActions {
             routes: vec![Route::AddPodcast]
         }

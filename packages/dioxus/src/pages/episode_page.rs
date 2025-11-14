@@ -23,66 +23,41 @@ pub fn EpisodePage(podcast_id: String, episode_id: Uuid) -> Element {
             "Unable to find episode: {episode_id}"
         };
     };
-    let description = if let Some(description) = &episode.description {
-        if description.starts_with('<') {
-            plain()
-                .no_link_wrapping()
-                .do_decorate()
-                .link_footnotes(true)
-                .string_from_read(description.as_bytes(), 1000)
-                .ok()
-        } else {
-            Some(description.clone())
-        }
-    } else {
-        None
-    };
+    let description = episode.get_description();
+    let subtitle = episode.get_subtitle();
     rsx! {
-        div { class: "block",
-            header { class: "media",
-                figure { class: "media-left",
-                    p { class: "image is-128x128",
-                        if let Some(url) = &episode.image {
-                            img { src: "{url}" }
-                        } else {
-                            if let Some(url) = &feed.podcast.image {
+        Main {
+            title: episode.title.clone(),
+            subtitle: subtitle.clone(),
+            div { class: "block",
+                header { class: "media",
+                    figure { class: "media-left",
+                        p { class: "image is-128x128",
+                            if let Some(url) = &episode.image {
                                 img { src: "{url}" }
+                            } else {
+                                if let Some(url) = &feed.podcast.image {
+                                    img { src: "{url}" }
+                                }
                             }
                         }
                     }
-                }
-                div {
-                    class: "media-content",
-                    style: "align-self: center;",
-                    p { class: "title",
-                        "{episode.title} "
-                    }
-                    p { class: "subtitle",
-                        "{episode.published_at.format(\"%-d %B %Y\")}"
-                        if episode.season.is_some() || episode.episode.is_some() {
-                            " · "
+                    div {
+                        class: "media-content",
+                        style: "align-self: center;",
+                        p { class: "title",
+                            "{episode.title} "
                         }
-                        if let Some(season) = episode.season {
-                            "S{season:02}"
-                        }
-                        if let Some(number) = episode.episode {
-                            "E{number:02}"
-                        }
-                        if let Some(duration) = episode.source_duration {
-                            " · {format_duration_human(duration)}"
-                        }
-                        if let Some(kind) = episode.kind {
-                            if kind != EpisodeKind::Full {
-                                " · {kind}"
-                            }
+                        p { class: "subtitle",
+                            "{subtitle}"
                         }
                     }
                 }
-            }
-            if let Some(description) = description {
-                article {
-                    pre {
-                        "{description}"
+                if let Some(description) = description {
+                    article {
+                        pre {
+                            "{description}"
+                        }
                     }
                 }
             }

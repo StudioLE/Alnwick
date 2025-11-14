@@ -2,9 +2,8 @@ use crate::prelude::*;
 
 /// A [Material Design 3 app bar](https://m3.material.io/components/app-bars/overview).
 #[component]
-pub fn Bar() -> Element {
+pub fn AppBar(title: String, subtitle: Option<String>) -> Element {
     let current: Route = use_route();
-    let info = current.get_info();
     let breadcrumbs = current.get_info().breadcrumbs;
     let previous = if breadcrumbs.len() > 1 {
         breadcrumbs.get(breadcrumbs.len() - 2)
@@ -38,10 +37,12 @@ pub fn Bar() -> Element {
                 }
                 div {
                     p { class: "title",
-                        "{info.title} "
+                        "{title} "
                     }
-                    p { class: "subtitle",
-                        "This is a subtitle"
+                    if let Some(subtitle) = subtitle {
+                        p { class: "subtitle",
+                            "{subtitle}"
+                        }
                     }
                 }
             }
