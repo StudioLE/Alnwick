@@ -13,27 +13,36 @@ pub fn Bar() -> Element {
     };
     rsx! {
         header { style: "
-margin: var(--bulma-block-spacing) 0;
-display: flex;
-align-items: center;
-gap: 1rem;",
-            if let Some(previous) = previous {
-                div { style: "",
-                    Link { style: "",
-                        to: previous.clone(),
-                        span {
-                            class: "icon is-medium",
-                            i { class: "fas fa-arrow-left fa-lg" }
+            position: fixed;
+            left: 0;
+            right: 0;
+            top: 0;
+            z-index: 1;
+            background-color: var(--bulma-body-background-color)",
+            class: "container is-max-tablet",
+            div { style: "
+                margin: var(--bulma-block-spacing) 0;
+                display: flex;
+                align-items: center;
+                gap: 1rem;",
+                if let Some(previous) = previous {
+                    div {
+                        Link {
+                            to: previous.clone(),
+                            span {
+                                class: "icon is-medium",
+                                i { class: "fas fa-arrow-left fa-lg" }
+                            }
                         }
                     }
                 }
-            }
-            div {
-                p { class: "title",
-                    "{info.title} "
-                }
-                p { class: "subtitle",
-                    "This is a subtitle"
+                div {
+                    p { class: "title",
+                        "{info.title} "
+                    }
+                    p { class: "subtitle",
+                        "This is a subtitle"
+                    }
                 }
             }
         }

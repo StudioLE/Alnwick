@@ -13,38 +13,30 @@ pub fn App() -> Element {
 pub fn Layout() -> Element {
     rsx! {
         HeadComponent {}
-        div { style: " height: 100vh; display: flex; flex-direction: column;",
-            div { style: "flex: 1; min-height: 0; display: flex;",
-                Drawer {
-                    lists: vec![
-                        MenuListProps {
-                            label: "Menu".to_owned(),
-                            routes: vec![Route::Index, Route::AddPodcast, Route::Settings]
-                        }
-                    ]
-                },
-                div { style: "flex: 1; display: flex; flex-direction: column; position: relative;",
-                    div { style: "flex: 0 0;",
-                        div { class: "container is-max-tablet",
-                            Bar {}
-                        }
-                    }
-                    div { style: "flex: 1; overflow-y: auto;",
-                        main { class: "container is-max-tablet",
-                            Outlet::<Route> {}
-                        }
-                    }
-                    div { style: "position: absolute; bottom: 0; right: 0;",
-                        FloatingActions {
-                            routes: vec![Route::AddPodcast]
-                        }
-                    }
-                }
-            }
-            footer { style: "flex-shrink: 0;",
-                Tabs {
+        Drawer {
+            lists: vec![
+                MenuListProps {
+                    label: "Menu".to_owned(),
                     routes: vec![Route::Index, Route::AddPodcast, Route::Settings]
                 }
+            ]
+        },
+        Bar {}
+        main { class: "container is-max-tablet",
+            style: "margin: 90px auto;",
+            Outlet::<Route> {}
+        }
+        FloatingActions {
+            routes: vec![Route::AddPodcast]
+        }
+        footer { style: "
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--bulma-body-background-color);",
+            Tabs {
+                routes: vec![Route::Index, Route::AddPodcast, Route::Settings]
             }
         }
     }

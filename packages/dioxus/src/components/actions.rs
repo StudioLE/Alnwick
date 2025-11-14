@@ -4,17 +4,19 @@ use crate::prelude::*;
 #[component]
 pub fn FloatingActions(routes: Vec<Route>) -> Element {
     rsx! {
-        div { style: "
-display: flex;
-margin: 1rem;
-flex-direction: column-reverse;
-align-items: center;
-flex: 0;
-gap: 1rem;",
-            for (index, route) in routes.iter().enumerate() {
-                FloatingAction {
-                    route: route.clone(),
-                    is_large: index == 0
+        div { style: "position: fixed; right: 0; bottom: 60px;",
+            div { style: "
+                display: flex;
+                margin: 1rem;
+                flex-direction: column-reverse;
+                align-items: center;
+                flex: 0;
+                gap: 1rem;",
+                for (index, route) in routes.iter().enumerate() {
+                    FloatingAction {
+                        route: route.clone(),
+                        is_large: index == 0
+                    }
                 }
             }
         }
