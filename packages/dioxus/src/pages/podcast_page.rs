@@ -18,52 +18,21 @@ pub fn PodcastPage(id: String) -> Element {
         Main {
             title: feed.podcast.title.clone(),
             subtitle: subtitle.clone(),
-
-            header { class: "media",
-                figure { class: "media-left",
-                    p { class: "image is-128x128",
-                        if let Some(url) = &feed.podcast.image {
-                            img { src: "{url}" }
-                        }
-                    }
-                }
-                div {
-                    class: "media-content",
-                    style: "align-self: center;",
-                    p { class: "title",
-                        "{feed.podcast.title} "
-                    }
-                    p { class: "subtitle",
-                        "{subtitle}"
-                    }
-                }
+            MediaObject {
+                title: feed.podcast.title.clone(),
+                subtitle: subtitle,
+                image_src: feed.podcast.image.clone(),
+                image_size: ImageSize::_128
             }
             for episode in feed.episodes.iter() {
                 div { class: "block item",
                     Link {
                         to: Route::Episode { podcast_id: feed.podcast.id.clone(), episode_id: episode.id },
-                        article { class: "media",
-                            figure { class: "media-left",
-                                p { class: "image is-64x64",
-                                    if let Some(url) = &episode.image {
-                                        img { src: "{url}" }
-                                    } else {
-                                        if let Some(url) = &feed.podcast.image {
-                                            img { src: "{url}" }
-                                        }
-                                    }
-                                }
-                            }
-                            div {
-                                class: "media-content",
-                                style: "align-self: center;",
-                                p { class: "title",
-                                    "{episode.title} "
-                                }
-                                p { class: "subtitle",
-                                    "{episode.get_subtitle()}"
-                                }
-                            }
+                        MediaObject {
+                            title: episode.title.clone(),
+                            subtitle: episode.get_subtitle(),
+                            image_src: episode.image.clone().or_else(|| feed.podcast.image.clone()),
+                            image_size: ImageSize::_64
                         }
                     }
                 }

@@ -25,33 +25,17 @@ pub fn EpisodePage(podcast_id: String, episode_id: Uuid) -> Element {
     };
     let description = episode.get_description();
     let subtitle = episode.get_subtitle();
+    let image = episode.image.clone().or_else(|| feed.podcast.image.clone());
     rsx! {
         Main {
             title: episode.title.clone(),
             subtitle: subtitle.clone(),
             div { class: "block",
-                header { class: "media",
-                    figure { class: "media-left",
-                        p { class: "image is-128x128",
-                            if let Some(url) = &episode.image {
-                                img { src: "{url}" }
-                            } else {
-                                if let Some(url) = &feed.podcast.image {
-                                    img { src: "{url}" }
-                                }
-                            }
-                        }
-                    }
-                    div {
-                        class: "media-content",
-                        style: "align-self: center;",
-                        p { class: "title",
-                            "{episode.title} "
-                        }
-                        p { class: "subtitle",
-                            "{subtitle}"
-                        }
-                    }
+                MediaObject {
+                    title: episode.title.clone(),
+                    subtitle: subtitle,
+                    image_src: image,
+                    image_size: ImageSize::_128
                 }
                 if let Some(description) = description {
                     article {

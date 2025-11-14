@@ -18,7 +18,7 @@ impl EpisodeInfoExt for EpisodeInfo {
                 let _ = write!(season_episode, "S{season:02}");
             }
             if let Some(number) = self.episode {
-                let _ = write!(season_episode, "E{number:02})");
+                let _ = write!(season_episode, "E{number:02}");
             }
             subtitle.push(season_episode);
         }

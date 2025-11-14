@@ -23,24 +23,11 @@ pub fn IndexPage() -> Element {
                 div { class: "block item",
                     Link {
                         to: Route::Podcast { id: feed.podcast.id.clone() },
-                        article { class: "media",
-                            figure { class: "media-left",
-                                p { class: "image is-64x64",
-                                    if let Some(url) = &feed.podcast.image {
-                                        img { src: "{url}" }
-                                    }
-                                }
-                            }
-                            div {
-                                class: "media-content",
-                                style: "align-self: center;",
-                                p { class: "title",
-                                    "{feed.podcast.title} "
-                                }
-                                p { class: "subtitle",
-                                    "{feed.episodes.len()} episodes · {feed.podcast.id}"
-                                }
-                            }
+                        MediaObject {
+                            title: feed.podcast.title.clone(),
+                            subtitle: "{feed.episodes.len()} episodes · {feed.podcast.id}",
+                            image_src: feed.podcast.image.clone(),
+                            image_size: ImageSize::_64
                         }
                     }
                 }

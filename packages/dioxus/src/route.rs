@@ -44,7 +44,9 @@ impl Route {
             } => RouteInfo {
                 title: "Episode".to_owned(),
                 icon: "fa-user".to_owned(),
-                previous: Some(Route::Podcast { id: podcast_id.clone() }),
+                previous: Some(Route::Podcast {
+                    id: podcast_id.clone(),
+                }),
                 breadcrumbs: vec![
                     Route::Index,
                     Route::Episode {

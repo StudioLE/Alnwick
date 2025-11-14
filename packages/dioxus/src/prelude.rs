@@ -1,3 +1,4 @@
+pub use crate::components::ImageSize;
 pub use crate::components::*;
 pub use crate::contexts::*;
 pub use crate::layout::*;
