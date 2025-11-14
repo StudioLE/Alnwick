@@ -4,12 +4,7 @@ use crate::prelude::*;
 #[component]
 pub fn AppBar(title: String, subtitle: Option<String>) -> Element {
     let current: Route = use_route();
-    let breadcrumbs = current.get_info().breadcrumbs;
-    let previous = if breadcrumbs.len() > 1 {
-        breadcrumbs.get(breadcrumbs.len() - 2)
-    } else {
-        None
-    };
+    let previous = current.get_info().previous;
     rsx! {
         header { style: "
             position: fixed;

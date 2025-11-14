@@ -27,12 +27,14 @@ impl Route {
             Route::Index => RouteInfo {
                 title: "Podcasts".to_owned(),
                 icon: "fa-podcast".to_owned(),
+                previous: None,
                 breadcrumbs: vec![Route::Index],
                 path: "/".to_owned(),
             },
             Route::Podcast { id } => RouteInfo {
                 title: "Podcast".to_owned(),
                 icon: "fa-user".to_owned(),
+                previous: Some(Route::Index),
                 breadcrumbs: vec![Route::Index, Route::Podcast { id: id.clone() }],
                 path: format!("/podcasts/{id}"),
             },
@@ -42,6 +44,7 @@ impl Route {
             } => RouteInfo {
                 title: "Episode".to_owned(),
                 icon: "fa-user".to_owned(),
+                previous: Some(Route::Podcast { id: podcast_id.clone() }),
                 breadcrumbs: vec![
                     Route::Index,
                     Route::Episode {
@@ -54,18 +57,21 @@ impl Route {
             Route::Settings => RouteInfo {
                 title: "Settings".to_owned(),
                 icon: "fa-cog".to_owned(),
+                previous: Some(Route::Index),
                 breadcrumbs: vec![Route::Settings],
                 path: "/settings".to_owned(),
             },
             Route::PlayerSettings => RouteInfo {
                 title: "Player".to_owned(),
                 icon: "fa-play".to_owned(),
+                previous: Some(Route::Settings),
                 breadcrumbs: vec![Route::Settings, Route::PlayerSettings],
                 path: "/settings/player".to_owned(),
             },
             Route::AddPodcast => RouteInfo {
                 title: "Add Podcast".to_owned(),
                 icon: "fa-plus".to_owned(),
+                previous: Some(Route::Index),
                 breadcrumbs: vec![Route::AddPodcast],
                 path: "/add".to_owned(),
             },
