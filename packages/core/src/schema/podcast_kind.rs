@@ -24,8 +24,7 @@ impl TryFrom<&String> for PodcastKind {
         match lower.as_str() {
             "episodic" => Ok(PodcastKind::Episodic),
             "serial" => Ok(PodcastKind::Serial),
-            _ => Err(Report::new(PodcastKindError)
-                .attach(format!("Invalid type: {value}"))),
+            _ => Err(Report::new(PodcastKindError).attach(format!("Invalid type: {value}"))),
         }
     }
 }

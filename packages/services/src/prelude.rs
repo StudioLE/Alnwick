@@ -1,5 +1,5 @@
 pub use alnwick_core::prelude::*;
-pub use futures::{stream, StreamExt, TryStreamExt};
+pub use futures::{StreamExt, TryStreamExt, stream};
 #[cfg(test)]
 pub use insta::*;
 pub use reqwest::Client as ReqwestClient;
@@ -10,8 +10,8 @@ pub use std::fs::File;
 pub use std::io::{BufReader, BufWriter};
 pub use std::mem::take;
 pub use tokio::fs::{
-    copy, create_dir_all, hard_link, metadata, read_dir, read_to_string, remove_dir_all,
-    remove_file, File as AsyncFile,
+    File as AsyncFile, copy, create_dir_all, hard_link, metadata, read_dir, read_to_string,
+    remove_dir_all, remove_file,
 };
 pub use tokio::io::AsyncWriteExt;
 #[cfg(test)]

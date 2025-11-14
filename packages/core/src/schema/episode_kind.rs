@@ -27,8 +27,7 @@ impl TryFrom<&String> for EpisodeKind {
             "full" => Ok(EpisodeKind::Full),
             "trailer" => Ok(EpisodeKind::Trailer),
             "bonus" => Ok(EpisodeKind::Bonus),
-            _ => Err(Report::new(EpisodeKindError)
-                .attach(format!("Invalid type: {value}"))),
+            _ => Err(Report::new(EpisodeKindError).attach(format!("Invalid type: {value}"))),
         }
     }
 }
