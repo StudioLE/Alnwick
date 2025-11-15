@@ -16,7 +16,7 @@ pub fn IndexPage() -> Element {
     }
     rsx! {
 
-        Main {
+        Page {
             title: "Hello, world!",
             subtitle: "This is a subtitle!",
             for feed in podcasts.values() {

@@ -4,7 +4,7 @@ use crate::prelude::*;
 pub fn PlayerSettingsPage() -> Element {
     let context = SettingsContext::consume();
     rsx! {
-        Main {
+        Page {
             title: "Player Settings",
             Field::<u32> {
                 label: "Skip forward time",

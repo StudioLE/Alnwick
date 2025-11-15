@@ -27,7 +27,7 @@ pub fn EpisodePage(podcast_id: String, episode_id: Uuid) -> Element {
     let subtitle = episode.get_subtitle();
     let image = episode.image.clone().or_else(|| feed.podcast.image.clone());
     rsx! {
-        Main {
+        Page {
             title: episode.title.clone(),
             subtitle: subtitle.clone(),
             div { class: "block",

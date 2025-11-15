@@ -15,7 +15,7 @@ pub fn PodcastPage(id: String) -> Element {
     };
     let subtitle = format!("{} episodes · {}", feed.episodes.len(), feed.podcast.id);
     rsx! {
-        Main {
+        Page {
             title: feed.podcast.title.clone(),
             subtitle: subtitle.clone(),
             MediaObject {
