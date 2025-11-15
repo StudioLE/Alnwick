@@ -36,7 +36,7 @@ code, pre {
 .block.item a {
   border-radius: .5rem;
   display: block;
-  background-color: hsl(var(--bulma-scheme-h),var(--bulma-scheme-s),calc(var(--bulma-scheme-main-l) + var(--item-l-delta)));
+  background-color: hsl(var(--bulma-scheme-h), var(--bulma-scheme-s), calc(var(--bulma-scheme-main-l) + var(--item-l-delta)));
 }
 
 .block.item a:hover {
