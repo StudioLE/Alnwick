@@ -96,7 +96,7 @@ pub enum IconSize {
 
 impl IconSize {
     #[must_use]
-    fn get_class(&self) -> String {
+    fn get_class(self) -> String {
         let str = match self {
             IconSize::ExtraExtraSmall => "fa-2xs",
             IconSize::ExtraSmall => "fa-xs",
@@ -131,7 +131,7 @@ pub enum IconContainerSize {
 
 impl IconContainerSize {
     #[must_use]
-    fn get_class(&self) -> String {
+    fn get_class(self) -> String {
         let str = match self {
             IconContainerSize::Default => "",
             IconContainerSize::Small => "is-small",
