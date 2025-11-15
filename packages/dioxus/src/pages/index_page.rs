@@ -5,20 +5,44 @@ pub fn IndexPage() -> Element {
     let context = PodcastsContext::consume();
     if *context.loading.read() {
         return rsx! {
-            "Loading..."
+            Page {
+                title: "Loading...",
+                for _i in 0..5 {
+                    div { class: "block item pulse-animation",
+                        a {
+                            SkeletonMediaObject {
+                                image_size: ImageSize::_64,
+                            }
+                        }
+                    }
+                }
+            }
         };
     }
     let podcasts = context.podcasts.read();
     if podcasts.is_empty() {
         return rsx! {
-            "No podcasts found"
+            Page {
+                title: "Podcasts",
+                subtitle: "0 podcasts",
+                div { class: "block item",
+                    Link {
+                        to: Route::AddPodcast,
+                        MediaObject {
+                            title: "Your collection is empty",
+                            subtitle: "Add your first podcast to get started",
+                            image_size: ImageSize::_64,
+                            icon: "fa-plus",
+                        }
+                    }
+                }
+            }
         };
     }
     rsx! {
-
         Page {
-            title: "Hello, world!",
-            subtitle: "This is a subtitle!",
+            title: "Podcasts",
+            subtitle: "{podcasts.len()} podcasts",
             for feed in podcasts.values() {
                 div { class: "block item",
                     Link {
@@ -27,7 +51,8 @@ pub fn IndexPage() -> Element {
                             title: feed.podcast.title.clone(),
                             subtitle: "{feed.episodes.len()} episodes · {feed.podcast.id}",
                             image_src: feed.podcast.image.clone(),
-                            image_size: ImageSize::_64
+                            image_size: ImageSize::_64,
+                            icon: "fa-image",
                         }
                     }
                 }
