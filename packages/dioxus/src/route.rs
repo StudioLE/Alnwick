@@ -111,7 +111,5 @@ fn PlayerSettings() -> Element {
 
 #[component]
 fn AddPodcast() -> Element {
-    rsx! {
-        "AddPodcast"
-    }
+    AddPodcastPage()
 }
