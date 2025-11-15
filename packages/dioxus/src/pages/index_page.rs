@@ -12,6 +12,7 @@ pub fn IndexPage() -> Element {
                         a {
                             SkeletonMediaObject {
                                 image_size: ImageSize::_64,
+                                icon: "fa-image",
                             }
                         }
                     }

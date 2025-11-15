@@ -6,12 +6,37 @@ pub fn EpisodePage(podcast_id: String, episode_id: Uuid) -> Element {
     let context = PodcastsContext::consume();
     if *context.loading.read() {
         return rsx! {
-            "Loading..."
+            Page {
+                title: "Loading...",
+                SkeletonMediaObject {
+                    image_size: ImageSize::_128,
+                    icon: "fa-image",
+                }
+                for _i in 0..5 {
+                    div { class: "block item pulse-animation",
+                        a {
+                            SkeletonMediaObject {
+                                image_size: ImageSize::_64,
+                                icon: "fa-image",
+                            }
+                        }
+                    }
+                }
+            }
         };
     }
     let Some(feed) = context.podcasts.get(&podcast_id) else {
         return rsx! {
-            "Unable to find podcast: {podcast_id}"
+            Page {
+                title: "Podcast not found",
+                subtitle: "404",
+                MediaObject {
+                    title: "Unable to find podcast",
+                    subtitle: "{podcast_id}",
+                    image_size: ImageSize::_128,
+                    icon: "fa-triangle-exclamation",
+                }
+            }
         };
     };
     let Some(episode) = feed
@@ -20,7 +45,16 @@ pub fn EpisodePage(podcast_id: String, episode_id: Uuid) -> Element {
         .find(|episode| episode.id == episode_id)
     else {
         return rsx! {
-            "Unable to find episode: {episode_id}"
+            Page {
+                title: "Episode not found",
+                subtitle: "404",
+                MediaObject {
+                    title: "Unable to find episode",
+                    subtitle: "{podcast_id} · {episode_id}",
+                    image_size: ImageSize::_128,
+                    icon: "fa-triangle-exclamation",
+                }
+            }
         };
     };
     let description = episode.get_description();
@@ -35,7 +69,8 @@ pub fn EpisodePage(podcast_id: String, episode_id: Uuid) -> Element {
                     title: episode.title.clone(),
                     subtitle: subtitle,
                     image_src: image,
-                    image_size: ImageSize::_128
+                    image_size: ImageSize::_128,
+                    icon: "fa-image",
                 }
                 if let Some(description) = description {
                     article {
