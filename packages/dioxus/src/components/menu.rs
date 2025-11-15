@@ -56,9 +56,7 @@ fn MenuItem(route: Route) -> Element {
             Link {
                 to: route,
                 class: if is_active { "is-active" } else { "" },
-                span { class: "icon has-text-grey-dark",
-                    i { class: info.get_icon_classes() }
-                }
+                Icon { class: info.icon }
                 span { "{info.title}" }
             }
         }

@@ -28,9 +28,7 @@ fn Tab(route: Route) -> Element {
         li { class: if is_active { "is-active" } else { "" },
             Link {
                 to: route,
-                span { class: "icon",
-                    i { class: info.get_icon_classes() }
-                }
+                Icon { class: info.icon }
                 span { "{info.title}" }
             }
         }

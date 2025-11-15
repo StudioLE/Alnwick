@@ -23,9 +23,10 @@ pub fn AppBar(title: String, subtitle: Option<String>) -> Element {
                     div {
                         Link {
                             to: previous.clone(),
-                            span {
-                                class: "icon is-medium",
-                                i { class: "fas fa-arrow-left fa-lg" }
+                            Icon {
+                                class: "fa-arrow-left",
+                                container_size: IconContainerSize::Medium,
+                                size: IconSize::Large,
                             }
                         }
                     }

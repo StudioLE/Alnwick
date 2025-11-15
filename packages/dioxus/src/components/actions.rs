@@ -31,10 +31,7 @@ pub fn FloatingAction(route: Route, is_large: bool) -> Element {
         Link { style: "width: fit-content;",
             to: route,
             class: get_button_classes(is_large),
-            span {
-                class: "icon",
-                i { class: info.get_icon_classes() }
-            }
+            Icon { class: info.icon }
         }
     }
 }

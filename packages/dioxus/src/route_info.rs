@@ -9,11 +9,3 @@ pub struct RouteInfo {
     pub breadcrumbs: Vec<Route>,
     pub path: String,
 }
-
-impl RouteInfo {
-    /// Get the CSS classes for the page icon.
-    #[must_use]
-    pub fn get_icon_classes(&self) -> String {
-        format!("fa-solid {}", self.icon)
-    }
-}
