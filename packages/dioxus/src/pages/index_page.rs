@@ -52,7 +52,7 @@ fn NoPodcasts() -> Element {
 }
 
 #[component]
-fn Podcasts(podcasts: Vec<IndexPagePodcastPartial>) -> Element {
+fn Podcasts(podcasts: Vec<PodcastPartial>) -> Element {
     rsx! {
         Page {
             title: "Podcasts",
@@ -63,7 +63,7 @@ fn Podcasts(podcasts: Vec<IndexPagePodcastPartial>) -> Element {
                         to: Route::Podcast { id: podcast.slug.clone() },
                         MediaObject {
                             title: podcast.title.clone(),
-                            subtitle: "{podcast.episodes} episodes · {podcast.slug}",
+                            subtitle: "{podcast.episodes_count} episodes · {podcast.slug}",
                             image_src: get_image_url(podcast.image.clone()),
                             image_size: ImageSize::_64,
                             icon: "fa-image",
@@ -76,7 +76,7 @@ fn Podcasts(podcasts: Vec<IndexPagePodcastPartial>) -> Element {
 }
 
 #[get("/api/podcasts")]
-async fn get_podcasts() -> Result<Vec<IndexPagePodcastPartial>, ServerFnError> {
+async fn get_podcasts() -> Result<Vec<PodcastPartial>, ServerFnError> {
     match SERVICES.metadata.get_podcasts().await {
         Ok(podcasts) => Ok(podcasts),
         Err(error) => {

@@ -59,7 +59,7 @@ fn NoEpisode(podcast_slug: String, episode_key: u32) -> Element {
 }
 
 #[component]
-fn Episode(episode: EpisodePagePartial) -> Element {
+fn Episode(episode: EpisodePartial) -> Element {
     let description = format_description(episode.description);
     let subtitle = get_subtitle(
         episode.published_at,
@@ -98,7 +98,7 @@ fn Episode(episode: EpisodePagePartial) -> Element {
 async fn get_episode(
     podcast_slug: String,
     episode_key: u32,
-) -> Result<Option<EpisodePagePartial>, ServerFnError> {
+) -> Result<Option<EpisodePartial>, ServerFnError> {
     match SERVICES
         .metadata
         .get_episode(&podcast_slug, episode_key)

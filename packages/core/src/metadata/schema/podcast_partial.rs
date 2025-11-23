@@ -1,10 +1,13 @@
 use crate::prelude::*;
 use sea_orm::*;
 
-/// A minimal subset of [`PodcastInfo`] used for the index page.
-#[derive(Clone, Debug, DerivePartialModel, Deserialize, PartialEq, Serialize)]
-#[sea_orm(entity = "podcast::Entity")]
-pub struct IndexPagePodcastPartial {
+/// A partial of [`podcast::Model`]
+///
+/// Used by:
+/// - [`MetadataRepository::get_podcasts`]
+/// - [`MetadataRepository::get_podcast`]
+#[derive(Clone, Debug, FromQueryResult, Deserialize, PartialEq, Serialize)]
+pub struct PodcastPartial {
     /// Primary key
     ///
     /// This is auto-incremented by the database
@@ -18,6 +21,5 @@ pub struct IndexPagePodcastPartial {
     /// - Max: 3000 x 3000 px
     pub image: Option<String>,
     /// Episode count
-    #[sea_orm(from_expr = "episode::Column::PrimaryKey.count()")]
-    pub episodes: i64,
+    pub episodes_count: u32,
 }

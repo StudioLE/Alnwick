@@ -55,7 +55,7 @@ fn NoPodcast(id: String) -> Element {
 }
 
 #[component]
-fn Podcast(podcast: PodcastPagePartial, episodes: Vec<PodcastPageEpisodePartial>) -> Element {
+fn Podcast(podcast: PodcastPartial, episodes: Vec<EpisodePartial>) -> Element {
     let subtitle = format!("{} episodes · {}", episodes.len(), podcast.slug);
     rsx! {
         Page {
@@ -93,7 +93,7 @@ fn Podcast(podcast: PodcastPagePartial, episodes: Vec<PodcastPageEpisodePartial>
 #[get("/api/podcast/:id")]
 async fn get_podcast(
     id: String,
-) -> Result<Option<(PodcastPagePartial, Vec<PodcastPageEpisodePartial>)>, ServerFnError> {
+) -> Result<Option<(PodcastPartial, Vec<EpisodePartial>)>, ServerFnError> {
     match SERVICES.metadata.get_podcast(&id).await {
         Ok(option) => Ok(option),
         Err(error) => {

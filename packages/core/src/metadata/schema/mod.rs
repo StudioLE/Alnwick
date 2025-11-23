@@ -9,4 +9,9 @@ pub use podcast_category::*;
 mod podcast_feed;
 pub use podcast_feed::*;
 mod podcast_kind;
+pub use episode_partial::*;
 pub use podcast_kind::*;
+mod episode_partial;
+
+pub use podcast_partial::*;
+mod podcast_partial;

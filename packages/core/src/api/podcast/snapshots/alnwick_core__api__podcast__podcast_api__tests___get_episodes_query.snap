@@ -3,14 +3,14 @@ source: packages/core/src/api/podcast/podcast_api.rs
 expression: sql
 ---
 SELECT
-  "episodes"."primary_key" AS "primary_key",
-  "episodes"."title" AS "title",
-  "episodes"."published_at" AS "published_at",
-  "episodes"."source_duration" AS "source_duration",
-  "episodes"."image" AS "image",
-  "episodes"."episode" AS "episode",
-  "episodes"."season" AS "season",
-  "episodes"."kind" AS "kind"
+  "episodes"."primary_key",
+  "episodes"."title",
+  "episodes"."published_at",
+  "episodes"."source_duration",
+  "episodes"."image",
+  "episodes"."episode",
+  "episodes"."season",
+  "episodes"."kind"
 FROM
   "episodes"
 WHERE

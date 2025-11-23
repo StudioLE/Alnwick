@@ -3,11 +3,13 @@ source: packages/core/src/api/podcast/podcast_api.rs
 expression: sql
 ---
 SELECT
-  "podcasts"."primary_key" AS "primary_key",
-  "podcasts"."slug" AS "slug",
-  "podcasts"."title" AS "title",
-  "podcasts"."image" AS "image"
+  "podcasts"."primary_key",
+  "podcasts"."slug",
+  "podcasts"."title",
+  "podcasts"."image",
+  COUNT("episodes"."primary_key") AS "episodes_count"
 FROM
   "podcasts"
+  LEFT JOIN "episodes" ON "podcasts"."primary_key" = "episodes"."podcast_key"
 WHERE
   "podcasts"."slug" = 'irl'

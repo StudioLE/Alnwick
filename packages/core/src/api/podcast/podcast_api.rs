@@ -7,7 +7,7 @@ impl MetadataRepository {
     pub async fn get_podcast(
         &self,
         slug: &str,
-    ) -> Result<Option<(PodcastPagePartial, Vec<PodcastPageEpisodePartial>)>, DbErr> {
+    ) -> Result<Option<(PodcastPartial, Vec<EpisodePartial>)>, DbErr> {
         let option = get_podcast_query(slug).one(&self.db).await?;
         let Some(podcast) = option else {
             return Ok(None);
@@ -19,18 +19,36 @@ impl MetadataRepository {
     }
 }
 
-fn get_podcast_query(slug: &str) -> Selector<SelectModel<PodcastPagePartial>> {
-    podcast::Entity::find_by_slug(slug).into_partial_model::<PodcastPagePartial>()
+fn get_podcast_query(slug: &str) -> Selector<SelectModel<PodcastPartial>> {
+    podcast::Entity::find_by_slug(slug)
+        .join(JoinType::LeftJoin, podcast::Relation::Episode.def())
+        .select_only()
+        .columns([
+            podcast::Column::PrimaryKey,
+            podcast::Column::Slug,
+            podcast::Column::Title,
+            podcast::Column::Image,
+        ])
+        .expr_as(episode::Column::PrimaryKey.count(), "episodes_count")
+        .into_model::<PodcastPartial>()
 }
 
-fn get_episodes_query(primary_key: u32) -> Selector<SelectModel<PodcastPageEpisodePartial>> {
+fn get_episodes_query(primary_key: u32) -> Selector<SelectModel<EpisodePartial>> {
     episode::Entity::find()
-        .has_related(
-            podcast::Entity,
-            podcast::Column::PrimaryKey.eq(primary_key),
-        )
+        .has_related(podcast::Entity, podcast::Column::PrimaryKey.eq(primary_key))
+        .select_only()
+        .columns([
+            episode::Column::PrimaryKey,
+            episode::Column::Title,
+            episode::Column::PublishedAt,
+            episode::Column::SourceDuration,
+            episode::Column::Image,
+            episode::Column::Episode,
+            episode::Column::Season,
+            episode::Column::Kind,
+        ])
         .order_by_asc(episode::Column::PublishedAt)
-        .into_partial_model::<PodcastPageEpisodePartial>()
+        .into_model::<EpisodePartial>()
 }
 
 #[cfg(test)]

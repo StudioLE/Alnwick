@@ -8,7 +8,7 @@ impl MetadataRepository {
         &self,
         podcast_slug: &str,
         episode_key: u32,
-    ) -> Result<Option<EpisodePagePartial>, DbErr> {
+    ) -> Result<Option<EpisodePartial>, DbErr> {
         get_episode_query(podcast_slug, episode_key)
             .one(&self.db)
             .await
@@ -18,11 +18,23 @@ impl MetadataRepository {
 fn get_episode_query(
     podcast_slug: &str,
     episode_key: u32,
-) -> Selector<SelectModel<EpisodePagePartial>> {
+) -> Selector<SelectModel<EpisodePartial>> {
     episode::Entity::find_by_id(episode_key)
         .join(JoinType::InnerJoin, episode::Relation::Podcast.def())
         .filter(podcast::Column::Slug.eq(podcast_slug))
-        .into_partial_model::<EpisodePagePartial>()
+        .select_only()
+        .columns([
+            episode::Column::PrimaryKey,
+            episode::Column::Title,
+            episode::Column::PublishedAt,
+            episode::Column::Description,
+            episode::Column::SourceDuration,
+            episode::Column::Image,
+            episode::Column::Episode,
+            episode::Column::Season,
+            episode::Column::Kind,
+        ])
+        .into_model::<EpisodePartial>()
 }
 
 #[cfg(test)]

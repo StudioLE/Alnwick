@@ -1,10 +1,13 @@
 use crate::prelude::*;
 use sea_orm::*;
 
-/// A minimal subset of [`EpisodeInfo`] used for the podcast page.
-#[derive(Clone, Debug, DerivePartialModel, Deserialize, PartialEq, Serialize)]
-#[sea_orm(entity = "episode::Entity")]
-pub struct EpisodePagePartial {
+/// A partial of [`episode::Model`]
+///
+/// Used by:
+/// - [`MetadataRepository::get_podcast`]
+/// - [`MetadataRepository::get_episode`]
+#[derive(Clone, Debug, FromQueryResult, Deserialize, PartialEq, Serialize)]
+pub struct EpisodePartial {
     /// Primary key
     ///
     /// This is auto-incremented by the database
@@ -14,6 +17,8 @@ pub struct EpisodePagePartial {
     /// Date and time episode was released
     pub published_at: DateTime<FixedOffset>,
     /// HTML formatted description
+    ///
+    /// This will always be `None` for [`MetadataRepository::get_podcast`]
     pub description: Option<String>,
     /// Duration in seconds
     pub source_duration: Option<u32>,
