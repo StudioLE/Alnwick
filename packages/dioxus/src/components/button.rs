@@ -104,7 +104,7 @@ pub enum ButtonSize {
 
 impl ButtonSize {
     #[must_use]
-    pub fn get_class(&self) -> String {
+    pub fn get_class(self) -> String {
         let str = match self {
             ButtonSize::Small => "is-small",
             ButtonSize::Normal => "is-normal",

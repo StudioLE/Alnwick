@@ -71,13 +71,7 @@ pub struct Model {
 impl PodcastInfo {
     #[must_use]
     pub fn get_image_url(&self) -> Option<Url> {
-        self.image.clone().and_then(|url| {
-            Url::parse(&url)
-                .map_err(|error| {
-                    warn!(podcast = self.slug, %url, %error, "Failed to parse podcast image URL");
-                })
-                .ok()
-        })
+        get_image_url(self.image.clone())
     }
 
     #[must_use]

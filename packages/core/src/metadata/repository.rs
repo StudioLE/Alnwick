@@ -4,7 +4,7 @@ use sea_orm::*;
 use sea_orm_migration::MigratorTrait;
 
 pub struct MetadataRepository {
-    pub(super) db: DatabaseConnection,
+    pub(crate) db: DatabaseConnection,
 }
 
 impl MetadataRepository {

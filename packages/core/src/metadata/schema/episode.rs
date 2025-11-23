@@ -80,13 +80,7 @@ impl EpisodeInfo {
 
     #[must_use]
     pub fn get_image_url(&self) -> Option<Url> {
-        self.image.clone().and_then(|url| {
-            Url::parse(&url)
-                .map_err(|error| {
-                    warn!(episode = %self, %url, %error, "Failed to parse episode image URL");
-                })
-                .ok()
-        })
+        get_image_url(self.image.clone())
     }
     #[must_use]
     pub fn get_filename(&self) -> String {

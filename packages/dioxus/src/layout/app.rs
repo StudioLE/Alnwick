@@ -3,7 +3,6 @@ use crate::prelude::*;
 #[component]
 pub fn App() -> Element {
     SettingsContext::create();
-    PodcastsContext::create();
     rsx! {
         Router::<Route> {}
     }

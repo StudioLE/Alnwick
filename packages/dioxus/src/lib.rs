@@ -1,8 +1,10 @@
+pub use layout::App;
+#[allow(dead_code)]
 mod components;
 mod contexts;
 mod layout;
 mod pages;
-pub mod prelude;
+mod prelude;
 mod route;
 mod route_info;
 mod utils;
