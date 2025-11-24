@@ -26,7 +26,7 @@ impl MetadataRepository {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use sqlformat::{format, FormatOptions, QueryParams};
+    use sqlformat::{FormatOptions, QueryParams, format};
 
     #[tokio::test]
     pub async fn migrate() {

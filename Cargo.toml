@@ -16,7 +16,8 @@ documentation = "https://github.com/StudioLE/Alnwick"
 [workspace.dependencies]
 chrono = { version = "0.4.42", features = ["serde"] }
 clap = { version = "4.5.48", features = ["derive"] }
-dioxus = { version = "0.7.0", features = ["fullstack", "router"] }
+dioxus = { version = "0.7.1", features = ["fullstack", "router"] }
+dioxus-cli-config = { version = "0.7.1" }
 dirs = { version = "6.0.0" }
 envy = { version = "0.4.2" }
 error-stack = { version = "0.6.0", features = ["serde", "tracing"] }
@@ -42,6 +43,7 @@ tokio = { version = "1.47.1", features = ["macros", "rt-multi-thread", "fs", "io
 tracing = "0.1.41"
 tracing-subscriber = { version = "0.3.20", features = ["ansi", "env-filter"] }
 tracing-test = "0.2.5"
+tracing-wasm = "0.2.1"
 url = { version = "2.5.7" }
 urlencoding = { version = "2.1.3" }
 

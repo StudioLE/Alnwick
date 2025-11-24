@@ -14,6 +14,9 @@ server = ["dioxus/server", "alnwick_core/server"]
 alnwick_core = { path = "../core", default-features = false }
 dioxus = { workspace = true }
 html2text = { workspace = true }
+dioxus-cli-config = {  workspace = true }
+tracing-subscriber = {  workspace = true }
+tracing-wasm = { workspace = true }
 
 [lints]
 workspace = true

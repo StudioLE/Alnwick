@@ -3,7 +3,7 @@ use std::process::exit;
 
 #[tokio::main]
 async fn main() {
-    init_logger();
+    init_logger().expect("should be able to init logger");
     let cli = Cli::parse();
     let services = match ServiceProvider::create().await {
         Ok(services) => services,
