@@ -16,5 +16,5 @@ FROM
   "episodes"
   INNER JOIN "podcasts" ON "episodes"."podcast_key" = "podcasts"."primary_key"
 WHERE
-  "episodes"."primary_key" = 1
+  "episodes"."primary_key" = 2
   AND "podcasts"."slug" = 'test-0'

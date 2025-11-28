@@ -6,7 +6,6 @@ use image::codecs::jpeg::JpegEncoder;
 use image::codecs::png::PngEncoder;
 use image::codecs::webp::WebPEncoder;
 use image::{DynamicImage, ExtendedColorType, ImageEncoder, ImageFormat, ImageReader};
-use lofty::picture::{MimeType, Picture, PictureType};
 use std::fs::write;
 
 const RESIZE_ALGORITHM: ResizeAlg = ResizeAlg::Interpolation(FilterType::CatmullRom);
@@ -33,12 +32,7 @@ impl Resize {
         })
     }
 
-    pub fn to_file(
-        &self,
-        path: &Path,
-        width: u32,
-        height: u32,
-    ) -> Result<PathBuf, Report<ResizeError>> {
+    pub fn to_file(&self, path: &Path, width: u32, height: u32) -> Result<(), Report<ResizeError>> {
         let bytes = self.to_bytes(width, height)?;
         let extension = self
             .format
@@ -48,24 +42,7 @@ impl Resize {
         let path = path.with_extension(extension);
         write(&path, bytes)
             .change_context(ResizeError::Write)
-            .attach_path(&path)?;
-        Ok(path)
-    }
-
-    pub fn to_picture(&self, width: u32, height: u32) -> Result<Picture, Report<ResizeError>> {
-        let mime = match self.format {
-            ImageFormat::Png => MimeType::Png,
-            ImageFormat::Jpeg => MimeType::Jpeg,
-            ImageFormat::Gif => MimeType::Gif,
-            format => MimeType::from_str(format.to_mime_type()),
-        };
-        let bytes = self.to_bytes(width, height)?;
-        Ok(Picture::new_unchecked(
-            PictureType::CoverFront,
-            Some(mime),
-            None,
-            bytes,
-        ))
+            .attach_path(&path)
     }
 
     fn to_bytes(&self, width: u32, height: u32) -> Result<Vec<u8>, Report<ResizeError>> {

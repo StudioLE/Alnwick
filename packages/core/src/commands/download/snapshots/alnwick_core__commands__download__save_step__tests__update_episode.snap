@@ -1,5 +1,5 @@
 ---
-source: packages/core/src/api/podcast/podcast_api.rs
+source: packages/core/src/commands/download/save_step.rs
 expression: "(podcast, episodes)"
 ---
 - primary_key: 1

@@ -3,6 +3,7 @@ use crate::prelude::*;
 use rss::Item as RssItem;
 
 pub struct EmulateCommand {
+    options: Arc<AppOptions>,
     paths: Arc<PathProvider>,
     metadata: Arc<MetadataRepository>,
 }
@@ -13,14 +14,23 @@ impl Service for EmulateCommand {
         Ok(Self::new(
             services.get_service().await?,
             services.get_service().await?,
+            services.get_service().await?,
         ))
     }
 }
 
 impl EmulateCommand {
     #[must_use]
-    pub fn new(paths: Arc<PathProvider>, metadata: Arc<MetadataRepository>) -> Self {
-        Self { paths, metadata }
+    pub fn new(
+        options: Arc<AppOptions>,
+        paths: Arc<PathProvider>,
+        metadata: Arc<MetadataRepository>,
+    ) -> Self {
+        Self {
+            options,
+            paths,
+            metadata,
+        }
     }
 
     pub async fn execute(&self, options: EmulateOptions) -> Result<(), Report<EmulateError>> {
@@ -62,7 +72,7 @@ impl EmulateCommand {
     ) -> Result<PathBuf, Report<EmulateError>> {
         let mut channel = PodcastToRss::execute(feed.clone());
         for item in &mut channel.items {
-            self.replace_enclosure(feed, item);
+            self.replace_enclosure(feed, item)?;
         }
         let xml = channel.to_string();
         let path = self.paths.get_rss_path(&feed.podcast.slug, season, year);
@@ -84,18 +94,38 @@ impl EmulateCommand {
         Ok(path)
     }
 
-    fn replace_enclosure(&self, feed: &PodcastFeed, item: &mut RssItem) -> Option<()> {
-        let guid = item.guid.clone()?;
+    fn replace_enclosure(
+        &self,
+        feed: &PodcastFeed,
+        item: &mut RssItem,
+    ) -> Result<(), Report<EmulateError>> {
+        let guid = item.guid.clone().ok_or(EmulateError::NoGuid)?;
         let episode = feed
             .episodes
             .iter()
-            .find(|episode| episode.source_id == guid.value)?;
-        let enclosure = item.enclosure.as_mut()?;
-        enclosure.url = self
-            .paths
-            .get_audio_url(&feed.podcast.slug, episode)?
-            .to_string();
-        Some(())
+            .find(|episode| episode.source_id == guid.value)
+            .ok_or(EmulateError::NoMatch)?;
+        let enclosure = item.enclosure.as_mut().ok_or(EmulateError::NoEnclosure)?;
+        enclosure.url = self.get_audio_url(episode)?.to_string();
+        Ok(())
+    }
+
+    /// URL of the episode audio file.
+    ///
+    /// If the `server_base` option is not set this falls back to a `file://` URL.
+    ///
+    /// Examples:
+    /// - `https://example.com/irl/S00/1970/1970-01-01 001 Hello World.mp3`
+    /// - `file://$HOME/.local/share/alnwick/podcasts/irl/S00/1970/1970-01-01 001 Hello World.mp3`
+    fn get_audio_url(&self, episode: &EpisodeInfo) -> Result<Url, Report<EmulateError>> {
+        let Some(sub_path) = &episode.file_sub_path else {
+            return Err(Report::new(EmulateError::NoPath).attach(format!("Episode: {episode}")));
+        };
+        let Some(base) = &self.options.server_base else {
+            return Err(Report::new(EmulateError::NoServerBase));
+        };
+        base.join(sub_path.to_string_lossy().as_ref())
+            .change_context(EmulateError::ParseUrl)
     }
 }
 

@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use base64::prelude::*;
 use chrono::{NaiveDate, NaiveTime, TimeZone};
 
 pub struct MetadataRepositoryExample;
@@ -14,11 +15,18 @@ impl MetadataRepositoryExample {
     #[allow(clippy::as_conversions)]
     pub const EPISODE_COUNT: usize = Self::PODCAST_COUNT * Self::EPISODES_PER_SEASON as usize;
     pub const PODCAST_SLUG: &'static str = "test-0";
+    const EPISODE_FILE_URL: &'static str = "aHR0cHM6Ly9maWxlcy5mcmVlbXVzaWNhcmNoaXZlLm9yZy9zdG9yYWdlLWZyZWVtdXNpY2FyY2hpdmUtb3JnL3RyYWNrcy9nR1J5M1JmYm1EWE5vOEw1SlBPc0I3ZFBoTXhnbEJKaEw4M2owVHp5Lm1wMw==";
+    const EPISODE_IMAGE_URL: &'static str =
+        "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png";
 
     pub async fn create() -> MetadataRepository {
         let dir = TempDirectory::default()
             .create()
             .expect("should be able to create temp directory");
+        Self::create_in_directory(dir).await
+    }
+
+    pub async fn create_in_directory(dir: PathBuf) -> MetadataRepository {
         let path = dir.join(METADATA_DB);
         let metadata = MetadataRepository::new(path)
             .await
@@ -41,9 +49,19 @@ impl MetadataRepositoryExample {
         Slug::from_str(Self::PODCAST_SLUG).expect("should be valid slug")
     }
 
+    fn get_episode_file_url() -> UrlWrapper {
+        let bytes = BASE64_STANDARD
+            .decode(Self::EPISODE_FILE_URL)
+            .expect("should be valid base64");
+        let url = String::from_utf8(bytes).expect("should be valid UTF-8");
+        UrlWrapper::from_str(&url).expect("should be valid URL")
+    }
+
     #[must_use]
     pub fn example_feeds() -> Vec<PodcastFeed> {
         let mut feeds = Vec::new();
+        let source_url = Self::get_episode_file_url();
+        let image_url = UrlWrapper::from_str(Self::EPISODE_IMAGE_URL).expect("should be valid URL");
         for podcast_index in 0..Self::PODCAST_COUNT {
             let mut episodes = Vec::new();
             let slug = Slug::from_str(&format!("test-{podcast_index}")).expect("should be valid");
@@ -63,6 +81,8 @@ impl MetadataRepositoryExample {
                             published_at: date(year, ordinal),
                             season: Some(season),
                             episode: Some(episode),
+                            source_url: source_url.clone(),
+                            image: Some(image_url.clone()),
                             ..EpisodeInfo::example()
                         });
                     }
@@ -103,5 +123,13 @@ mod tests {
             "podcast count"
         );
         assert_yaml_snapshot!(feeds);
+    }
+
+    #[test]
+    fn _get_episode_file_url() {
+        // Arrange
+        // Act
+        // Assert
+        let _url = MetadataRepositoryExample::get_episode_file_url();
     }
 }

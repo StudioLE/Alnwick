@@ -6,6 +6,18 @@ pub enum EmulateError {
     Repository,
     #[error("Podcast does not exist")]
     NoPodcast,
+    #[error("Episode has not been downloaded")]
+    NoPath,
+    #[error("Server base option must be set")]
+    NoServerBase,
+    #[error("Unable to parse URL")]
+    ParseUrl,
+    #[error("Episode does not have a GUID")]
+    NoGuid,
+    #[error("Unable to match episode to RSS channel item")]
+    NoMatch,
+    #[error("Episode does not have an enclosure URL")]
+    NoEnclosure,
     #[error("Unable to create directory")]
     CreateDirectory,
     #[error("Unable to create RSS file")]

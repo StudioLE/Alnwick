@@ -85,6 +85,17 @@ impl HttpClient {
         Ok(path)
     }
 
+    pub async fn download(
+        &self,
+        url: &Url,
+        destination_path: PathBuf,
+    ) -> Result<(), Report<HttpError>> {
+        let extension = destination_path.extension().and_then(|e| e.to_str());
+        let source_path = self.get(url, extension).await?;
+        copy_with_logging(source_path, destination_path).await?;
+        Ok(())
+    }
+
     pub async fn remove(&self, url: &Url, extension: Option<&str>) -> bool {
         let path = self.get_cache_path(url, extension);
         let exists = path.exists();
@@ -189,7 +200,7 @@ async fn create_dir(path: &Path) -> Result<(), Report<HttpError>> {
         trace!("Creating cache directory: {}", dir.display());
         create_dir_all(dir)
             .await
-            .change_context(HttpError::CreateDirectory)
+            .change_context(HttpError::CreateCacheDirectory)
             .attach_path(dir)?;
     }
     Ok(())

@@ -1,50 +1,50 @@
 use crate::prelude::*;
 use sea_orm::sea_query::*;
 use sea_orm::*;
-use url::ParseError;
+use std::convert::Infallible;
 
-/// A wrapper type for URL that can be used as a `SeaORM` model field
+/// A wrapper type for [`PathBuf`] that can be used as a `SeaORM` model field
 ///
 /// - <https://www.sea-ql.org/SeaORM/docs/generate-entity/newtype/>
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
-pub struct UrlWrapper(Url);
+pub struct PathWrapper(PathBuf);
 
 // Convenience traits
 
-impl Display for UrlWrapper {
+impl Display for PathWrapper {
     fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
-        write!(f, "{}", self.0)
+        write!(f, "{}", self.0.display())
     }
 }
 
-impl From<Url> for UrlWrapper {
-    fn from(url: Url) -> Self {
-        UrlWrapper(url)
+impl From<PathBuf> for PathWrapper {
+    fn from(path: PathBuf) -> Self {
+        PathWrapper(path)
     }
 }
 
-impl From<UrlWrapper> for Url {
-    fn from(url: UrlWrapper) -> Self {
-        url.0
+impl From<PathWrapper> for PathBuf {
+    fn from(path: PathWrapper) -> Self {
+        path.0
     }
 }
 
-impl FromStr for UrlWrapper {
-    type Err = ParseError;
+impl FromStr for PathWrapper {
+    type Err = Infallible;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        Url::parse(s).map(UrlWrapper)
+        PathBuf::from_str(s).map(PathWrapper)
     }
 }
 
-impl AsRef<Url> for UrlWrapper {
-    fn as_ref(&self) -> &Url {
+impl AsRef<PathBuf> for PathWrapper {
+    fn as_ref(&self) -> &PathBuf {
         &self.0
     }
 }
 
-impl Deref for UrlWrapper {
-    type Target = Url;
+impl Deref for PathWrapper {
+    type Target = PathBuf;
 
     fn deref(&self) -> &Self::Target {
         &self.0
@@ -53,34 +53,36 @@ impl Deref for UrlWrapper {
 
 // SeaORM traits
 
-impl From<UrlWrapper> for Value {
-    fn from(url: UrlWrapper) -> Self {
-        Value::String(Some(url.0.to_string()))
+impl From<PathWrapper> for Value {
+    fn from(path: PathWrapper) -> Self {
+        Value::String(Some(path.to_string()))
     }
 }
 
-impl TryGetable for UrlWrapper {
+impl TryGetable for PathWrapper {
     fn try_get_by<I: ColIdx>(res: &QueryResult, index: I) -> Result<Self, TryGetError> {
         let value: Option<String> = res.try_get_by(index).map_err(TryGetError::DbErr)?;
         match value {
-            Some(s) => Url::from_str(&s)
-                .map(UrlWrapper)
+            Some(s) => PathBuf::from_str(&s)
+                .map(PathWrapper)
                 .map_err(|e| TryGetError::DbErr(DbErr::Type(format!("Invalid URL: {e}")))),
             None => Err(TryGetError::Null(format!("{index:?}"))),
         }
     }
 }
 
-impl ValueType for UrlWrapper {
+impl ValueType for PathWrapper {
     fn try_from(v: Value) -> Result<Self, ValueTypeErr> {
         match v {
-            Value::String(Some(s)) => Url::from_str(&s).map(UrlWrapper).map_err(|_| ValueTypeErr),
+            Value::String(Some(s)) => PathBuf::from_str(&s)
+                .map(PathWrapper)
+                .map_err(|_| ValueTypeErr),
             _ => Err(ValueTypeErr),
         }
     }
 
     fn type_name() -> String {
-        "UrlWrapper".to_owned()
+        "PathWrapper".to_owned()
     }
 
     fn array_type() -> ArrayType {
@@ -92,7 +94,7 @@ impl ValueType for UrlWrapper {
     }
 }
 
-impl Nullable for UrlWrapper {
+impl Nullable for PathWrapper {
     fn null() -> Value {
         Value::String(None)
     }

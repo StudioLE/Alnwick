@@ -92,6 +92,8 @@ fn episode_from_rss(item: RssItem) -> Result<EpisodeInfo, Report<EpisodeFromRssE
     let episode = EpisodeInfo {
         primary_key: u32::default(),
         podcast_key: None,
+        file_sub_path: None,
+        image_sub_path: None,
         title: item.title.ok_or(EpisodeFromRssError::NoTitle)?,
         source_url: try_parse_url(enclosure.url, EpisodeFromRssError::ParseUrl)?,
         source_file_size: try_parse(&enclosure.length, EpisodeFromRssError::ParseFileSize)?,

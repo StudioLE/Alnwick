@@ -69,6 +69,8 @@ impl From<SimplecastEpisode> for EpisodeInfo {
         EpisodeInfo {
             primary_key: u32::default(),
             podcast_key: None,
+            file_sub_path: None,
+            image_sub_path: None,
             source_id: episode.id,
             title: episode.title,
             description: Some(episode.description),

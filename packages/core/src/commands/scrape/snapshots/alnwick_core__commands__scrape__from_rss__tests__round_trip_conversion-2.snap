@@ -20,6 +20,8 @@ podcast:
 episodes:
   - primary_key: 0
     podcast_key: ~
+    file_sub_path: ~
+    image_sub_path: ~
     source_id: 550e8400-e29b-41d4-a716-446655440000
     title: Lorem ipsum dolor sit amet
     source_url: "https://example.com/season-1/episode-1.mp3"

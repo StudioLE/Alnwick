@@ -29,6 +29,8 @@ CREATE TABLE sqlite_sequence(name, seq)
 CREATE TABLE "episodes" (
   "primary_key" integer NOT NULL PRIMARY KEY AUTOINCREMENT,
   "podcast_key" integer NULL,
+  "file_sub_path" varchar NULL,
+  "image_sub_path" varchar NULL,
   "source_id" varchar NOT NULL,
   "title" varchar NOT NULL,
   "source_url" varchar NOT NULL,

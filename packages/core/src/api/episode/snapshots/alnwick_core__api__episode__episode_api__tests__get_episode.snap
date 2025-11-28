@@ -2,12 +2,12 @@
 source: packages/core/src/api/episode/episode_api.rs
 expression: episode
 ---
-primary_key: 1
-title: S01E01 of test-0
-published_at: "2000-04-16T00:00:00Z"
+primary_key: 2
+title: S01E02 of test-0
+published_at: "2000-04-23T00:00:00Z"
 description: "Aenean sit amet sem quis velit viverra vestibulum. Vivamus aliquam mattis ipsum, a dignissim elit pulvinar vitae. Aliquam neque risus, tincidunt sit amet elit quis, malesuada ultrices urna."
 source_duration: ~
-image: "https://example.com/image.jpg"
-episode: 1
+image: "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
+episode: 2
 season: 1
 kind: Full

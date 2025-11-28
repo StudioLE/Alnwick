@@ -14,6 +14,7 @@ description = "A self hosted podcast library"
 documentation = "https://github.com/StudioLE/Alnwick"
 
 [workspace.dependencies]
+base64 = { version = "0.22.1" }
 chrono = { version = "0.4.42", features = ["serde"] }
 clap = { version = "4.5.48", features = ["derive"] }
 dioxus = { version = "0.7.1", features = ["fullstack", "router"] }
@@ -46,6 +47,9 @@ tracing-test = "0.2.5"
 tracing-wasm = "0.2.1"
 url = { version = "2.5.7" }
 urlencoding = { version = "2.1.3" }
+
+[workspace.lints.rust]
+deprecated = "allow"
 
 [workspace.lints.clippy]
 pedantic = { level = "warn", priority = -1 }

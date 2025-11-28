@@ -17,13 +17,17 @@ pub enum HttpError {
     #[error("Unable to open cache file")]
     OpenCache,
     #[error("Unable to create cache directory")]
-    CreateDirectory,
+    CreateCacheDirectory,
     #[error("A request error occured")]
     Chunk,
     #[error("Unable to deserialize")]
     Deserialize,
     #[error("Response did not contain a Content-Type header")]
     NoContentType,
+    #[error("Unable to create destiantion directory")]
+    CreateDestinationDirectory,
+    #[error("Unable to copy file")]
+    Copy,
 }
 
 fn get_reason(number: &u16) -> &str {

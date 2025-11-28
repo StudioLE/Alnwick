@@ -20,7 +20,7 @@ async fn main() {
         }
         Command::Download(options) => {
             let command = services
-                .get_service::<DownloadCommand>()
+                .get_service::<DownloadCliCommand>()
                 .await
                 .expect("should be able to get command");
             if let Err(e) = command.execute(options).await {

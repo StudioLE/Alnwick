@@ -59,7 +59,7 @@ mod tests {
     #[test]
     pub fn _get_podcast_query() {
         // Arrange
-        let slug = Slug::from_str(PODCAST_SLUG).expect("should be valid");
+        let slug = example_slug();
 
         // Act
         let statement = get_podcast_query(slug).into_statement(DB_BACKEND);

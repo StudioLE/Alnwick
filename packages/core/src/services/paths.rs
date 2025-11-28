@@ -10,8 +10,9 @@ const BANNER_FILE_NAME: &str = "banner.jpg";
 const COVER_FILE_NAME: &str = "cover.jpg";
 
 /// Service for providing file paths and URL.
-#[derive(Default)]
+#[derive(Clone, Default)]
 pub struct PathProvider {
+    // TODO: Only store the options we need
     options: Arc<AppOptions>,
 }
 
@@ -78,35 +79,6 @@ impl PathProvider {
         self.get_data_dir().join(PODCASTS_DIR)
     }
 
-    /// Absolute path to where the downloaded and processed episode audio file is stored.
-    ///
-    /// Example: `$HOME/.local/share/alnwick/podcasts/irl/S00/1970/1970-01-01 001 Hello World.mp3`
-    #[must_use]
-    #[deprecated]
-    pub fn get_audio_path(&self, podcast_slug: &Slug, episode: &EpisodeInfo) -> PathBuf {
-        self.get_podcasts_dir()
-            .join(get_sub_path_for_audio(podcast_slug, episode))
-    }
-
-    /// URL of the episode audio file.
-    ///
-    /// If the `server_base` option is not set this falls back to a `file://` URL.
-    ///
-    /// Examples:
-    /// - `https://example.com/irl/S00/1970/1970-01-01 001 Hello World.mp3`
-    /// - `file://$HOME/.local/share/alnwick/podcasts/irl/S00/1970/1970-01-01 001 Hello World.mp3`
-    #[deprecated]
-    #[must_use]
-    pub fn get_audio_url(&self, podcast_slug: &Slug, episode: &EpisodeInfo) -> Option<Url> {
-        if let Some(base) = &self.options.server_base {
-            let path = get_sub_path_for_audio(podcast_slug, episode);
-            base.join(path.to_string_lossy().as_ref()).ok()
-        } else {
-            let path = self.get_audio_path(podcast_slug, episode);
-            Url::from_file_path(path).ok()
-        }
-    }
-
     /// Path for the RSS feed file.
     ///
     /// Examples:
@@ -124,7 +96,7 @@ impl PathProvider {
         if season.is_none() && year.is_none() {
             return path.join(RSS_FILE_NAME);
         }
-        let season = EpisodeInfo::format_season(season);
+        let season = format!("S{:02}", season.unwrap_or(0));
         let year = year.map(|s| s.to_string()).unwrap_or_default();
         path.join(season).join(year).join(RSS_FILE_NAME)
     }
@@ -176,84 +148,9 @@ pub enum PathProviderError {
     CreateDirectory(String),
 }
 
-/// Sub path for an episodes's audio file.
-///
-/// Example: `irl/S00/1970/1970-01-01 001 Hello World.mp3`
-#[deprecated]
-fn get_sub_path_for_audio(podcast_slug: &Slug, episode: &EpisodeInfo) -> PathBuf {
-    let season = episode.get_formatted_season();
-    let year = episode.published_at.year().to_string();
-    let filename = episode.get_filename();
-    PathBuf::new()
-        .join(podcast_slug.as_str())
-        .join(season)
-        .join(year)
-        .join(filename)
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    #[test]
-    fn get_audio_path() {
-        // Arrange
-        let paths = PathProvider::default();
-        let data_dir = paths.get_data_dir();
-        let example = EpisodeInfo::example();
-        let mut seasonless = EpisodeInfo::example();
-        seasonless.season = None;
-        let slug = Slug::from_str("abc").expect("should be valid slug");
-
-        // Act
-        // Assert
-        assert_eq!(
-            paths.get_audio_path(&slug, &example),
-            data_dir.join("podcasts/abc/S02/1970/1970-01-01 003 Lorem ipsum dolor sit amet.mp3")
-        );
-        assert_eq!(
-            paths.get_audio_path(&slug, &seasonless),
-            data_dir.join("podcasts/abc/S00/1970/1970-01-01 003 Lorem ipsum dolor sit amet.mp3")
-        );
-    }
-
-    #[test]
-    fn get_audio_url_file() {
-        // Arrange
-        let paths = PathProvider::default();
-        let data_dir = paths.get_data_dir();
-        let expected =
-            data_dir.join("podcasts/abc/S02/1970/1970-01-01 003 Lorem ipsum dolor sit amet.mp3");
-        let expected = Url::from_file_path(expected).expect("should be valid");
-        let slug = Slug::from_str("abc").expect("should be valid slug");
-
-        // Act
-        let result = paths
-            .get_audio_url(&slug, &EpisodeInfo::example())
-            .expect("should be valid");
-
-        // Assert
-        assert_eq!(result.to_string(), expected.to_string());
-    }
-
-    #[test]
-    fn get_audio_url_http() {
-        // Arrange
-        let options = AppOptions {
-            server_base: Some(Url::parse("https://example.com").expect("should be valid")),
-            ..AppOptions::default()
-        };
-        let paths = PathProvider::new(Arc::new(options));
-        let slug = Slug::from_str("abc").expect("should be valid slug");
-
-        // Act
-        let result = paths
-            .get_audio_url(&slug, &EpisodeInfo::example())
-            .expect("should be valid");
-
-        // Assert
-        assert_eq!(result.to_string(), "https://example.com/abc/S02/1970/1970-01-01%20003%20Lorem%20ipsum%20dolor%20sit%20amet.mp3".to_owned());
-    }
 
     #[test]
     fn get_rss_path() {

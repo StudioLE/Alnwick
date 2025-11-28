@@ -19,6 +19,8 @@ impl MigrationTrait for Migration {
                             .primary_key(),
                     )
                     .col(ColumnDef::new(Episodes::PodcastKey).unsigned().null())
+                    .col(ColumnDef::new(Episodes::FileSubPath).string().null())
+                    .col(ColumnDef::new(Episodes::ImageSubPath).string().null())
                     .col(ColumnDef::new(Episodes::SourceId).string().not_null())
                     .col(ColumnDef::new(Episodes::Title).string().not_null())
                     .col(ColumnDef::new(Episodes::SourceUrl).string().not_null())
@@ -70,6 +72,8 @@ enum Episodes {
     Table,
     PrimaryKey,
     PodcastKey,
+    FileSubPath,
+    ImageSubPath,
     SourceId,
     Title,
     SourceUrl,

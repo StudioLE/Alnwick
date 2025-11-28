@@ -2,11 +2,9 @@ use crate::prelude::*;
 use sea_orm::{DatabaseBackend, Statement};
 use sqlformat::{FormatOptions, QueryParams, format};
 
-pub const PODCAST_KEY: u32 = 1;
-pub const PODCAST_SLUG: &str = "irl";
-pub const EPISODE_KEY: u32 = 1;
-pub const EPISODE_YEAR: i32 = 2018;
-pub const EPISODE_SEASON: u32 = 4;
+pub const PODCAST_KEY: PodcastKey = 1;
+const PODCAST_SLUG: &str = "irl";
+pub const EPISODE_KEY: EpisodeKey = 2;
 pub const DB_BACKEND: DatabaseBackend = DatabaseBackend::Sqlite;
 
 #[must_use]

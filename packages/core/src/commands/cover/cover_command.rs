@@ -63,10 +63,10 @@ impl CoverCommand {
         let resize = Resize::new(&src)
             .change_context(CoverError::CreateImage)
             .attach_path(src)?;
-        let banner = resize
+        resize
             .to_file(&banner, BANNER_WIDTH, BANNER_HEIGHT)
             .change_context(CoverError::CreateImage)?;
-        let cover = resize
+        resize
             .to_file(&cover, COVER_SIZE, COVER_SIZE)
             .change_context(CoverError::CreateImage)?;
         info!("Created images");

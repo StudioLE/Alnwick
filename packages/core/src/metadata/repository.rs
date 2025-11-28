@@ -3,6 +3,7 @@ use crate::prelude::*;
 use sea_orm::*;
 use sea_orm_migration::MigratorTrait;
 
+#[derive(Clone)]
 pub struct MetadataRepository {
     pub(crate) db: DatabaseConnection,
 }
