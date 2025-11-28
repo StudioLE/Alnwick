@@ -27,4 +27,7 @@ mod validation;
 #[cfg(feature = "server")]
 pub use resize::*;
 mod resize_error;
+pub use episode_helpers::*;
+mod episode_helpers;
+
 pub use resize_error::*;

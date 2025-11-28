@@ -4,9 +4,6 @@ use std::fs::create_dir;
 
 const HTTP_DIR: &str = "http";
 const PODCASTS_DIR: &str = "podcasts";
-const TORRENT_DIR: &str = "torrent";
-const TORRENT_CONTENT_DIR: &str = "content";
-const TORRENT_FILES_DIR: &str = "files";
 const RSS_FILE_NAME: &str = "feed.rss";
 pub const METADATA_DB: &str = "metadata.db";
 const BANNER_FILE_NAME: &str = "banner.jpg";
@@ -76,37 +73,16 @@ impl PathProvider {
     /// Directory for storing podcast episodes and feeds.
     ///
     /// Default: `$HOME/.local/share/alnwick/podcasts`
-    fn get_podcasts_dir(&self) -> PathBuf {
+    #[must_use]
+    pub fn get_podcasts_dir(&self) -> PathBuf {
         self.get_data_dir().join(PODCASTS_DIR)
-    }
-
-    /// Directory for storing torrent content and files.
-    ///
-    /// Default: `$HOME/.local/share/alnwick/torrent`
-    fn get_torrent_dir(&self) -> PathBuf {
-        self.get_data_dir().join(TORRENT_DIR)
-    }
-
-    /// Directory for storing torrent content.
-    ///
-    /// Default: `$HOME/.local/share/alnwick/torrent/content`
-    #[must_use]
-    pub fn get_torrent_content_dir(&self) -> PathBuf {
-        self.get_torrent_dir().join(TORRENT_CONTENT_DIR)
-    }
-
-    /// Directory for storing torrent files.
-    ///
-    /// Default: `$HOME/.local/share/alnwick/torrent/files`
-    #[must_use]
-    pub fn get_torrent_files_dir(&self) -> PathBuf {
-        self.get_torrent_dir().join(TORRENT_FILES_DIR)
     }
 
     /// Absolute path to where the downloaded and processed episode audio file is stored.
     ///
     /// Example: `$HOME/.local/share/alnwick/podcasts/irl/S00/1970/1970-01-01 001 Hello World.mp3`
     #[must_use]
+    #[deprecated]
     pub fn get_audio_path(&self, podcast_slug: &Slug, episode: &EpisodeInfo) -> PathBuf {
         self.get_podcasts_dir()
             .join(get_sub_path_for_audio(podcast_slug, episode))
@@ -119,6 +95,7 @@ impl PathProvider {
     /// Examples:
     /// - `https://example.com/irl/S00/1970/1970-01-01 001 Hello World.mp3`
     /// - `file://$HOME/.local/share/alnwick/podcasts/irl/S00/1970/1970-01-01 001 Hello World.mp3`
+    #[deprecated]
     #[must_use]
     pub fn get_audio_url(&self, podcast_slug: &Slug, episode: &EpisodeInfo) -> Option<Url> {
         if let Some(base) = &self.options.server_base {
@@ -152,28 +129,6 @@ impl PathProvider {
         path.join(season).join(year).join(RSS_FILE_NAME)
     }
 
-    /// Sub path for audio files as torrent content.
-    ///
-    /// Examples:
-    /// - `S00/1970/1970-01-01 001 Hello World.mp3`
-    /// - `S00/1970-01-01 001 Hello World.mp3`
-    /// - `1970/1970-01-01 001 Hello World.mp3`
-    #[must_use]
-    pub fn get_torrent_sub_path(
-        season_dirs: bool,
-        year_dirs: bool,
-        episode: &EpisodeInfo,
-    ) -> PathBuf {
-        let mut path = PathBuf::new();
-        if season_dirs {
-            path.push(episode.get_formatted_season());
-        }
-        if year_dirs {
-            path.push(episode.published_at.year().to_string());
-        }
-        path.join(episode.get_filename())
-    }
-
     /// Absolute path to where the cover image is stored.
     ///
     /// Example: `$HOME/.local/share/alnwick/podcasts/irl/cover.jpg`
@@ -203,9 +158,6 @@ impl PathProvider {
             ("Data directory", data_dir),
             ("HTTP cache directory", self.get_http_dir()),
             ("Podcasts directory", self.get_podcasts_dir()),
-            ("Torrent directory", self.get_torrent_dir()),
-            ("Torrent content directory", self.get_torrent_content_dir()),
-            ("Torrent files directory", self.get_torrent_files_dir()),
         ];
         for (name, dir) in dirs {
             if !dir.exists() {
@@ -227,6 +179,7 @@ pub enum PathProviderError {
 /// Sub path for an episodes's audio file.
 ///
 /// Example: `irl/S00/1970/1970-01-01 001 Hello World.mp3`
+#[deprecated]
 fn get_sub_path_for_audio(podcast_slug: &Slug, episode: &EpisodeInfo) -> PathBuf {
     let season = episode.get_formatted_season();
     let year = episode.published_at.year().to_string();

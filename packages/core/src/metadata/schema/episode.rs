@@ -39,7 +39,6 @@ pub struct Model {
     /// Size of source media file in bytes
     pub source_file_size: FileSize,
     /// Mime type of source media file
-    #[sea_orm(abbb)]
     pub source_content_type: String,
 
     // Recommended
@@ -69,6 +68,7 @@ pub struct Model {
 
 impl EpisodeInfo {
     #[must_use]
+    #[deprecated]
     pub fn get_filename(&self) -> String {
         let file_stem = self.get_file_stem();
         let extension = self.get_extension().unwrap_or(MP3_EXTENSION.to_owned());
@@ -76,6 +76,7 @@ impl EpisodeInfo {
     }
 
     #[must_use]
+    #[deprecated]
     pub fn get_file_stem(&self) -> String {
         let mut output = self.get_formatted_date();
         if let Some(number) = self.episode {
@@ -99,6 +100,7 @@ impl EpisodeInfo {
     }
 
     #[must_use]
+    #[deprecated]
     pub fn get_extension(&self) -> Option<String> {
         let extension = match self.source_content_type.as_ref() {
             "audio/mpeg" => MP3_EXTENSION,
@@ -118,14 +120,17 @@ impl EpisodeInfo {
     }
 
     #[must_use]
+    #[deprecated]
     pub fn format_season(season: Option<u32>) -> String {
         format!("S{:02}", season.unwrap_or(0))
     }
 
+    #[deprecated]
     fn get_formatted_date(&self) -> String {
         self.published_at.format("%Y-%m-%d").to_string()
     }
 
+    #[deprecated]
     fn get_sanitized_title(&self) -> String {
         Sanitizer::execute(&self.title).trim().to_owned()
     }
@@ -155,7 +160,14 @@ impl EpisodeInfo {
 
 impl Display for EpisodeInfo {
     fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
-        write!(f, "{}", self.get_file_stem())
+        let file_stem = get_episode_file_stem(
+            self.title.clone(),
+            self.published_at,
+            self.season,
+            self.episode,
+            self.kind,
+        );
+        write!(f, "{file_stem}")
     }
 }
 
