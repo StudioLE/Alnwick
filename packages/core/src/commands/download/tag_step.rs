@@ -3,8 +3,9 @@ use lofty::config::WriteOptions;
 use lofty::error::LoftyError;
 use lofty::id3::v2::Id3v2Tag;
 use lofty::picture::{Picture, PictureType};
-use lofty::prelude::{Accessor, TagExt};
-use lofty::tag::TagType;
+use lofty::prelude::{Accessor, TagExt, TaggedFileExt};
+use lofty::probe::Probe;
+use lofty::tag::{Tag, TagType};
 
 impl DownloadHandler {
     #[allow(clippy::unused_self)]
@@ -59,9 +60,20 @@ fn create_tag(
 }
 
 fn write_tag(path: &PathBuf, tag: Id3v2Tag) -> Result<(), LoftyError> {
-    TagType::Ape.remove_from_path(path)?;
-    TagType::Id3v1.remove_from_path(path)?;
-    TagType::Id3v2.remove_from_path(path)?;
+    for tag_type in get_tag_types(path)? {
+        trace!("Removing tag: {:?}", tag_type);
+        tag.remove_from_path(path)?;
+    }
     tag.save_to_path(path, WriteOptions::default())?;
     Ok(())
+}
+
+fn get_tag_types(path: &Path) -> Result<Vec<TagType>, LoftyError> {
+    let tagged_file = Probe::open(path)?.read()?;
+    let tag_types = tagged_file
+        .tags()
+        .iter()
+        .map(Tag::tag_type)
+        .collect();
+    Ok(tag_types)
 }
