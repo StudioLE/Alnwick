@@ -77,10 +77,16 @@ impl HttpClient {
     ) -> Result<PathBuf, Report<HttpError>> {
         let path = self.get_cache_path(url, extension);
         if path.exists() {
-            trace!("Cache HIT: {url}");
+            trace!(%url, "Cache HIT");
         } else {
-            trace!("Cache MISS: {url}");
+            trace!(%url, "Cache MISS");
             self.download_to_cache(url, &path).await?;
+            let metadata = path.metadata().change_context(HttpError::Metadata)?;
+            if metadata.len() == 0 {
+                let report =
+                    Report::new(HttpError::Size).attach(format!("Path: {}", path.display()));
+                return Err(report);
+            }
         }
         Ok(path)
     }

@@ -8,7 +8,7 @@ pub use crate::traits::*;
 pub(crate) use async_trait::async_trait;
 pub(crate) use error_stack::{Report, ResultExt};
 #[allow(unused_imports)]
-pub(crate) use std::any::{type_name, Any, TypeId};
+pub(crate) use std::any::{Any, TypeId, type_name};
 pub(crate) use std::collections::{HashMap, VecDeque};
 pub(crate) use std::convert::Infallible;
 pub(crate) use std::error::Error;

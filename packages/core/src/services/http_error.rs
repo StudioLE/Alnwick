@@ -28,6 +28,10 @@ pub enum HttpError {
     CreateDestinationDirectory,
     #[error("Unable to copy file")]
     Copy,
+    #[error("Unable to get metadata of file")]
+    Metadata,
+    #[error("File size is zero")]
+    Size,
 }
 
 fn get_reason(number: &u16) -> &str {
