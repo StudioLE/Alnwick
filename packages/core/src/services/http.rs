@@ -240,6 +240,7 @@ mod tests {
     use serde_json::Value;
 
     #[tokio::test]
+    #[ignore = "uses example.com"]
     pub async fn head() {
         // Arrange
         let http = HttpClient::default();
@@ -273,6 +274,7 @@ mod tests {
     }
 
     #[tokio::test]
+    #[ignore = "uses example.com"]
     pub async fn get() {
         // Arrange
         let http = HttpClient::default();
@@ -291,6 +293,7 @@ mod tests {
     }
 
     #[tokio::test]
+    #[ignore = "uses example.com"]
     pub async fn get_html() {
         // Arrange
         let http = HttpClient::default();
