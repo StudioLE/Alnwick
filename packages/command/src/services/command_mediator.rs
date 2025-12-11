@@ -1,27 +1,26 @@
 #![allow(dead_code)]
 use crate::prelude::*;
 
-// TODO: These values don't need to be Arc
 /// A mediator between the command queue and the workers.
 pub struct WorkerMediator<T: ICommandInfo> {
     /// Number of commands queued over time
-    pub(super) all_time_queued: Arc<Mutex<usize>>,
+    pub(super) all_time_queued: Mutex<usize>,
     /// Number of commands completed over time
-    pub(super) all_time_completed: Arc<Mutex<usize>>,
+    pub(super) all_time_completed: Mutex<usize>,
     /// Queue of commands to execute
-    pub(super) queue: Arc<Mutex<VecDeque<T::Command>>>,
+    pub(super) queue: Mutex<VecDeque<T::Command>>,
     /// Notify workers when new work is available
-    pub(super) notify_workers: Arc<Notify>,
+    pub(super) notify_workers: Notify,
     /// Notify progress subscribers when work is queued, executing, or completed
-    pub(super) notify_progress: Arc<Notify>,
+    pub(super) notify_progress: Notify,
     /// Current status of the runner
     ///
     /// `RwLock` allows multiple readers
-    pub(super) status: Arc<RwLock<RunnerStatus>>,
+    pub(super) status: RwLock<RunnerStatus>,
     /// Current status of the runner
     ///
     /// `RwLock` allows multiple readers
-    pub(super) results: Arc<Mutex<Vec<T::Result>>>,
+    pub(super) results: Mutex<Vec<T::Result>>,
 }
 
 impl<T: ICommandInfo + 'static> Service for WorkerMediator<T> {
@@ -35,13 +34,13 @@ impl<T: ICommandInfo + 'static> Service for WorkerMediator<T> {
 impl<T: ICommandInfo> WorkerMediator<T> {
     pub(super) fn new() -> Self {
         Self {
-            all_time_queued: Arc::default(),
-            all_time_completed: Arc::default(),
-            queue: Arc::default(),
-            notify_workers: Arc::default(),
-            notify_progress: Arc::default(),
-            status: Arc::default(),
-            results: Arc::default(),
+            all_time_queued: Mutex::default(),
+            all_time_completed: Mutex::default(),
+            queue: Mutex::default(),
+            notify_workers: Notify::default(),
+            notify_progress: Notify::default(),
+            status: RwLock::default(),
+            results: Mutex::default(),
         }
     }
 
