@@ -1,7 +1,7 @@
 #![allow(dead_code)]
 
 use crate::prelude::*;
-use tokio::sync::futures::Notified;
+use tokio::sync::MutexGuard;
 
 #[derive(Clone, Copy, Debug, Default, Eq, Error, PartialEq)]
 pub enum RunnerStatus {
@@ -17,7 +17,7 @@ pub enum RunnerStatus {
 }
 
 pub struct CommandRunner<T: ICommandInfo> {
-    mediator: Arc<WorkerMediator<T>>,
+    mediator: Arc<CommandMediator<T>>,
     registry: Arc<CommandRegistry<T>>,
     workers: Arc<WorkerPool<T>>,
 }
@@ -37,7 +37,7 @@ impl<T: ICommandInfo + 'static> Service for CommandRunner<T> {
 impl<T: ICommandInfo + 'static> CommandRunner<T> {
     #[must_use]
     pub fn new(
-        mediator: Arc<WorkerMediator<T>>,
+        mediator: Arc<CommandMediator<T>>,
         registry: Arc<CommandRegistry<T>>,
         workers: Arc<WorkerPool<T>>,
     ) -> Self {
@@ -57,7 +57,7 @@ impl<T: ICommandInfo + 'static> CommandRunner<T> {
         self.workers.start(worker_count).await;
     }
 
-    /// Stop workers after draining the queue
+    /// Stop workers after draining the queue.
     pub async fn drain(&self) {
         self.mediator.set_status(RunnerStatus::Draining).await;
         self.workers.wait_for_stop().await;
@@ -69,61 +69,22 @@ impl<T: ICommandInfo + 'static> CommandRunner<T> {
         self.workers.wait_for_stop().await;
     }
 
-    /// Add a request to the command queue and notify a worker.
+    /// Queue a command as a request.
     pub async fn queue_request<R: Executable + Send + Sync + 'static>(
         &self,
         request: R,
     ) -> Result<(), Report<QueueError>> {
         let command = self.registry.resolve(request)?;
-        self.queue_command(command).await;
+        self.mediator.queue_command(command).await;
         Ok(())
     }
 
-    /// Add a command to the queue and notify a worker.
-    async fn queue_command(&self, command: T::Command) {
-        let mut queue = self.mediator.queue.lock().await;
-        queue.push_back(command);
-        drop(queue);
-        self.mediator.notify_workers.notify_one();
-        let mut queued = self.mediator.all_time_queued.lock().await;
-        *queued += 1;
-        drop(queued);
-        self.mediator.notify_progress.notify_one();
-    }
-
-    /// Get the number of items in the queue
-    pub async fn get_queue_length(&self) -> usize {
-        let queue = self.mediator.queue.lock().await;
-        queue.len()
-    }
-
-    /// Get the number of items in the queue
-    pub async fn get_results_length(&self) -> usize {
-        let queue = self.mediator.results.lock().await;
-        queue.len()
-    }
-
-    /// Drain all the results
-    pub async fn drain_results(&self) -> Vec<T::Result> {
-        let mut results = self.mediator.results.lock().await;
-        results.drain(..).collect()
-    }
-
-    /// Wait for progress to be reported
-    pub fn wait_for_progress(&self) -> Notified<'_> {
-        self.mediator.notify_progress.notified()
-    }
-
-    /// Number of commands queued over time
-    pub async fn get_all_time_queued(&self) -> usize {
-        let queued_guard = self.mediator.all_time_queued.lock().await;
-        *queued_guard
-    }
-
-    /// Number of commands completed over time
-    pub async fn get_all_time_completed(&self) -> usize {
-        let completed_guard = self.mediator.all_time_completed.lock().await;
-        *completed_guard
+    /// Get the results.
+    ///
+    /// Note: The [`MutexGuard`] must be dropped or the [`Worker`] will be unable to finish
+    /// execution.
+    pub async fn get_results(&self) -> MutexGuard<'_, Vec<T::Result>> {
+        self.mediator.get_results().await
     }
 }
 
@@ -153,6 +114,10 @@ mod tests {
             .get_service::<CommandRunner<CommandInfo>>()
             .await
             .expect("should be able to get runner");
+        let mediator = services
+            .get_service::<CommandMediator<CommandInfo>>()
+            .await
+            .expect("should be able to get mediator");
         let _logger = init_test_logger();
 
         // Act
@@ -161,37 +126,35 @@ mod tests {
         info!("Adding {A_COUNT} commands to queue");
         for i in 1..=A_COUNT {
             let request = DelayRequest::new(format!("A{i}"), A_DURATON);
-            let command = runner
-                .registry
-                .resolve(request)
-                .expect("should be able to add command");
-            runner.queue_command(command).await;
+            runner
+                .queue_request(request)
+                .await
+                .expect("should be able to queue command");
         }
         info!("Added {A_COUNT} commands to queue");
 
         // Assert
-        let length = runner.get_queue_length().await;
+        let length = mediator.get_progress().await.queued;
         debug!("Queue: {length}");
         assert_eq!(length, A_COUNT, "Queue immediately after sending batch A");
 
         wait(50).await;
-        let length = runner.get_queue_length().await;
+        let length = mediator.get_progress().await.queued;
         debug!("Queue: {length}");
         assert_ne!(length, 0, "Queue soon after adding batch A");
 
         wait(A_TOTAL_DURATON + 100).await;
-        let length = runner.get_queue_length().await;
+        let length = mediator.get_progress().await.queued;
         debug!("Queue: {length}");
         assert_eq!(length, 0, "Queue after batch A should have completed");
 
         info!("Adding {B_COUNT} commands to queue");
         for i in 1..=B_COUNT {
             let request = DelayRequest::new(format!("B{i}"), B_DURATON);
-            let command = runner
-                .registry
-                .resolve(request)
-                .expect("should be able to add command");
-            runner.queue_command(command).await;
+            runner
+                .queue_request(request)
+                .await
+                .expect("should be able to queue command");
         }
         info!("Added {B_COUNT} commands to queue");
 
@@ -200,12 +163,11 @@ mod tests {
         runner.workers.stop().await;
         info!("Completed stop");
 
-        let length = runner.get_queue_length().await;
-        debug!("Queue: {length}");
-        assert_eq!(length, 6, "Queue after stop");
-        let length = runner.get_results_length().await;
-        debug!("Results: {length}");
-        assert_eq!(length, 14, "Results after stop");
+        let progress = mediator.get_progress().await;
+        debug!("Queue: {}", progress.queued);
+        assert_eq!(progress.queued, 6, "Queue after stop");
+        debug!("Completed: {}", progress.completed);
+        assert_eq!(progress.completed, 14, "Completed after stop");
     }
 
     async fn wait(wait: u64) {

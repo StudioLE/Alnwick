@@ -55,11 +55,11 @@ impl DownloadCliCommand {
         self.progress.start().await;
         self.runner.start(CONCURRENCY).await;
         self.runner.drain().await;
-        let results = self.runner.drain_results().await;
         self.progress.finish().await;
+        let results = self.runner.get_results().await;
         let mut episodes = Vec::new();
         let mut errors = Vec::new();
-        for result in results {
+        for result in results.iter() {
             match result {
                 CommandResult::Download(_, Ok(episode)) => episodes.push(episode),
                 CommandResult::Download(_, Err(e)) => errors.push(e),

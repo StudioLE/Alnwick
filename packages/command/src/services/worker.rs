@@ -13,7 +13,7 @@ pub enum Instruction<'a, T: ICommandInfo> {
 
 /// A worker that executes commands
 ///
-/// The worker is instructed by a [`WorkerMediator`].
+/// The worker is instructed by a [`CommandMediator`].
 pub struct Worker {
     id: WorkerId,
     handle: JoinHandle<()>,
@@ -22,7 +22,7 @@ pub struct Worker {
 impl Worker {
     pub(super) fn new<T: ICommandInfo + 'static>(
         id: WorkerId,
-        mediator: Arc<WorkerMediator<T>>,
+        mediator: Arc<CommandMediator<T>>,
     ) -> Self {
         let handle = spawn(async move {
             internal_loop(mediator, id).await;
@@ -36,7 +36,7 @@ impl Worker {
     }
 }
 
-async fn internal_loop<T: ICommandInfo>(mediator: Arc<WorkerMediator<T>>, worker: WorkerId) {
+async fn internal_loop<T: ICommandInfo>(mediator: Arc<CommandMediator<T>>, worker: WorkerId) {
     loop {
         match mediator.get_instruction().await {
             Instruction::Execute(command) => {

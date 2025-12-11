@@ -3,42 +3,37 @@ use indicatif::ProgressBar;
 use tokio::spawn;
 
 pub struct CliProgress<T: ICommandInfo> {
-    runner: Arc<CommandRunner<T>>,
-    progress: Arc<ProgressBar>,
+    mediator: Arc<CommandMediator<T>>,
+    bar: Arc<ProgressBar>,
     handle: Mutex<Option<JoinHandle<()>>>,
     finished: Arc<Mutex<bool>>,
 }
 
 impl<T: ICommandInfo + 'static> CliProgress<T> {
     #[must_use]
-    pub fn new(runner: Arc<CommandRunner<T>>) -> Self {
+    pub fn new(mediator: Arc<CommandMediator<T>>) -> Self {
         Self {
-            runner,
-            progress: Arc::new(ProgressBar::new(0)),
+            mediator,
+            bar: Arc::new(ProgressBar::new(0)),
             handle: Mutex::default(),
             finished: Arc::new(Mutex::new(false)),
         }
     }
 
-    #[allow(clippy::as_conversions)]
     pub async fn start(&self) {
         let mut handle_guard = self.handle.lock().await;
         if handle_guard.is_some() {
             return;
         }
-        let runner = self.runner.clone();
-        let progress = self.progress.clone();
+        let mediator = self.mediator.clone();
+        let bar = self.bar.clone();
         let finished = self.finished.clone();
         let handle = spawn(async move {
-            loop {
-                let queued = runner.get_all_time_queued().await;
-                let completed = runner.get_all_time_completed().await;
-                progress.set_length(queued as u64);
-                progress.set_position(completed as u64);
-                runner.wait_for_progress().await;
-                if *finished.lock().await {
-                    break;
-                }
+            let progress = mediator.get_progress().await;
+            update(&bar, &progress);
+            while !*finished.lock().await {
+                let progress = mediator.wait_for_progress().await;
+                update(&bar, &progress);
             }
         });
         *handle_guard = Some(handle);
@@ -53,8 +48,14 @@ impl<T: ICommandInfo + 'static> CliProgress<T> {
             handle.abort();
         }
         drop(handle_guard);
-        self.progress.finish();
+        self.bar.finish();
     }
+}
+
+#[allow(clippy::as_conversions)]
+fn update(bar: &ProgressBar, progress: &CommandProgress) {
+    bar.set_length(progress.total as u64);
+    bar.set_position(progress.completed as u64);
 }
 
 impl<T: ICommandInfo + 'static> Service for CliProgress<T> {

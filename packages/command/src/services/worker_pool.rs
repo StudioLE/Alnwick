@@ -1,7 +1,7 @@
 use crate::prelude::*;
 
 pub struct WorkerPool<T: ICommandInfo> {
-    mediator: Arc<WorkerMediator<T>>,
+    mediator: Arc<CommandMediator<T>>,
     /// Current worker index
     ///
     /// Used to ensure each worker has a unique ID even if additional workers are started
@@ -20,7 +20,7 @@ impl<T: ICommandInfo + 'static> Service for WorkerPool<T> {
 
 impl<T: ICommandInfo + 'static> WorkerPool<T> {
     #[must_use]
-    pub fn new(mediator: Arc<WorkerMediator<T>>) -> Self {
+    pub fn new(mediator: Arc<CommandMediator<T>>) -> Self {
         Self {
             mediator,
             latest_worker_index: Arc::default(),
