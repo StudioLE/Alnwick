@@ -124,9 +124,20 @@ impl<T: ICommandInfo> CommandMediator<T> {
     }
 
     /// Add the result of a completed execution.
-    pub(super) async fn completed(&self, request: T::Request, result: T::Result) {
+    pub(super) async fn completed(
+        &self,
+        request: T::Request,
+        result: Result<T::Success, T::Failure>,
+    ) {
         let mut commands = self.commands.lock().await;
-        commands.insert(request, CommandStatus::Completed(result));
+        match result {
+            Ok(success) => {
+                commands.insert(request, CommandStatus::Succeeded(success));
+            }
+            Err(failure) => {
+                commands.insert(request, CommandStatus::Failed(failure));
+            }
+        }
         drop(commands);
         self.update_progress(|progress| {
             progress.executing -= 1;

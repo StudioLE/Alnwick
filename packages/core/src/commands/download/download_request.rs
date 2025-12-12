@@ -22,5 +22,5 @@ impl Display for DownloadRequest {
 
 impl Executable for DownloadRequest {
     type Response = ();
-    type ExecutionError = DownloadError;
+    type ExecutionError = Report<DownloadError>;
 }

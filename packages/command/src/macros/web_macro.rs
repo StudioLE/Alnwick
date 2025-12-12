@@ -21,13 +21,22 @@ macro_rules! define_commands_web {
         )*
 
         #[derive(Debug)]
-        pub enum CommandResult {
+        pub enum CommandSuccess {
             $(
-                $kind($req, Result<<$req as Executable>::Response, Report<<$req as Executable>::ExecutionError>>),
+                $kind(<$req as Executable>::Response),
             )*
         }
 
-        impl IResult for CommandResult {}
+        impl ISuccess for CommandSuccess {}
+
+        #[derive(Debug)]
+        pub enum CommandFailure {
+            $(
+                $kind(<$req as Executable>::ExecutionError),
+            )*
+        }
+
+        impl IFailure for CommandFailure {}
 
         pub struct CommandInfo;
 
@@ -37,20 +46,23 @@ macro_rules! define_commands_web {
             type Command =  Command;
             #[cfg(feature = "server")]
             type Handler = CommandHandler;
-            type Result = CommandResult;
+            type Success = CommandSuccess;
+            type Failure = CommandFailure;
         }
     };
 }
 
 pub trait IRequest: Clone + Debug + Eq + Hash + PartialEq + Send + Sync {}
 
-pub trait IResult: Debug + Send + Sync {}
+pub trait ISuccess: Debug + Send + Sync {}
+pub trait IFailure: Debug + Send + Sync {}
 
 pub trait ICommandInfo {
     type Request: IRequest;
     #[cfg(feature = "server")]
-    type Command: ICommand<Self::Handler, Self::Result>;
+    type Command: ICommand<Self::Handler, Self::Success, Self::Failure>;
     #[cfg(feature = "server")]
     type Handler: IHandler;
-    type Result: IResult;
+    type Success: ISuccess;
+    type Failure: IFailure;
 }

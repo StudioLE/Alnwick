@@ -54,6 +54,6 @@ mod tests {
         let response = command.execute().await;
 
         // Assert
-        assert!(matches!(response, CommandResult::Delay(_, Ok(()))));
+        assert!(matches!(response, Ok(CommandSuccess::Delay(()))));
     }
 }

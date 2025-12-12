@@ -19,7 +19,7 @@ macro_rules! define_commands_server {
         }
 
         #[async_trait]
-        impl ICommand<CommandHandler, CommandResult> for Command {
+        impl ICommand<CommandHandler, CommandSuccess, CommandFailure> for Command {
             fn new<T: Executable + Send + Sync + 'static>(
                 request: T,
                 handler: CommandHandler,
@@ -37,12 +37,14 @@ macro_rules! define_commands_server {
                 }
             }
 
-            async fn execute(self) -> CommandResult {
+            async fn execute(self) -> Result<CommandSuccess, CommandFailure> {
                 match self {
                     $(
                         Self::$kind(request, handler) => {
-                            let result = handler.execute(&request).await;
-                            CommandResult::$kind(request, result)
+                            match handler.execute(&request).await {
+                                Ok(result) => Ok(CommandSuccess::$kind(result)),
+                                Err(e) => Err(CommandFailure::$kind(e)),
+                            }
                         },
                     )*
                 }
@@ -89,7 +91,7 @@ macro_rules! define_commands_server {
 pub trait IHandler: Clone + Send + Sync {}
 
 #[async_trait]
-pub trait ICommand<H: IHandler, R: IResult>: Display + Send + Sync {
+pub trait ICommand<H: IHandler, S: ISuccess, F: IFailure>: Display + Send + Sync {
     fn new<T: Executable + Send + Sync + 'static>(request: T, handler: H) -> Self;
-    async fn execute(self) -> R;
+    async fn execute(self) -> Result<S, F>;
 }

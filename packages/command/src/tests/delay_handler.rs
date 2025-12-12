@@ -15,7 +15,7 @@ impl Service for DelayHandler {
 
 #[async_trait]
 impl Execute<DelayRequest, (), Infallible> for DelayHandler {
-    async fn execute(&self, request: &DelayRequest) -> Result<(), Report<Infallible>> {
+    async fn execute(&self, request: &DelayRequest) -> Result<(), Infallible> {
         trace!(%request, "Executing {} ms delay", request.duration);
         sleep(Duration::from_millis(request.duration)).await;
         Ok(())

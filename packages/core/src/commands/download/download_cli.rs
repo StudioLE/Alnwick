@@ -55,18 +55,18 @@ impl DownloadCliCommand {
         self.runner.drain().await;
         self.progress.finish().await;
         let results = self.runner.get_commands().await;
-        let mut episodes = Vec::new();
+        let mut requests = Vec::new();
         let mut errors = Vec::new();
-        for (_request, status) in results.iter() {
+        for (request, status) in results.iter() {
             match status {
-                CommandStatus::Completed(CommandResult::Download(_, Ok(episode))) => {
-                    episodes.push(episode);
+                CommandStatus::Succeeded(CommandSuccess::Download(())) => {
+                    requests.push(request);
                 }
-                CommandStatus::Completed(CommandResult::Download(_, Err(e))) => errors.push(e),
+                CommandStatus::Failed(CommandFailure::Download(e)) => errors.push(e),
                 _ => unreachable!("Should only get download results"),
             }
         }
-        info!("Downloaded audio files for {} episodes", episodes.len());
+        info!("Downloaded audio files for {} episodes", requests.len());
         if !errors.is_empty() {
             warn!("Skipped {} episodes due to failures", errors.len());
             for error in errors {

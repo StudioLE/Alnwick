@@ -19,7 +19,7 @@ impl Service for DownloadHandler {
 }
 
 #[async_trait]
-impl Execute<DownloadRequest, (), DownloadError> for DownloadHandler {
+impl Execute<DownloadRequest, (), Report<DownloadError>> for DownloadHandler {
     async fn execute(&self, request: &DownloadRequest) -> Result<(), Report<DownloadError>> {
         let context = self.context_step(request).await?;
         let podcast = context.podcast.to_string();
