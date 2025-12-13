@@ -113,6 +113,7 @@ dependencies = [
  "dioxus",
  "dioxus-cli-config",
  "html2text",
+ "tokio",
  "tracing-subscriber",
  "tracing-wasm",
 ]

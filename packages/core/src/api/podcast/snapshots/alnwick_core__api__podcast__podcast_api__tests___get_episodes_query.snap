@@ -10,7 +10,9 @@ SELECT
   "episodes"."image",
   "episodes"."episode",
   "episodes"."season",
-  "episodes"."kind"
+  "episodes"."kind",
+  "episodes"."file_sub_path",
+  "episodes"."image_sub_path"
 FROM
   "episodes"
 WHERE

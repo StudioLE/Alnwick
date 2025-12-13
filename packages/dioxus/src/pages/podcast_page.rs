@@ -82,6 +82,7 @@ fn Podcast(podcast: PodcastPartial, episodes: Vec<EpisodePartial>) -> Element {
                             image_src: episode.image.clone().or_else(|| podcast.image.clone()).map(Url::from),
                             image_size: ImageSize::_64,
                             icon: "fa-image",
+                            EpisodeButton { episode: episode.clone(), podcast: podcast.clone() }
                         }
                     }
                 }
@@ -94,7 +95,8 @@ fn Podcast(podcast: PodcastPartial, episodes: Vec<EpisodePartial>) -> Element {
 async fn get_podcast(
     slug: Slug,
 ) -> Result<Option<(PodcastPartial, Vec<EpisodePartial>)>, ServerFnError> {
-    match METADATA.get_podcast(slug).await {
+    let metadata = get_metadata().await;
+    match metadata.get_podcast(slug).await {
         Ok(option) => Ok(option),
         Err(error) => {
             error!("{error:?}");
