@@ -2,9 +2,7 @@ use crate::layout::App;
 use alnwick_core::prelude::{DEFAULT_LOG_LEVEL, get_targets};
 use dioxus::launch;
 use dioxus::logger::tracing::dispatcher::SetGlobalDefaultError;
-use dioxus::logger::tracing::level_filters::LevelFilter;
 use dioxus::logger::tracing::subscriber::set_global_default;
-use tracing_subscriber::filter::Targets;
 use tracing_subscriber::fmt::layer;
 use tracing_subscriber::layer::SubscriberExt;
 use tracing_subscriber::{Layer, Registry};
@@ -28,7 +26,7 @@ fn init_logger() -> Result<(), SetGlobalDefaultError> {
 
 #[allow(dead_code)]
 fn server_logger() -> Result<(), SetGlobalDefaultError> {
-    let targets = get_targets();
+    let targets = get_targets().with_default(DEFAULT_LOG_LEVEL);
     let mut layer = layer().compact().without_time().with_target(false);
     if dioxus_cli_config::is_cli_enabled() {
         layer = layer.without_time();
@@ -40,9 +38,7 @@ fn server_logger() -> Result<(), SetGlobalDefaultError> {
 
 #[allow(dead_code)]
 fn wasm_logger() -> Result<(), SetGlobalDefaultError> {
-    let targets = Targets::new()
-        .with_target("dioxus", LevelFilter::INFO)
-        .with_default(DEFAULT_LOG_LEVEL);
+    let targets = get_targets().with_default(DEFAULT_LOG_LEVEL);
     let layer = WASMLayer::default().with_filter(targets);
     let reg = Registry::default().with(layer);
     set_global_default(reg)

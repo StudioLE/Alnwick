@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use tokio::task::yield_now;
 
 pub struct WorkerPool<T: ICommandInfo> {
     mediator: Arc<CommandMediator<T>>,
@@ -34,20 +35,25 @@ impl<T: ICommandInfo + 'static> WorkerPool<T> {
     ///
     /// Status will be set to `Running`.
     pub(super) async fn start(&self, worker_count: usize) {
+        trace!(count = %worker_count, "Creating workers");
         let mut index_guard = self.latest_worker_index.lock().await;
         let start = *index_guard + 1;
-        let end = start + worker_count;
+        let end = start + worker_count - 1;
         *index_guard = end;
         drop(index_guard);
         self.mediator.set_runner_status(RunnerStatus::Running).await;
         let mut handles = Vec::with_capacity(worker_count);
         for worker_id in start..=end {
+            trace!(worker = worker_id, "Creating worker");
             let handle = Worker::new(worker_id, self.mediator.clone());
             handles.push(handle);
         }
         let mut workers_guard = self.workers.lock().await;
         workers_guard.append(&mut handles);
         drop(workers_guard);
+        trace!("Yielding until workers have started");
+        yield_now().await;
+        trace!("Workers have started");
     }
 
     /// Stop workers after draining the queue

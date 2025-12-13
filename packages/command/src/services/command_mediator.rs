@@ -45,6 +45,7 @@ impl<T: ICommandInfo> CommandMediator<T> {
 // Implementation for `CommandRunner`
 impl<T: ICommandInfo> CommandMediator<T> {
     pub(super) async fn set_runner_status(&self, status: RunnerStatus) {
+        trace!(?status, "Set runner status");
         let mut status_guard = self.runner_status.lock().await;
         *status_guard = status;
         drop(status_guard);
@@ -57,8 +58,10 @@ impl<T: ICommandInfo> CommandMediator<T> {
     ///
     /// If added to the queue then progress is updated and subscribers are notified.
     pub(super) async fn queue(&self, request: T::Request, command: T::Command) -> bool {
+        trace!(?request, "Queueing");
         let mut commands = self.commands.lock().await;
         if let Some(CommandStatus::Queued(_) | CommandStatus::Executing) = commands.get(&request) {
+            trace!(?request, "Skipping as already queued or executing");
             return false;
         }
         commands.insert(request.clone(), CommandStatus::Queued(command));
@@ -67,8 +70,10 @@ impl<T: ICommandInfo> CommandMediator<T> {
             .events
             .send(T::Event::new(request.clone(), EventKind::Queued));
         let mut queue = self.queue.lock().await;
-        queue.push_back(request);
+        queue.push_back(request.clone());
         drop(queue);
+        trace!(?request, "Queued");
+        trace!(?request, "Notifying worker");
         self.notify_workers.notify_one();
         true
     }
@@ -89,6 +94,7 @@ impl<T: ICommandInfo> CommandMediator<T> {
     /// Get the next instruction.
     #[allow(clippy::panic)]
     pub(super) async fn get_instruction(&self) -> Instruction<'_, T> {
+        let notify = self.notify_workers.notified();
         let mut queue_guard = self.queue.lock().await;
         if self.get_runner_status().await == RunnerStatus::Stopping {
             return Instruction::Stop;
@@ -110,7 +116,7 @@ impl<T: ICommandInfo> CommandMediator<T> {
         if self.get_runner_status().await == RunnerStatus::Draining {
             return Instruction::Stop;
         }
-        Instruction::Wait(self.notify_workers.notified())
+        Instruction::Wait(notify)
     }
 
     /// Add the result of a completed execution.
@@ -122,12 +128,14 @@ impl<T: ICommandInfo> CommandMediator<T> {
         let mut commands = self.commands.lock().await;
         match result {
             Ok(success) => {
+                trace!(?request, "Command succeeded");
                 commands.insert(request.clone(), CommandStatus::Succeeded(success));
                 let _ = self
                     .events
                     .send(T::Event::new(request, EventKind::Succeeded));
             }
             Err(failure) => {
+                warn!(?request, error = ?failure, "Command failed");
                 commands.insert(request.clone(), CommandStatus::Failed(failure));
                 let _ = self.events.send(T::Event::new(request, EventKind::Failed));
             }
