@@ -4,9 +4,9 @@ mod format;
 #[cfg(feature = "server")]
 mod fs;
 mod logging;
-#[cfg(all(feature = "server", target_os = "linux"))]
+#[cfg(target_os = "linux")]
 mod mount_provider_linux;
-#[cfg(all(feature = "server", not(target_os = "linux")))]
+#[cfg(not(target_os = "linux"))]
 mod mount_provider_other;
 #[cfg(feature = "server")]
 mod resize;
@@ -24,9 +24,9 @@ pub use format::*;
 #[cfg(feature = "server")]
 pub use fs::*;
 pub use logging::*;
-#[cfg(all(feature = "server", target_os = "linux"))]
+#[cfg(target_os = "linux")]
 pub use mount_provider_linux::*;
-#[cfg(all(feature = "server", not(target_os = "linux")))]
+#[cfg(not(target_os = "linux"))]
 pub use mount_provider_other::*;
 #[cfg(feature = "server")]
 pub use resize::*;
