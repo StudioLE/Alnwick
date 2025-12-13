@@ -18,7 +18,7 @@ pub(crate) use std::hash::Hash;
 pub(crate) use std::mem::take;
 pub(crate) use std::sync::Arc;
 pub(crate) use thiserror::Error;
-pub(crate) use tracing::{debug, info, trace};
+pub(crate) use tracing::{debug, error, info, trace, warn};
 
 #[cfg(feature = "server")]
 pub use crate::server_prelude::*;

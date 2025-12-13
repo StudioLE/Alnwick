@@ -1,5 +1,6 @@
 use crate::prelude::*;
-use tokio::spawn;
+use std::thread::current;
+use tokio::runtime::Handle;
 use tokio::sync::futures::Notified;
 
 pub type WorkerId = usize;
@@ -24,9 +25,12 @@ impl Worker {
         id: WorkerId,
         mediator: Arc<CommandMediator<T>>,
     ) -> Self {
-        let handle = spawn(async move {
+        let thread = current().id();
+        trace!(worker = id, ?thread, "Spawning");
+        let handle = Handle::current().spawn(async move {
             internal_loop(mediator, id).await;
         });
+        trace!(worker = id, "Spawned");
         Self { id, handle }
     }
 
@@ -37,11 +41,13 @@ impl Worker {
 }
 
 async fn internal_loop<T: ICommandInfo>(mediator: Arc<CommandMediator<T>>, worker: WorkerId) {
+    let thread = current().id();
+    trace!(worker, ?thread, "Starting");
     loop {
         match mediator.get_instruction().await {
             Instruction::Execute(request, command) => {
                 let command_id = command.to_string();
-                trace!(worker, %command, "Executing");
+                debug!(worker, ?thread, %command, "Executing");
                 let result = command.execute().await;
                 mediator.completed(request, result).await;
                 trace!(worker, command = command_id, "Executed");
@@ -56,7 +62,7 @@ async fn internal_loop<T: ICommandInfo>(mediator: Arc<CommandMediator<T>>, worke
             }
         }
     }
-    trace!(worker, "Stopped");
+    trace!(worker, ?thread, "Stopped");
 }
 
 impl Display for Worker {

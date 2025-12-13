@@ -21,6 +21,7 @@ impl Service for DownloadHandler {
 #[async_trait]
 impl Execute<DownloadRequest, (), Report<DownloadError>> for DownloadHandler {
     async fn execute(&self, request: &DownloadRequest) -> Result<(), Report<DownloadError>> {
+        trace!(%request, "Retrieving podcast and episode from DB");
         let context = self.context_step(request).await?;
         let podcast = context.podcast.to_string();
         let episode = context.episode.to_string();

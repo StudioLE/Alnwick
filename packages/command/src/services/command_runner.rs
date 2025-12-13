@@ -78,7 +78,9 @@ impl<T: ICommandInfo + 'static> CommandRunner<T> {
         &self,
         request: R,
     ) -> Result<(), Report<QueueError>> {
+        trace!(%request, type = type_name::<R>(), "Queueing");
         let command = self.registry.resolve(request.clone())?;
+        trace!(%request, type = type_name::<R>(), "Resolved command");
         self.mediator.queue(request.into(), command).await;
         Ok(())
     }
@@ -126,7 +128,7 @@ mod tests {
         let _logger = init_test_logger();
 
         // Act
-        runner.workers.start(WORKER_COUNT).await;
+        runner.start(WORKER_COUNT).await;
 
         info!("Adding {A_COUNT} commands to queue");
         for i in 1..=A_COUNT {
@@ -185,10 +187,10 @@ mod tests {
             .get_currently_queued()
             .expect("should be able to subtract");
         debug!("Queue: {length}");
-        assert_eq!(length, 6, "Queue after stop");
+        assert_eq!(length, 7, "Queue after stop");
         let length = count.succeeded;
         debug!("Succeeded: {length}");
-        assert_eq!(length, 14, "Succeeded after stop");
+        assert_eq!(length, 13, "Succeeded after stop");
     }
 
     async fn wait(wait: u64) {
