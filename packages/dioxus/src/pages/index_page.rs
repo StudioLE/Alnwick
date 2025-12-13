@@ -77,7 +77,8 @@ fn Podcasts(podcasts: Vec<PodcastPartial>) -> Element {
 
 #[get("/api/podcasts")]
 async fn get_podcasts() -> Result<Vec<PodcastPartial>, ServerFnError> {
-    match METADATA.get_podcasts().await {
+    let metadata = get_metadata().await;
+    match metadata.get_podcasts().await {
         Ok(podcasts) => Ok(podcasts),
         Err(error) => {
             error!("{error:?}");
