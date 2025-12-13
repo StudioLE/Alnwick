@@ -11,6 +11,7 @@ mod download_handler;
 mod download_options;
 mod download_podcast_partial;
 mod download_request;
+mod download_response;
 #[cfg(feature = "server")]
 mod download_step;
 #[cfg(feature = "server")]
@@ -31,3 +32,4 @@ pub use download_handler::*;
 pub use download_options::*;
 pub use download_podcast_partial::*;
 pub use download_request::*;
+pub use download_response::*;

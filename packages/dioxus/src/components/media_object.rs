@@ -10,6 +10,7 @@ pub fn MediaObject(
     image_size: ImageSize,
     image_src: Option<Url>,
     icon: Option<String>,
+    children: Element,
 ) -> Element {
     rsx! {
         div { class: "media",
@@ -39,14 +40,19 @@ pub fn MediaObject(
             }
             div {
                 class: "media-content",
-                style: "align-self: center;",
-                p { class: "title",
-                    "{title}"
-                }
-                if let Some(subtitle) = subtitle {
-                    p { class: "subtitle",
-                        "{subtitle}"
+                style: "margin-inline-end: var(--bulma-media-spacing); align-self: center; display: flex; align-items: center; ",
+                div { style: "flex: 1;",
+                    p { class: "title",
+                        "{title}"
                     }
+                    if let Some(subtitle) = subtitle {
+                        p { class: "subtitle",
+                            "{subtitle}"
+                        }
+                    }
+                }
+                div { style: "flex: 0;",
+                    { children }
                 }
             }
         }

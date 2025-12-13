@@ -1,8 +1,11 @@
+use crate::contexts::DownloadContext;
 use crate::prelude::*;
 
 #[component]
 pub fn App() -> Element {
     SettingsContext::create();
+    DownloadContext::create();
+    DownloadContext::watch_events();
     rsx! {
         Router::<Route> {}
     }

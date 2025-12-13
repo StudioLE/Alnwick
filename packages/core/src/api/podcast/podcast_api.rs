@@ -46,6 +46,8 @@ fn get_episodes_query(primary_key: u32) -> Selector<SelectModel<EpisodePartial>>
             episode::Column::Episode,
             episode::Column::Season,
             episode::Column::Kind,
+            episode::Column::FileSubPath,
+            episode::Column::ImageSubPath,
         ])
         .order_by_asc(episode::Column::PublishedAt)
         .into_model::<EpisodePartial>()

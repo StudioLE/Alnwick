@@ -20,7 +20,7 @@ macro_rules! define_commands_web {
             }
         )*
 
-        #[derive(Debug)]
+        #[derive(Clone, Debug, Deserialize, Serialize)]
         pub enum CommandSuccess {
             $(
                 $kind(<$req as Executable>::Response),
@@ -38,23 +38,28 @@ macro_rules! define_commands_web {
 
         impl IFailure for CommandFailure {}
 
-        #[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
+        #[derive(Clone, Debug, Deserialize, Serialize)]
         pub struct CommandEvent {
-            pub request: CommandRequest,
-            pub kind: EventKind,
+            kind: EventKind,
+            request: CommandRequest,
+            success: Option<CommandSuccess>,
         }
 
-        impl IEvent<CommandRequest> for CommandEvent {
-            fn new(request: CommandRequest, kind: EventKind) -> Self {
-                Self { request, kind }
+        impl IEvent<CommandRequest, CommandSuccess> for CommandEvent {
+            fn new(kind: EventKind, request: CommandRequest, success: Option<CommandSuccess>) -> Self {
+                Self { kind, request, success }
+            }
+
+            fn get_kind(&self) -> &EventKind {
+                &self.kind
             }
 
             fn get_request(&self) -> &CommandRequest {
                 &self.request
             }
 
-            fn get_kind(&self) -> &EventKind {
-                &self.kind
+            fn get_success(&self) -> &Option<CommandSuccess> {
+                &self.success
             }
         }
 
@@ -73,16 +78,20 @@ macro_rules! define_commands_web {
     };
 }
 
-pub trait IRequest: Clone + Debug + Eq + Hash + PartialEq + Send + Sync {}
-
-pub trait ISuccess: Debug + Send + Sync {}
+pub trait IRequest:
+    Clone + Debug + DeserializeOwned + Eq + Hash + PartialEq + Send + Serialize + Sync
+{
+}
+pub trait ISuccess: Clone + Debug + DeserializeOwned + Send + Serialize + Sync {}
 pub trait IFailure: Debug + Send + Sync {}
-pub trait IEvent<Req: IRequest>: Clone + Debug + Send + Sync {
-    fn new(request: Req, kind: EventKind) -> Self;
+pub trait IEvent<Req: IRequest, S: ISuccess>: Clone + Debug + Send + Sync {
+    fn new(kind: EventKind, request: Req, success: Option<S>) -> Self;
+
+    fn get_kind(&self) -> &EventKind;
 
     fn get_request(&self) -> &Req;
 
-    fn get_kind(&self) -> &EventKind;
+    fn get_success(&self) -> &Option<S>;
 }
 
 pub trait ICommandInfo {
@@ -93,5 +102,5 @@ pub trait ICommandInfo {
     type Handler: IHandler;
     type Success: ISuccess;
     type Failure: IFailure;
-    type Event: IEvent<Self::Request>;
+    type Event: IEvent<Self::Request, Self::Success>;
 }

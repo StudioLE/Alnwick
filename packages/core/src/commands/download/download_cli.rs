@@ -59,7 +59,7 @@ impl DownloadCliCommand {
         let mut errors = Vec::new();
         for (request, status) in results.iter() {
             match status {
-                CommandStatus::Succeeded(CommandSuccess::Download(())) => {
+                CommandStatus::Succeeded(CommandSuccess::Download(_response)) => {
                     requests.push(request);
                 }
                 CommandStatus::Failed(CommandFailure::Download(e)) => errors.push(e),

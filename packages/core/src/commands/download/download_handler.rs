@@ -19,8 +19,11 @@ impl Service for DownloadHandler {
 }
 
 #[async_trait]
-impl Execute<DownloadRequest, (), Report<DownloadError>> for DownloadHandler {
-    async fn execute(&self, request: &DownloadRequest) -> Result<(), Report<DownloadError>> {
+impl Execute<DownloadRequest, DownloadResponse, Report<DownloadError>> for DownloadHandler {
+    async fn execute(
+        &self,
+        request: &DownloadRequest,
+    ) -> Result<DownloadResponse, Report<DownloadError>> {
         trace!(%request, "Retrieving podcast and episode from DB");
         let context = self.context_step(request).await?;
         let podcast = context.podcast.to_string();
@@ -34,8 +37,7 @@ impl Execute<DownloadRequest, (), Report<DownloadError>> for DownloadHandler {
         trace!(podcast, episode, "Tagging episode");
         self.tag_step(&context)?;
         trace!(podcast, episode, "Saving episode");
-        self.save_step(&context).await?;
-        Ok(())
+        self.save_step(&context).await
     }
 }
 

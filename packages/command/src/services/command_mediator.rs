@@ -68,7 +68,7 @@ impl<T: ICommandInfo> CommandMediator<T> {
         drop(commands);
         let _ = self
             .events
-            .send(T::Event::new(request.clone(), EventKind::Queued));
+            .send(T::Event::new(EventKind::Queued, request.clone(), None));
         let mut queue = self.queue.lock().await;
         queue.push_back(request.clone());
         drop(queue);
@@ -103,7 +103,7 @@ impl<T: ICommandInfo> CommandMediator<T> {
             drop(queue_guard);
             let _ = self
                 .events
-                .send(T::Event::new(request.clone(), EventKind::Executing));
+                .send(T::Event::new(EventKind::Executing, request.clone(), None));
             let mut commands = self.commands.lock().await;
             let option = commands.insert(request.clone(), CommandStatus::Executing);
             drop(commands);
@@ -129,15 +129,17 @@ impl<T: ICommandInfo> CommandMediator<T> {
         match result {
             Ok(success) => {
                 trace!(?request, "Command succeeded");
-                commands.insert(request.clone(), CommandStatus::Succeeded(success));
-                let _ = self
-                    .events
-                    .send(T::Event::new(request, EventKind::Succeeded));
+                commands.insert(request.clone(), CommandStatus::Succeeded(success.clone()));
+                let _ =
+                    self.events
+                        .send(T::Event::new(EventKind::Succeeded, request, Some(success)));
             }
             Err(failure) => {
                 warn!(?request, error = ?failure, "Command failed");
                 commands.insert(request.clone(), CommandStatus::Failed(failure));
-                let _ = self.events.send(T::Event::new(request, EventKind::Failed));
+                let _ = self
+                    .events
+                    .send(T::Event::new(EventKind::Failed, request, None));
             }
         }
         drop(commands);

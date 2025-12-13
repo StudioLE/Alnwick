@@ -5,7 +5,7 @@ impl DownloadHandler {
     pub(super) async fn save_step(
         &self,
         context: &DownloadContext,
-    ) -> Result<(), Report<DownloadError>> {
+    ) -> Result<DownloadResponse, Report<DownloadError>> {
         let podcasts_dir = self.paths.get_podcasts_dir();
         let file_path = context
             .file_path
@@ -19,9 +19,14 @@ impl DownloadHandler {
                 .to_path_buf()
         });
         self.metadata
-            .update_episode(context.episode.primary_key, file_path, image_path)
+            .update_episode(
+                context.episode.primary_key,
+                file_path.clone(),
+                image_path.clone(),
+            )
             .await
-            .change_context(DownloadError::Save)
+            .change_context(DownloadError::Save)?;
+        Ok(DownloadResponse::new(file_path, image_path))
     }
 }
 
