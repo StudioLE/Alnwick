@@ -10,7 +10,7 @@ use tracing_subscriber::fmt::time::FormatTime;
 use tracing_subscriber::layer::SubscriberExt;
 use tracing_subscriber::{Layer, Registry};
 
-const TEST_LOG_LEVEL: Level = Level::TRACE;
+const TEST_LOG_LEVEL: Level = Level::DEBUG;
 
 #[must_use]
 pub fn init_test_logger() -> DefaultGuard {

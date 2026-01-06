@@ -8,7 +8,7 @@ use tracing_subscriber::fmt::layer;
 use tracing_subscriber::layer::SubscriberExt;
 use tracing_subscriber::{Layer, Registry};
 
-pub const DEFAULT_LOG_LEVEL: Level = Level::TRACE;
+pub const DEFAULT_LOG_LEVEL: Level = Level::INFO;
 
 pub fn init_logger() -> Result<(), SetGlobalDefaultError> {
     let targets = get_targets().with_default(LevelFilter::from_level(DEFAULT_LOG_LEVEL));
