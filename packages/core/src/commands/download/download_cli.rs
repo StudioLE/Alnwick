@@ -43,6 +43,7 @@ impl DownloadCliCommand {
             .change_context(DownloadCliError::Repository)?
             .ok_or(DownloadCliError::NoPodcast)?;
         let podcast = feed.podcast.primary_key;
+        self.progress.start().await;
         for episode in feed.episodes.iter() {
             let request = DownloadRequest::new(podcast, episode.primary_key);
             self.runner
@@ -50,7 +51,6 @@ impl DownloadCliCommand {
                 .await
                 .expect("should be able to queue request");
         }
-        self.progress.start().await;
         self.runner.start(CONCURRENCY).await;
         self.runner.drain().await;
         self.progress.finish().await;
