@@ -1,6 +1,7 @@
 use crate::prelude::*;
 
 impl DownloadHandler {
+    /// Download the episode audio file to the local filesystem.
     pub(super) async fn download_episode_step(
         &self,
         context: &DownloadContext,
@@ -13,6 +14,7 @@ impl DownloadHandler {
             .change_context(DownloadError::DownloadEpisode)
     }
 
+    /// Download the episode artwork if available.
     pub(super) async fn download_image_step(
         &self,
         context: &DownloadContext,

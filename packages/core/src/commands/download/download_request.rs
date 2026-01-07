@@ -8,6 +8,7 @@ pub struct DownloadRequest {
 }
 
 impl DownloadRequest {
+    /// Create a new [`DownloadRequest`] from database keys.
     #[must_use]
     pub fn new(podcast: PodcastKey, episode: EpisodeKey) -> Self {
         Self { podcast, episode }

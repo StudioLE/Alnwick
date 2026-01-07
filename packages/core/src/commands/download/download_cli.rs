@@ -1,7 +1,12 @@
 use crate::prelude::*;
 
+/// Maximum concurrent downloads.
 const CONCURRENCY: usize = 8;
 
+/// CLI command for batch downloading episodes.
+///
+/// Queues multiple [`DownloadRequest`]s based on filter criteria and
+/// executes them concurrently with a progress bar.
 pub struct DownloadCliCommand {
     metadata: Arc<MetadataRepository>,
     runner: Arc<CommandRunner<CommandInfo>>,
@@ -21,6 +26,7 @@ impl Service for DownloadCliCommand {
 }
 
 impl DownloadCliCommand {
+    /// Create a new [`DownloadCliCommand`] from services.
     #[must_use]
     pub fn new(
         metadata: Arc<MetadataRepository>,
@@ -34,6 +40,7 @@ impl DownloadCliCommand {
         }
     }
 
+    /// Download episodes matching the filter criteria.
     #[allow(unreachable_patterns, clippy::match_wildcard_for_single_variants)]
     pub async fn execute(&self, options: DownloadOptions) -> Result<(), Report<DownloadCliError>> {
         let feed = self
@@ -77,6 +84,7 @@ impl DownloadCliCommand {
     }
 }
 
+/// Errors from [`DownloadCliCommand`].
 #[derive(Clone, Debug, Error)]
 pub enum DownloadCliError {
     #[error("Unable to get podcast")]
@@ -94,7 +102,6 @@ mod tests {
     #[serial]
     pub async fn download_command() {
         // Arrange
-        warn!("Starting test");
         let services = TestServiceProvider::create().await;
         let command = services
             .get_service::<DownloadCliCommand>()

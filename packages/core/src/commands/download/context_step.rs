@@ -3,6 +3,7 @@ use sea_orm::Selector;
 use sea_orm::*;
 
 impl DownloadHandler {
+    /// Load podcast and episode metadata from the database.
     pub(super) async fn context_step(
         &self,
         request: &DownloadRequest,

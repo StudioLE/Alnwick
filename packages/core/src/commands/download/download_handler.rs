@@ -1,5 +1,11 @@
 use crate::prelude::*;
 
+/// Downloads a single episode through a multi-step pipeline.
+///
+/// - Fetch audio file
+/// - Fetch and resize artwork
+/// - Add ID3 tags
+/// - Save file paths to database
 pub struct DownloadHandler {
     pub(super) paths: Arc<PathProvider>,
     pub(super) http: Arc<HttpClient>,
@@ -20,6 +26,7 @@ impl Service for DownloadHandler {
 
 #[async_trait]
 impl Execute<DownloadRequest, DownloadResponse, Report<DownloadError>> for DownloadHandler {
+    /// Execute the download pipeline for a single episode.
     async fn execute(
         &self,
         request: &DownloadRequest,

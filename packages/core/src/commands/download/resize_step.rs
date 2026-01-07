@@ -1,9 +1,15 @@
 use crate::prelude::*;
 use tokio::task::spawn_blocking;
 
+/// Target dimension for resized artwork in pixels.
 const IMAGE_SIZE: u32 = 720;
 
 impl DownloadHandler {
+    /// Resize episode artwork.
+    ///
+    /// - Resizes to a square with dimensions defined by [`IMAGE_SIZE`]
+    /// - Runs in a blocking task via [`spawn_blocking`]
+    /// - Saves to file
     pub(super) async fn resize_step(
         &self,
         context: &DownloadContext,

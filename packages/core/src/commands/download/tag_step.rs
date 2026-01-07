@@ -8,6 +8,7 @@ use lofty::probe::Probe;
 use lofty::tag::{Tag, TagType};
 
 impl DownloadHandler {
+    /// Add ID3 tags to MP3 files with podcast and episode metadata.
     #[allow(clippy::unused_self)]
     pub(super) fn tag_step(&self, context: &DownloadContext) -> Result<(), Report<DownloadError>> {
         let content_type = context.episode.source_content_type.as_str();
@@ -67,7 +68,7 @@ fn create_tag(
 
 fn write_tag(path: &PathBuf, tag: Id3v2Tag) -> Result<(), LoftyError> {
     for tag_type in get_tag_types(path)? {
-        trace!("Removing tag: {:?}", tag_type);
+        trace!(?tag_type, "Removing tag");
         tag.remove_from_path(path)?;
     }
     tag.save_to_path(path, WriteOptions::default())?;

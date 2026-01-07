@@ -1,14 +1,20 @@
 use crate::prelude::*;
 
+/// Internal state passed between [`DownloadHandler`] pipeline steps.
 #[derive(Clone, Debug)]
 pub struct DownloadContext {
+    /// Podcast metadata for tagging.
     pub(super) podcast: DownloadPodcastPartial,
+    /// Episode metadata for tagging and path generation.
     pub(super) episode: DownloadEpisodePartial,
+    /// Resolved path for the audio file.
     pub(super) file_path: PathBuf,
+    /// Resolved path for artwork. `None` if episode has no image URL.
     pub(super) image_path: Option<PathBuf>,
 }
 
 impl DownloadContext {
+    /// Create a new [`DownloadContext`] from metadata partials and base directory.
     #[must_use]
     pub fn new(
         podcast: DownloadPodcastPartial,
