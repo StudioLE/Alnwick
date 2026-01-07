@@ -25,6 +25,7 @@ impl From<SimplecastPodcast> for PodcastInfo {
         PodcastInfo {
             primary_key: u32::default(),
             slug: Slug::from_str(&podcast.id).expect("should be valid slug"),
+            feed_url: None,
             title: podcast.title,
             description: podcast.description,
             image: podcast.image_url.map(UrlWrapper::from),

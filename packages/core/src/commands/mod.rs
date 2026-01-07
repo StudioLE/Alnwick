@@ -1,11 +1,13 @@
+mod add;
 mod cover;
 mod define;
 mod download;
 mod emulate;
-mod scrape;
+mod fetch;
 
+pub use add::*;
 pub use cover::*;
 pub use define::*;
 pub use download::*;
 pub use emulate::*;
-pub use scrape::*;
+pub use fetch::*;

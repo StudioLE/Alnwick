@@ -28,6 +28,8 @@ pub struct Model {
     /// User defined slug
     #[sea_orm(unique)]
     pub slug: Slug,
+    /// RSS feed URL for re-scraping
+    pub feed_url: Option<UrlWrapper>,
 
     // Required
     /// Title
@@ -74,6 +76,7 @@ impl PodcastInfo {
     pub fn example() -> Self {
         Self {
             slug: Slug::from_str("test").expect("should be able to parse slug"),
+            feed_url: None,
             primary_key: u32::default(),
             title: "Podcast Title".to_owned(),
             description: "Sed ac volutpat tortor. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Suspendisse placerat leo augue, id elementum orci venenatis eu.".to_owned(),

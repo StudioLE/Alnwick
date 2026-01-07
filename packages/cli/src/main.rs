@@ -10,13 +10,24 @@ async fn main() {
         .await
         .expect("should be able to create services with commands");
     match cli.command {
-        Command::Scrape(options) => {
+        Command::Add(options) => {
             let command = services
-                .get_service::<ScrapeCommand>()
+                .get_service::<AddCliCommand>()
                 .await
                 .expect("should be able to get command");
             if let Err(e) = command.execute(options).await {
-                error!("Failed to scrape podcast");
+                error!("Failed to add podcast");
+                eprintln!("{e:?}");
+                exit(1);
+            }
+        }
+        Command::Fetch(options) => {
+            let command = services
+                .get_service::<FetchCliCommand>()
+                .await
+                .expect("should be able to get command");
+            if let Err(e) = command.execute(options).await {
+                error!("Failed to fetch podcast");
                 eprintln!("{e:?}");
                 exit(1);
             }
@@ -65,12 +76,14 @@ struct Cli {
 
 #[derive(Debug, Subcommand)]
 enum Command {
-    /// Scrape a podcast from an RSS feed or website.
-    Scrape(ScrapeOptions),
-    /// Download episodes of a scraped podcast.
+    /// Add a new podcast from an RSS feed.
+    Add(AddOptions),
+    /// Fetch an existing podcast using its stored feed URL.
+    Fetch(FetchOptions),
+    /// Download episodes of a podcast.
     Download(DownloadOptions),
-    /// Create emulated RSS of a scraped podcast.
+    /// Create emulated RSS of a podcast.
     Emulate(EmulateOptions),
-    /// Download cover and banner images of a scraped podcast.
+    /// Download cover and banner images of a podcast.
     Cover(CoverOptions),
 }

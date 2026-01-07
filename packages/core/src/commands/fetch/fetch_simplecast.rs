@@ -4,12 +4,13 @@ use crate::prelude::*;
 #[allow(dead_code)]
 const CONCURRENCY: usize = 8;
 
-impl ScrapeCommand {
+impl FetchHandler {
     pub(super) async fn get_simplecast_rss(
         &self,
-        options: &ScrapeOptions,
-    ) -> Result<Url, Report<ScrapeSimplecastError>> {
-        let player_id = self.get_player_id(&options.url).await?;
+        _slug: &Slug,
+        url: &Url,
+    ) -> Result<Url, Report<FetchSimplecastError>> {
+        let player_id = self.get_player_id(url).await?;
         let episode = self.get_episode(&player_id).await?;
         let podcast = self.get_podcast(&episode).await?;
         if let Some(url) = podcast.feed_url {
@@ -18,20 +19,20 @@ impl ScrapeCommand {
         if let Some(url) = podcast.external_feed_url {
             return Ok(url);
         }
-        let report = Report::new(ScrapeSimplecastError::NoFeed)
-            .attach(format!("Podcast ID: {}", podcast.id));
+        let report =
+            Report::new(FetchSimplecastError::NoFeed).attach(format!("Podcast ID: {}", podcast.id));
         Err(report)
     }
 
-    async fn get_player_id(&self, url: &Url) -> Result<String, Report<ScrapeSimplecastError>> {
+    async fn get_player_id(&self, url: &Url) -> Result<String, Report<FetchSimplecastError>> {
         let html = self
             .http
             .get_html(url)
             .await
-            .change_context(ScrapeSimplecastError::GetPage)
+            .change_context(FetchSimplecastError::GetPage)
             .attach_url(url)?;
         let episode_guid = get_simplecast_episode_guid(&html).ok_or_else(|| {
-            Report::new(ScrapeSimplecastError::PlayerNotFound).attach(format!("URL: {url}"))
+            Report::new(FetchSimplecastError::PlayerNotFound).attach(format!("URL: {url}"))
         })?;
         trace!("Found Simplecast player with episode id: {episode_guid}",);
         Ok(episode_guid)
@@ -40,14 +41,14 @@ impl ScrapeCommand {
     async fn get_episode(
         &self,
         id: &str,
-    ) -> Result<SimplecastEpisode, Report<ScrapeSimplecastError>> {
+    ) -> Result<SimplecastEpisode, Report<FetchSimplecastError>> {
         let episode_url = Url::parse(&format!("https://api.simplecast.com/episodes/{id}"))
             .expect("URL should be valid");
         let episode: SimplecastEpisode = self
             .http
             .get_json(&episode_url)
             .await
-            .change_context(ScrapeSimplecastError::GetEpisode)
+            .change_context(FetchSimplecastError::GetEpisode)
             .attach_with(|| format!("Episode ID: {id}"))?;
         Ok(episode)
     }
@@ -55,7 +56,7 @@ impl ScrapeCommand {
     async fn get_podcast(
         &self,
         episode: &SimplecastEpisode,
-    ) -> Result<SimplecastPodcast, Report<ScrapeSimplecastError>> {
+    ) -> Result<SimplecastPodcast, Report<FetchSimplecastError>> {
         debug!("Fetching podcast for {}", episode.podcast.title);
         let url = Url::parse(&format!(
             "https://api.simplecast.com/podcasts/{}",
@@ -65,7 +66,7 @@ impl ScrapeCommand {
         self.http
             .get_json(&url)
             .await
-            .change_context(ScrapeSimplecastError::GetPodcast)
+            .change_context(FetchSimplecastError::GetPodcast)
             .attach_with(|| format!("Podcast ID: {}", episode.podcast.id))
     }
 
@@ -73,7 +74,7 @@ impl ScrapeCommand {
     async fn get_playlist(
         &self,
         episode: &SimplecastEpisode,
-    ) -> Result<Vec<SimplecastPlaylistEpisode>, Report<ScrapeSimplecastError>> {
+    ) -> Result<Vec<SimplecastPlaylistEpisode>, Report<FetchSimplecastError>> {
         debug!("Fetching playlist for {}", episode.podcast.title);
         let mut playlist_url = Url::parse(&format!(
             "https://api.simplecast.com/podcasts/{}/playlist",
@@ -86,7 +87,7 @@ impl ScrapeCommand {
                 .http
                 .get_json(&playlist_url)
                 .await
-                .change_context(ScrapeSimplecastError::GetPlaylist)
+                .change_context(FetchSimplecastError::GetPlaylist)
                 .attach_with(|| format!("Podcast ID: {}", episode.podcast.id))?;
             let next = playlist.episodes.pages.next.clone();
             episodes.append(&mut playlist.episodes.collection);
@@ -102,7 +103,7 @@ impl ScrapeCommand {
     async fn get_episodes(
         &self,
         playlist: &[SimplecastPlaylistEpisode],
-    ) -> Result<Vec<SimplecastEpisode>, Report<ScrapeSimplecastError>> {
+    ) -> Result<Vec<SimplecastEpisode>, Report<FetchSimplecastError>> {
         debug!("Fetching metadata for {} episodes", playlist.len());
         stream::iter(playlist.iter().map(|episode| {
             let this = self;

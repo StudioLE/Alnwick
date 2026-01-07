@@ -21,7 +21,8 @@ CREATE TABLE "podcasts" (
   "kind" varchar NULL,
   "copyright" varchar NULL,
   "new_feed_url" varchar NULL,
-  "generator" varchar NULL
+  "generator" varchar NULL,
+  "feed_url" varchar NULL
 )
 
 CREATE TABLE sqlite_sequence(name, seq)

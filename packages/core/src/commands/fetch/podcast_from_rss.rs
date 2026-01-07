@@ -54,6 +54,7 @@ fn podcast_from_rss(
     let podcast = PodcastInfo {
         primary_key: u32::default(),
         slug,
+        feed_url: None,
         title: channel.title,
         description: channel.description,
         image: if let Some(url) = itunes.image {

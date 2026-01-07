@@ -1,19 +1,22 @@
 use crate::prelude::*;
 
+/// Errors from [`FetchHandler`].
 #[derive(Clone, Debug, Error)]
-pub enum ScrapeError {
-    #[error("Unable to get content type")]
-    Head,
-    #[error("Unable to get RSS feed from simplecast player")]
-    Simplecast,
-    #[error("Unable to get RSS feed")]
+pub enum FetchError {
+    #[error("Unable to query database")]
+    Repository,
+    #[error("Podcast does not exist")]
+    NoPodcast,
+    #[error("Podcast does not have a stored feed URL")]
+    NoFeedUrl,
+    #[error("Unable to fetch or parse RSS feed")]
     Rss,
-    #[error("Unable to save")]
+    #[error("Unable to save podcast")]
     Save,
 }
 
 #[derive(Clone, Debug, Error)]
-pub enum ScrapeRssError {
+pub enum FetchRssError {
     #[error("Unable to get feed")]
     Xml,
     #[error("An I/O error occurred")]
@@ -25,7 +28,7 @@ pub enum ScrapeRssError {
 }
 
 #[derive(Clone, Debug, Error)]
-pub enum ScrapeSimplecastError {
+pub enum FetchSimplecastError {
     #[error("Unable to get page")]
     GetPage,
     #[error("Page does not contain a Simplecast Player")]

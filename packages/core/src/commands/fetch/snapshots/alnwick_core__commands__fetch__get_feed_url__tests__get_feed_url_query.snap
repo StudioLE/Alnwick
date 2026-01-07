@@ -1,0 +1,10 @@
+---
+source: packages/core/src/commands/fetch/get_feed_url.rs
+expression: sql
+---
+SELECT
+  "podcasts"."feed_url"
+FROM
+  "podcasts"
+WHERE
+  "podcasts"."slug" = 'test-0'

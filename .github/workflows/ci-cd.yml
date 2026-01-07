@@ -20,7 +20,7 @@ jobs:
       run_before_test: |
         mkdir -p "${HOME}/.cache/alnwick"
         mkdir -p "${HOME}/.local/share/alnwick"
-        target/${MATRIX_TARGET}/release/alnwick scrape irl https://irlpodcast.org
+        target/${MATRIX_TARGET}/release/alnwick add irl https://irlpodcast.org
       docker_name: alnwick
       docker_args: >
         --file docker/cli/Dockerfile
