@@ -8,6 +8,7 @@ pub struct PodcastFeed {
 
 impl PodcastFeed {
     #[must_use]
+    #[cfg(test)]
     pub fn example() -> Self {
         Self {
             podcast: PodcastInfo::example(),

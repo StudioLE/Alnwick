@@ -49,6 +49,11 @@ impl MetadataRepositoryExample {
         Slug::from_str(Self::PODCAST_SLUG).expect("should be valid slug")
     }
 
+    #[must_use]
+    pub fn get_image_url() -> UrlWrapper {
+        UrlWrapper::from_str(Self::EPISODE_IMAGE_URL).expect("should be valid URL")
+    }
+
     fn get_episode_file_url() -> UrlWrapper {
         let bytes = BASE64_STANDARD
             .decode(Self::EPISODE_FILE_URL)
@@ -61,7 +66,7 @@ impl MetadataRepositoryExample {
     pub fn example_feeds() -> Vec<PodcastFeed> {
         let mut feeds = Vec::new();
         let source_url = Self::get_episode_file_url();
-        let image_url = UrlWrapper::from_str(Self::EPISODE_IMAGE_URL).expect("should be valid URL");
+        let image_url = Self::get_image_url();
         for podcast_index in 0..Self::PODCAST_COUNT {
             let mut episodes = Vec::new();
             let slug = Slug::from_str(&format!("test-{podcast_index}")).expect("should be valid");

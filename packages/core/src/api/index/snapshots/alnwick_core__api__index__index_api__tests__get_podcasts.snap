@@ -5,15 +5,15 @@ expression: podcasts
 - primary_key: 1
   slug: test-0
   title: Podcast 0
-  image: ~
+  image: "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
   episodes_count: 18
 - primary_key: 2
   slug: test-1
   title: Podcast 1
-  image: ~
+  image: "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
   episodes_count: 18
 - primary_key: 3
   slug: test-2
   title: Podcast 2
-  image: ~
+  image: "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
   episodes_count: 18

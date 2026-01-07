@@ -70,13 +70,16 @@ pub struct Model {
 
 impl PodcastInfo {
     #[must_use]
+    #[cfg(test)]
     pub fn example() -> Self {
         Self {
             slug: Slug::from_str("test").expect("should be able to parse slug"),
             primary_key: u32::default(),
             title: "Podcast Title".to_owned(),
             description: "Sed ac volutpat tortor. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Suspendisse placerat leo augue, id elementum orci venenatis eu.".to_owned(),
-            image: None,
+            image: Some(
+                MetadataRepositoryExample::get_image_url(),
+            ),
             language: Some("en-us".to_owned()),
             categories: PodcastCategories::default(),
             explicit: false,

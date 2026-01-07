@@ -5,7 +5,7 @@ expression: "(podcast, episodes)"
 - primary_key: 1
   slug: test-0
   title: Podcast 0
-  image: ~
+  image: "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
   episodes_count: 18
 - - primary_key: 1
     title: S01E01 of test-0

@@ -185,17 +185,13 @@ mod tests {
     #[tokio::test]
     pub async fn feeds_command() {
         // Arrange
-        let options = AppOptions {
-            server_base: Some(Url::parse("https://example.com").expect("should be valid URL")),
-            ..AppOptions::default()
-        };
-        let command = ServiceProvider::new()
-            .with_instance(options)
+        let services = TestServiceProvider::create().await;
+        let command = services
             .get_service::<EmulateCommand>()
             .await
             .expect("should be able to get command");
         let options = EmulateOptions {
-            podcast_slug: example_slug(),
+            podcast_slug: MetadataRepositoryExample::podcast_slug(),
         };
         let _logger = init_test_logger();
 
