@@ -139,14 +139,13 @@ mod tests {
     #[ignore = "uses ipinfo.io"]
     async fn validate_none() {
         // Arrange
-        let mut services = ServiceProvider::new();
         let options = AppOptions {
             expect_ip: None,
             expect_country: None,
             ..AppOptions::default()
         };
-        services.add_instance(options);
-        let ipinfo = services
+        let ipinfo = ServiceProvider::new()
+            .with_instance(options)
             .get_service::<IpInfoProvider>()
             .await
             .expect("should be able to get ipinfo");
@@ -162,14 +161,13 @@ mod tests {
     #[ignore = "uses ipinfo.io"]
     async fn validate_invalid() {
         // Arrange
-        let mut services = ServiceProvider::new();
         let options = AppOptions {
             expect_ip: Some("203.0.113.1".to_owned()),
             expect_country: Some("INVALID".to_owned()),
             ..AppOptions::default()
         };
-        services.add_instance(options);
-        let ipinfo = services
+        let ipinfo = ServiceProvider::new()
+            .with_instance(options)
             .get_service::<IpInfoProvider>()
             .await
             .expect("should be able to get ipinfo");

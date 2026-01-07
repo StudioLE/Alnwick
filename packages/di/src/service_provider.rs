@@ -16,7 +16,8 @@ impl ServiceProvider {
     }
 
     #[allow(clippy::as_conversions)]
-    pub fn add_instance<T>(&mut self, instance: T)
+    #[must_use]
+    pub fn with_instance<T>(self, instance: T) -> Self
     where
         T: Service + 'static,
     {
@@ -26,10 +27,12 @@ impl ServiceProvider {
             .lock()
             .expect("should be able to lock instances")
             .insert(type_id, dynamic);
+        self
     }
 
     #[allow(clippy::as_conversions)]
-    pub fn add_factory<T, F>(&mut self, factory: F)
+    #[must_use]
+    pub fn with_factory<T, F>(mut self, factory: F) -> Self
     where
         T: Service + 'static,
         F: Fn(&ServiceProvider) -> T + Send + Sync + 'static,
@@ -38,11 +41,12 @@ impl ServiceProvider {
             TypeId::of::<T>(),
             Box::new(move |services| Arc::new(factory(services)) as Arc<dyn Any + Send + Sync>),
         );
+        self
     }
 
     pub async fn get_service<T: Service>(&self) -> Result<Arc<T>, Report<ServiceError>> {
         let type_name = type_name::<T>();
-        trace!("Resolving required service: {type_name}");
+        trace!(type = type_name, "Resolving service");
         let type_id = TypeId::of::<T>();
         let option = self
             .get_existing_service::<T>(type_id, type_name)

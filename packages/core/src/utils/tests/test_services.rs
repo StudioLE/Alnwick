@@ -17,10 +17,9 @@ impl TestServiceProvider {
             ..AppOptions::default()
         };
         let metadata = MetadataRepositoryExample::create_in_directory(temp_dir).await;
-        let mut services = ServiceProvider::new();
-        services.add_instance(options);
-        services.add_instance(metadata);
-        services
+        ServiceProvider::new()
+            .with_instance(options)
+            .with_instance(metadata)
             .with_commands()
             .await
             .expect("should be able to create services with commands")

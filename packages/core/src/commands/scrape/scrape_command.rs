@@ -84,10 +84,9 @@ mod tests {
     pub async fn scrape_command_simplecast() {
         // Arrange
         let _logger = init_test_logger();
-        let mut services = ServiceProvider::new();
         let metadata = MetadataRepositoryExample::create().await;
-        services.add_instance(metadata);
-        let command = services
+        let command = ServiceProvider::new()
+            .with_instance(metadata)
             .get_service::<ScrapeCommand>()
             .await
             .expect("should be able to get command");
@@ -108,11 +107,9 @@ mod tests {
     #[serial]
     pub async fn scrape_command_rss() {
         // Arrange
-        let _logger = init_test_logger();
-        let mut services = ServiceProvider::new();
         let metadata = MetadataRepositoryExample::create().await;
-        services.add_instance(metadata);
-        let command = services
+        let command = ServiceProvider::new()
+            .with_instance(metadata)
             .get_service::<ScrapeCommand>()
             .await
             .expect("should be able to get command");
@@ -120,6 +117,7 @@ mod tests {
             podcast_slug: example_slug(),
             url: example_rss_url(),
         };
+        let _logger = init_test_logger();
 
         // Act
         let result = command.execute(options).await;

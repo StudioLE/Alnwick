@@ -75,14 +75,13 @@ macro_rules! define_commands_server {
         }
 
         impl WithCommands for ServiceProvider {
-            async fn with_commands(mut self) -> Result<Self, Report<ServiceError>> {
+            async fn with_commands(self) -> Result<Self, Report<ServiceError>> {
                 let mut registry: CommandRegistry<CommandInfo> = CommandRegistry::new();
                 $(
                     let handler = self.get_service::<$handler>().await?;
                     registry.register::<$req, $handler>(handler);
                 )*
-                self.add_instance(registry);
-                Ok(self)
+                Ok(self.with_instance(registry))
             }
         }
     };

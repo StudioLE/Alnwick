@@ -185,13 +185,12 @@ mod tests {
     #[tokio::test]
     pub async fn feeds_command() {
         // Arrange
-        let mut services = ServiceProvider::new();
         let options = AppOptions {
             server_base: Some(Url::parse("https://example.com").expect("should be valid URL")),
             ..AppOptions::default()
         };
-        services.add_instance(options);
-        let command = services
+        let command = ServiceProvider::new()
+            .with_instance(options)
             .get_service::<EmulateCommand>()
             .await
             .expect("should be able to get command");
