@@ -16,6 +16,8 @@ mod get_feed_url;
 mod podcast_from_rss;
 #[cfg(feature = "server")]
 mod simplecast;
+#[cfg(feature = "server")]
+mod update_feed;
 
 #[cfg(feature = "server")]
 pub use fetch_cli::*;
@@ -25,3 +27,5 @@ pub use fetch_handler::*;
 pub use fetch_options::*;
 pub use fetch_request::*;
 pub use fetch_response::*;
+#[cfg(feature = "server")]
+pub use update_feed::*;

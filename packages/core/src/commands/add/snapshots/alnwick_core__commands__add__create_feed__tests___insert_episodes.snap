@@ -1,5 +1,5 @@
 ---
-source: packages/core/src/metadata/create_feed.rs
+source: packages/core/src/commands/add/create_feed.rs
 expression: format_sql(&statement)
 ---
 INSERT INTO

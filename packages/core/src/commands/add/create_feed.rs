@@ -38,7 +38,7 @@ fn insert_podcast(podcast: PodcastInfo) -> Insert<podcast::ActiveModel> {
     podcast::Entity::insert(model)
 }
 
-pub(super) fn insert_episodes(
+pub(crate) fn insert_episodes(
     episodes: Vec<EpisodeInfo>,
     podcast_key: PodcastKey,
 ) -> InsertMany<episode::ActiveModel> {
