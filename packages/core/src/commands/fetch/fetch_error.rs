@@ -1,7 +1,7 @@
 use crate::prelude::*;
 
 /// Errors from [`FetchHandler`].
-#[derive(Clone, Debug, Error)]
+#[derive(Clone, Copy, Debug, Eq, Error, PartialEq)]
 pub enum FetchError {
     #[error("Unable to query database")]
     Repository,
@@ -15,7 +15,8 @@ pub enum FetchError {
     Save,
 }
 
-#[derive(Clone, Debug, Error)]
+/// Errors from fetching an RSS feed.
+#[derive(Clone, Copy, Debug, Eq, Error, PartialEq)]
 pub enum FetchRssError {
     #[error("Unable to get feed")]
     Xml,
@@ -27,7 +28,8 @@ pub enum FetchRssError {
     Convert,
 }
 
-#[derive(Clone, Debug, Error)]
+/// Errors from fetching a Simplecast feed.
+#[derive(Clone, Copy, Debug, Eq, Error, PartialEq)]
 pub enum FetchSimplecastError {
     #[error("Unable to get page")]
     GetPage,

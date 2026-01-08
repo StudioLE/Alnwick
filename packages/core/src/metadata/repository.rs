@@ -22,7 +22,8 @@ impl Service for MetadataRepository {
     }
 }
 
-#[derive(Clone, Debug, Error)]
+/// Errors from creating a [`MetadataRepository`].
+#[derive(Clone, Copy, Debug, Eq, Error, PartialEq)]
 pub enum MetadataRepositoryCreateError {
     #[error("Unable to connect to database")]
     DatabaseConnection,

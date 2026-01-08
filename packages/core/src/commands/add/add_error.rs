@@ -1,7 +1,7 @@
 use crate::prelude::*;
 
 /// Errors from [`AddHandler`].
-#[derive(Clone, Debug, Error)]
+#[derive(Clone, Copy, Debug, Eq, Error, PartialEq)]
 pub enum AddError {
     #[error("Unable to parse feed")]
     Parse,

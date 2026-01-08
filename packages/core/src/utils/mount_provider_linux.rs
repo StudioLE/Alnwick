@@ -45,7 +45,8 @@ impl Service for MountProvider {
     }
 }
 
-#[derive(Debug, Error)]
+/// Errors from [`MountProvider`].
+#[derive(Clone, Copy, Debug, Eq, Error, PartialEq)]
 pub enum MountIdError {
     #[error("Unable to canonicalize path")]
     Canonicalize,

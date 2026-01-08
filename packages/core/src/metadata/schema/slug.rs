@@ -40,7 +40,8 @@ impl FromStr for Slug {
     }
 }
 
-#[derive(Debug, Error)]
+/// Errors from parsing a [`Slug`].
+#[derive(Clone, Copy, Debug, Eq, Error, PartialEq)]
 pub enum SlugError {
     #[error("Must not be empty")]
     Empty,

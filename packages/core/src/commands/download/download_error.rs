@@ -1,7 +1,7 @@
 use crate::prelude::*;
 
 /// Errors that can occur during [`DownloadHandler`].
-#[derive(Clone, Debug, Error)]
+#[derive(Clone, Copy, Debug, Eq, Error, PartialEq)]
 pub enum DownloadError {
     #[error("Unable to get podcast")]
     GetPodcast,

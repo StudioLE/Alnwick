@@ -33,6 +33,7 @@ impl FromStr for PodcastKind {
     }
 }
 
-#[derive(Debug, Error)]
+/// Errors from parsing a [`PodcastKind`].
+#[derive(Clone, Debug, Eq, Error, PartialEq)]
 #[error("Unable to parse podcast type: {0}")]
 pub struct PodcastKindError(String);

@@ -40,7 +40,8 @@ impl Service for AppOptions {
     }
 }
 
-#[derive(Clone, Debug, Error)]
+/// Errors from [`AppOptions`].
+#[derive(Clone, Copy, Debug, Eq, Error, PartialEq)]
 pub enum AppOptionsError {
     #[error("Unable to read config from environment variables")]
     EnvConfig,

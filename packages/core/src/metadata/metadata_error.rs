@@ -1,6 +1,7 @@
 use crate::prelude::*;
 
-#[derive(Clone, Debug, Error)]
+/// Errors from reading metadata files.
+#[derive(Clone, Copy, Debug, Eq, Error, PartialEq)]
 pub enum GetMetadataError {
     #[error("Podcast not found")]
     NotFound,
@@ -10,7 +11,8 @@ pub enum GetMetadataError {
     Deserialize,
 }
 
-#[derive(Clone, Debug, Error)]
+/// Errors from writing metadata files.
+#[derive(Clone, Copy, Debug, Eq, Error, PartialEq)]
 pub enum PutMetadataError {
     #[error("Unable to create file")]
     Create,

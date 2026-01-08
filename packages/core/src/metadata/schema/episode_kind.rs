@@ -36,6 +36,7 @@ impl FromStr for EpisodeKind {
     }
 }
 
-#[derive(Debug, Error)]
+/// Errors from parsing an [`EpisodeKind`].
+#[derive(Clone, Debug, Eq, Error, PartialEq)]
 #[error("Unable to parse episode type: {0}")]
 pub struct EpisodeKindError(String);

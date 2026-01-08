@@ -1,8 +1,9 @@
 use crate::prelude::*;
 use reqwest::StatusCode;
 
+/// Errors from [`HttpClient`].
 #[allow(clippy::absolute_paths)]
-#[derive(Debug, Error)]
+#[derive(Clone, Copy, Debug, Eq, Error, PartialEq)]
 pub enum HttpError {
     #[error("Unexpected response status: {}", get_reason(&{0}))]
     Status(u16),

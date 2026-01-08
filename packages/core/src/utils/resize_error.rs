@@ -1,6 +1,7 @@
 use crate::prelude::*;
 
-#[derive(Clone, Debug, Error)]
+/// Errors from [`Resize`].
+#[derive(Clone, Copy, Debug, Eq, Error, PartialEq)]
 pub enum ResizeError {
     #[error("Unable to open image")]
     Open,

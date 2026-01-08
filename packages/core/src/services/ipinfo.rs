@@ -42,7 +42,8 @@ impl IpInfoProvider {
     }
 }
 
-#[derive(Clone, Debug, Error)]
+/// Errors from [`IpInfoProvider`].
+#[derive(Clone, Copy, Debug, Eq, Error, PartialEq)]
 pub enum IpInfoError {
     #[error("Failed to make request for external IP")]
     IpRequest,

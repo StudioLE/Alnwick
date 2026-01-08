@@ -98,7 +98,7 @@ const ALLOWED_SCHEMES: &[&str] = &["http", "https"];
 const MAX_SEGMENT_LENGTH: usize = 255;
 
 /// Errors that can occur when validating a URL for safe HTTP operations.
-#[derive(Debug, Error)]
+#[derive(Clone, Copy, Debug, Eq, Error, PartialEq)]
 pub enum UrlError {
     #[error("Not a URL")]
     Parse,

@@ -60,7 +60,7 @@ impl DownloadCliCommand {
 }
 
 /// Errors from [`DownloadCliCommand`].
-#[derive(Clone, Debug, Error)]
+#[derive(Clone, Copy, Debug, Eq, Error, PartialEq)]
 pub enum DownloadCliError {
     #[error("Unable to get podcast")]
     Repository,

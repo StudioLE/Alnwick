@@ -176,7 +176,8 @@ fn default_for_hard_link_from_cache(
     false
 }
 
-#[derive(Clone, Debug, Error)]
+/// Errors from [`PathProvider`].
+#[derive(Clone, Debug, Eq, Error, PartialEq)]
 pub enum PathProviderError {
     #[error("Unable to create {0} directory")]
     CreateDirectory(String),

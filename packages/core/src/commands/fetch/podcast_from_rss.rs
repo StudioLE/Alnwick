@@ -181,7 +181,8 @@ fn try_parse<T: FromStr, E: Error + Send + Sync + 'static>(
     }
 }
 
-#[derive(Debug, Error)]
+/// Errors from parsing a podcast from RSS.
+#[derive(Clone, Copy, Debug, Eq, Error, PartialEq)]
 pub enum PodcastFromRssError {
     #[error("Podcast RSS channel is missing the itunes extension")]
     NoItunes,
@@ -197,7 +198,8 @@ pub enum PodcastFromRssError {
     ParseNewFeedUrl,
 }
 
-#[derive(Debug, Error)]
+/// Errors from parsing an episode from RSS.
+#[derive(Clone, Copy, Debug, Eq, Error, PartialEq)]
 pub enum EpisodeFromRssError {
     #[error("RSS channel is missing the itunes extension")]
     NoItunes,
