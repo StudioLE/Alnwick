@@ -35,8 +35,15 @@ impl Execute<DownloadRequest, DownloadResponse, Report<DownloadError>> for Downl
         let context = self.context_step(request).await?;
         let podcast = context.podcast.to_string();
         let episode = context.episode.to_string();
+        if let Some(path) = &context.episode.file_sub_path {
+            debug!(podcast, episode, %path, "Skipping already downloaded");
+            return Ok(DownloadResponse {
+                file_path: path.as_ref().clone(),
+                image_path: context.episode.image_sub_path.as_deref().cloned(),
+            });
+        }
         trace!(podcast, episode, "Downloading episode file");
-        self.download_episode_step(&context).await?;
+        self.download_file_step(&context).await?;
         trace!(podcast, episode, "Downloading episode image");
         self.download_image_step(&context).await?;
         trace!(podcast, episode, "Resizing episode image");

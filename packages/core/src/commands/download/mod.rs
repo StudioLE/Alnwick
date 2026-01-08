@@ -7,13 +7,15 @@ mod download_context;
 mod download_episode_partial;
 mod download_error;
 #[cfg(feature = "server")]
+mod download_file_step;
+#[cfg(feature = "server")]
 mod download_handler;
+#[cfg(feature = "server")]
+mod download_image_step;
 mod download_options;
 mod download_podcast_partial;
 mod download_request;
 mod download_response;
-#[cfg(feature = "server")]
-mod download_step;
 #[cfg(feature = "server")]
 mod resize_step;
 #[cfg(feature = "server")]

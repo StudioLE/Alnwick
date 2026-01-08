@@ -27,7 +27,10 @@ impl DownloadHandler {
             )
             .await
             .change_context(DownloadError::Save)?;
-        Ok(DownloadResponse::new(file_path, image_path))
+        Ok(DownloadResponse {
+            file_path,
+            image_path,
+        })
     }
 }
 
