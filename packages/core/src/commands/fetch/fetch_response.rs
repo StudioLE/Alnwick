@@ -5,6 +5,10 @@ use crate::prelude::*;
 pub struct FetchResponse {
     /// Database key of the fetched podcast.
     pub podcast_key: PodcastKey,
-    /// Number of episodes fetched.
-    pub episode_count: usize,
+    /// Slug of the fetched podcast.
+    pub podcast_slug: Slug,
+    /// Number of episodes updated.
+    pub episodes_updated: usize,
+    /// Number of episodes inserted.
+    pub episodes_inserted: usize,
 }

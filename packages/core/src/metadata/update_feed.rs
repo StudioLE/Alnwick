@@ -7,26 +7,54 @@ impl MetadataRepository {
     /// Update an existing podcast feed.
     ///
     /// - Fails if the podcast doesn't exist
-    /// - Updates the podcast and replaces all episodes
-    pub async fn update_feed(&self, feed: PodcastFeed) -> Result<PodcastFeed, Report<UpdateError>> {
-        trace!(podcast = %feed.podcast.slug, "Updating existing podcast and replacing episodes");
+    /// - Updates existing episodes by matching `source_id`, preserving download paths
+    /// - Inserts new episodes
+    /// - Keeps episodes removed from feed (preserves downloaded content)
+    pub async fn update_feed(
+        &self,
+        feed: PodcastFeed,
+    ) -> Result<FetchResponse, Report<UpdateError>> {
+        let slug = feed.podcast.slug.clone();
+        trace!(podcast = %slug, "Updating podcast and merging episodes");
         let tx = self.db.begin().await.change_context(UpdateError::Begin)?;
         let key = get_podcast_key_by_slug(&tx, &feed.podcast.slug)
             .await
             .change_context(UpdateError::CheckExists)?
             .ok_or(UpdateError::NotFound)?;
-        remove_episodes(&tx, key)
+        let existing = get_existing_episodes(&tx, key)
             .await
-            .change_context(UpdateError::RemoveEpisodes)?;
-        let podcast = update_podcast(&tx, feed.podcast, key)
+            .change_context(UpdateError::GetExistingEpisodes)?;
+        update_podcast(&tx, feed.podcast, key)
             .await
             .change_context(UpdateError::Podcast)?;
-        let episodes = insert_episodes(feed.episodes, podcast.primary_key)
-            .exec_with_returning(&tx)
-            .await
-            .change_context(UpdateError::Episodes)?;
+        let (to_update, to_insert): (Vec<_>, Vec<_>) = feed
+            .episodes
+            .into_iter()
+            .partition(|ep| existing.contains_key(&ep.source_id));
+        let response = FetchResponse {
+            podcast_key: key,
+            podcast_slug: slug,
+            episodes_inserted: to_insert.len(),
+            episodes_updated: to_update.len(),
+        };
+        for episode in to_update {
+            let existing_key = existing
+                .get(&episode.source_id)
+                .copied()
+                .expect("partition guarantees existence");
+            update_episode_query(episode, existing_key, key)
+                .exec(&tx)
+                .await
+                .change_context(UpdateError::Episodes)?;
+        }
+        if !to_insert.is_empty() {
+            insert_episodes(to_insert, key)
+                .exec(&tx)
+                .await
+                .change_context(UpdateError::Episodes)?;
+        }
         tx.commit().await.change_context(UpdateError::Commit)?;
-        Ok(PodcastFeed { podcast, episodes })
+        Ok(response)
     }
 }
 
@@ -62,13 +90,52 @@ async fn update_podcast(
     update_podcast_query(podcast, primary_key).exec(tx).await
 }
 
-fn remove_episodes_query(podcast_key: PodcastKey) -> DeleteMany<episode::Entity> {
-    episode::Entity::delete_many().filter(episode::Column::PodcastKey.eq(podcast_key))
+fn get_existing_episodes_query(podcast_key: PodcastKey) -> Select<episode::Entity> {
+    episode::Entity::find()
+        .select_only()
+        .columns([episode::Column::SourceId, episode::Column::PrimaryKey])
+        .filter(episode::Column::PodcastKey.eq(podcast_key))
 }
 
-async fn remove_episodes(tx: &DatabaseTransaction, podcast_key: PodcastKey) -> Result<(), DbErr> {
-    remove_episodes_query(podcast_key).exec(tx).await?;
-    Ok(())
+async fn get_existing_episodes(
+    tx: &DatabaseTransaction,
+    podcast_key: PodcastKey,
+) -> Result<HashMap<String, EpisodeKey>, DbErr> {
+    let hash_map = get_existing_episodes_query(podcast_key)
+        .into_tuple()
+        .all(tx)
+        .await?
+        .into_iter()
+        .collect();
+    Ok(hash_map)
+}
+
+fn update_episode_query(
+    episode: EpisodeInfo,
+    existing_key: EpisodeKey,
+    podcast_key: PodcastKey,
+) -> UpdateOne<episode::ActiveModel> {
+    let model = episode::ActiveModel {
+        primary_key: Unchanged(existing_key),
+        podcast_key: Unchanged(Some(podcast_key)),
+        file_sub_path: Unchanged(None),
+        image_sub_path: Unchanged(None),
+        source_id: Set(episode.source_id),
+        title: Set(episode.title),
+        source_url: Set(episode.source_url),
+        source_file_size: Set(episode.source_file_size),
+        source_content_type: Set(episode.source_content_type),
+        published_at: Set(episode.published_at),
+        description: Set(episode.description),
+        source_duration: Set(episode.source_duration),
+        image: Set(episode.image),
+        explicit: Set(episode.explicit),
+        itunes_title: Set(episode.itunes_title),
+        episode: Set(episode.episode),
+        season: Set(episode.season),
+        kind: Set(episode.kind),
+    };
+    episode::Entity::update(model)
 }
 
 fn get_podcast_key_by_slug_select(slug: &Slug) -> Select<podcast::Entity> {
@@ -97,11 +164,11 @@ pub enum UpdateError {
     CheckExists,
     #[error("Podcast with this slug does not exist")]
     NotFound,
-    #[error("Unable to remove previous episodes")]
-    RemoveEpisodes,
+    #[error("Unable to get existing episodes")]
+    GetExistingEpisodes,
     #[error("Unable to update podcast")]
     Podcast,
-    #[error("Unable to insert episodes")]
+    #[error("Unable to update or insert episodes")]
     Episodes,
     #[error("Unable to commit database transaction")]
     Commit,
@@ -143,10 +210,25 @@ mod tests {
     }
 
     #[test]
-    fn _remove_episodes_query() {
+    fn _get_existing_episodes_query() {
         // Arrange
         // Act
-        let statement = remove_episodes_query(PODCAST_KEY).build(DB_BACKEND);
+        let statement = get_existing_episodes_query(PODCAST_KEY).build(DB_BACKEND);
+
+        // Assert
+        assert_snapshot!(format_sql(&statement));
+    }
+
+    #[test]
+    fn _update_episode_query() {
+        // Arrange
+        let episode = EpisodeInfo::example();
+
+        // Act
+        let statement = update_episode_query(episode, 42, PODCAST_KEY)
+            .validate()
+            .expect("query should be valid")
+            .build(DB_BACKEND);
 
         // Assert
         assert_snapshot!(format_sql(&statement));
@@ -160,21 +242,20 @@ mod tests {
             .into_iter()
             .next()
             .expect("should have at least one feed");
-        feed.podcast.title = "Updated Title".to_owned();
-        let slug = feed.podcast.slug.clone();
+        let existing_count = feed.episodes.len();
+        feed.episodes.push(EpisodeInfo {
+            source_id: "new-episode-source-id".to_owned(),
+            ..EpisodeInfo::example()
+        });
         let _logger = init_test_logger();
 
         // Act
         let result = metadata.update_feed(feed).await;
 
         // Assert
-        let saved_feed = result.assert_ok_debug();
-        assert_eq!(saved_feed.podcast.slug, slug);
-        assert_eq!(saved_feed.podcast.title, "Updated Title");
-        assert_eq!(
-            saved_feed.podcast.primary_key, 1,
-            "should reuse primary key"
-        );
+        let response = result.assert_ok_debug();
+        assert_eq!(response.episodes_updated, existing_count);
+        assert_eq!(response.episodes_inserted, 1);
     }
 
     #[tokio::test]

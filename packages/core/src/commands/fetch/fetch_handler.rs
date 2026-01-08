@@ -35,16 +35,16 @@ impl Execute<FetchRequest, FetchResponse, Report<FetchError>> for FetchHandler {
             .change_context(FetchError::Rss)?;
         trace!(slug = %request.slug, episodes = feed.episodes.len(), "Fetched feed");
         feed.podcast.feed_url = Some(feed_url);
-        let feed = self
+        let response = self
             .metadata
             .update_feed(feed)
             .await
             .change_context(FetchError::Save)?;
-        info!(slug = %feed.podcast.slug, episodes = feed.episodes.len(), "Fetched podcast");
-        Ok(FetchResponse {
-            podcast_key: feed.podcast.primary_key,
-            episode_count: feed.episodes.len(),
-        })
+        info!(
+            response.podcast_key,
+            response.episodes_updated, response.episodes_inserted, "Fetched podcast"
+        );
+        Ok(response)
     }
 }
 
@@ -85,6 +85,6 @@ mod tests {
 
         // Assert
         let response = result.assert_ok_debug();
-        assert!(response.episode_count > 0);
+        assert!(response.episodes_updated > 0, "updated");
     }
 }

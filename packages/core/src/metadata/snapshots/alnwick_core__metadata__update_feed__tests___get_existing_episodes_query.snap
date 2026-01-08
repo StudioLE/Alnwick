@@ -2,7 +2,10 @@
 source: packages/core/src/metadata/update_feed.rs
 expression: format_sql(&statement)
 ---
-DELETE FROM
+SELECT
+  "episodes"."source_id",
+  "episodes"."primary_key"
+FROM
   "episodes"
 WHERE
   "episodes"."podcast_key" = 1
