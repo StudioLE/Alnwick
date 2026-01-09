@@ -88,7 +88,8 @@ mod tests {
     pub fn _get_download_podcast_query() {
         // Arrange
         // Act
-        let statement = get_download_podcast_query(PODCAST_KEY).into_statement(DB_BACKEND);
+        let statement =
+            get_download_podcast_query(MockFeeds::PODCAST_KEY).into_statement(DB_BACKEND);
 
         // Assert
         let sql = format_sql(&statement);
@@ -99,8 +100,8 @@ mod tests {
     pub fn _get_download_episode_query() {
         // Arrange
         // Act
-        let statement =
-            get_download_episode_query(PODCAST_KEY, EPISODE_KEY).into_statement(DB_BACKEND);
+        let statement = get_download_episode_query(MockFeeds::PODCAST_KEY, MockFeeds::EPISODE_KEY)
+            .into_statement(DB_BACKEND);
 
         // Assert
         let sql = format_sql(&statement);
@@ -110,12 +111,17 @@ mod tests {
     #[tokio::test]
     pub async fn get_download_podcast() {
         // Arrange
-        let metadata = MetadataRepositoryExample::create().await;
+        let metadata = MockServices::default()
+            .create()
+            .await
+            .get_service::<MetadataRepository>()
+            .await
+            .expect("should be able to get metadata repository");
         let _logger = init_test_logger();
 
         // Act
         let result = metadata
-            .get_download_podcast(PODCAST_KEY, EPISODE_KEY)
+            .get_download_podcast(MockFeeds::PODCAST_KEY, MockFeeds::EPISODE_KEY)
             .await;
 
         // Assert

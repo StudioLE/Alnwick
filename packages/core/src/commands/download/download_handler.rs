@@ -52,12 +52,12 @@ mod tests {
     #[serial]
     pub async fn download_handler() {
         // Arrange
-        let services = TestServiceProvider::create().await;
+        let services = MockServices::default().create().await;
         let download = services
             .get_service::<DownloadHandler>()
             .await
             .expect("should be able to get command");
-        let request = DownloadRequest::new(PODCAST_KEY, EPISODE_KEY);
+        let request = DownloadRequest::new(MockFeeds::PODCAST_KEY, MockFeeds::EPISODE_KEY);
         let _logger = init_test_logger();
 
         // Act

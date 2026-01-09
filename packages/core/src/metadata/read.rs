@@ -83,7 +83,12 @@ mod tests {
     #[tokio::test]
     pub async fn get_all_feeds() {
         // Arrange
-        let metadata = MetadataRepositoryExample::create().await;
+        let metadata = MockServices::default()
+            .create()
+            .await
+            .get_service::<MetadataRepository>()
+            .await
+            .expect("should be able to get metadata repository");
         let _logger = init_test_logger();
 
         // Act
@@ -93,7 +98,7 @@ mod tests {
         let hash_map = result.assert_ok_debug();
         assert_eq!(
             hash_map.keys().len(),
-            MetadataRepositoryExample::PODCAST_COUNT,
+            MockFeeds::PODCAST_COUNT as usize,
             "podcast count"
         );
     }
@@ -105,9 +110,8 @@ mod tests {
 
         // Act
         let count = _get_feed_by_slug(options).await;
-        let expected = MetadataRepositoryExample::SEASONS_PER_YEAR
-            * MetadataRepositoryExample::EPISODES_PER_SEASON
-            * MetadataRepositoryExample::YEAR_COUNT;
+        let expected =
+            MockFeeds::SEASONS_PER_YEAR * MockFeeds::EPISODES_PER_SEASON * MockFeeds::YEAR_COUNT;
         assert_eq!(count, expected as usize);
     }
 
@@ -115,14 +119,13 @@ mod tests {
     pub async fn get_feed_by_slug__filter_year() {
         // Arrange
         let options = FilterOptions {
-            year: Some(MetadataRepositoryExample::START_YEAR as i32),
+            year: Some(MockFeeds::START_YEAR as i32),
             ..FilterOptions::default()
         };
 
         // Act
         let count = _get_feed_by_slug(Some(options)).await;
-        let expected = MetadataRepositoryExample::SEASONS_PER_YEAR
-            * MetadataRepositoryExample::EPISODES_PER_SEASON;
+        let expected = MockFeeds::SEASONS_PER_YEAR * MockFeeds::EPISODES_PER_SEASON;
         assert_eq!(count, expected as usize);
     }
 
@@ -130,8 +133,8 @@ mod tests {
     pub async fn get_feed_by_slug__filter_year_range() {
         // Arrange
         let options = FilterOptions {
-            from_year: Some(MetadataRepositoryExample::START_YEAR as i32),
-            to_year: Some(MetadataRepositoryExample::START_YEAR as i32 + 2),
+            from_year: Some(MockFeeds::START_YEAR as i32),
+            to_year: Some(MockFeeds::START_YEAR as i32 + 2),
             ..FilterOptions::default()
         };
 
@@ -139,9 +142,8 @@ mod tests {
         let count = _get_feed_by_slug(Some(options)).await;
 
         // Assert
-        let expected = 3
-            * MetadataRepositoryExample::SEASONS_PER_YEAR
-            * MetadataRepositoryExample::EPISODES_PER_SEASON;
+        let expected =
+            MockFeeds::PODCAST_COUNT * MockFeeds::SEASONS_PER_YEAR * MockFeeds::EPISODES_PER_SEASON;
         assert_eq!(count, expected as usize);
     }
 
@@ -157,10 +159,7 @@ mod tests {
         let count = _get_feed_by_slug(Some(options)).await;
 
         // Assert
-        assert_eq!(
-            count,
-            MetadataRepositoryExample::EPISODES_PER_SEASON as usize
-        );
+        assert_eq!(count, MockFeeds::EPISODES_PER_SEASON as usize);
     }
 
     #[tokio::test]
@@ -176,14 +175,19 @@ mod tests {
         let count = _get_feed_by_slug(Some(options)).await;
 
         // Assert
-        let expected = 3 * MetadataRepositoryExample::EPISODES_PER_SEASON;
+        let expected = 3 * MockFeeds::EPISODES_PER_SEASON;
         assert_eq!(count, expected as usize);
     }
 
     async fn _get_feed_by_slug(options: Option<FilterOptions>) -> usize {
         // Arrange
-        let metadata = MetadataRepositoryExample::create().await;
-        let slug = MetadataRepositoryExample::podcast_slug();
+        let metadata = MockServices::default()
+            .create()
+            .await
+            .get_service::<MetadataRepository>()
+            .await
+            .expect("should be able to get metadata repository");
+        let slug = MockFeeds::podcast_slug();
         let _logger = init_test_logger();
 
         // Act

@@ -25,25 +25,18 @@ impl MetadataRepository {
     /// - Returns `Ok(None)` if the podcast does not exist
     /// - Returns `Ok(Some(None))` if the podcast exists but has no feed URL
     async fn get_feed_url(&self, slug: &Slug) -> Result<Option<Option<UrlWrapper>>, DbErr> {
-        self.get_feed_url_select(slug)
+        get_feed_url_query(slug)
             .into_tuple::<Option<UrlWrapper>>()
             .one(&self.db)
             .await
     }
+}
 
-    #[allow(clippy::unused_self)]
-    fn get_feed_url_select(&self, slug: &Slug) -> Select<podcast::Entity> {
-        podcast::Entity::find()
-            .select_only()
-            .column(podcast::Column::FeedUrl)
-            .filter(podcast::Column::Slug.eq(slug.to_string()))
-    }
-
-    #[cfg(test)]
-    fn get_feed_url_query(&self, slug: &Slug) -> Statement {
-        self.get_feed_url_select(slug)
-            .build(self.db.get_database_backend())
-    }
+fn get_feed_url_query(slug: &Slug) -> Select<podcast::Entity> {
+    podcast::Entity::find()
+        .select_only()
+        .column(podcast::Column::FeedUrl)
+        .filter(podcast::Column::Slug.eq(slug.to_string()))
 }
 
 #[cfg(test)]
@@ -52,13 +45,12 @@ mod tests {
     use super::*;
 
     #[tokio::test]
-    pub async fn get_feed_url_query() {
+    pub async fn _get_feed_url_query() {
         // Arrange
-        let metadata = MetadataRepositoryExample::create().await;
-        let slug = MetadataRepositoryExample::podcast_slug();
+        let slug = MockFeeds::podcast_slug();
 
         // Act
-        let statement = metadata.get_feed_url_query(&slug);
+        let statement = get_feed_url_query(&slug).build(DB_BACKEND);
 
         // Assert
         let sql = format_sql(&statement);
@@ -68,7 +60,12 @@ mod tests {
     #[tokio::test]
     pub async fn get_feed_url__not_found() {
         // Arrange
-        let metadata = MetadataRepositoryExample::create().await;
+        let metadata = MockServices::new()
+            .create()
+            .await
+            .get_service::<MetadataRepository>()
+            .await
+            .expect("should be able to get metadata repository");
         let slug = Slug::from_str("non-existent").expect("should be valid slug");
 
         // Act
@@ -85,8 +82,13 @@ mod tests {
     #[tokio::test]
     pub async fn get_feed_url__no_url() {
         // Arrange
-        let metadata = MetadataRepositoryExample::create().await;
-        let slug = MetadataRepositoryExample::podcast_slug();
+        let metadata = MockServices::default()
+            .create()
+            .await
+            .get_service::<MetadataRepository>()
+            .await
+            .expect("should be able to get metadata repository");
+        let slug = MockFeeds::podcast_slug();
 
         // Act
         let result = metadata.get_feed_url(&slug).await;

@@ -81,7 +81,7 @@ impl PodcastInfo {
             title: "Podcast Title".to_owned(),
             description: "Sed ac volutpat tortor. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Suspendisse placerat leo augue, id elementum orci venenatis eu.".to_owned(),
             image: Some(
-                MetadataRepositoryExample::get_image_url(),
+                MockFeeds::image_url(),
             ),
             language: Some("en-us".to_owned()),
             categories: PodcastCategories::default(),

@@ -12,4 +12,4 @@ FROM
   "podcasts"
   LEFT JOIN "episodes" ON "podcasts"."primary_key" = "episodes"."podcast_key"
 WHERE
-  "podcasts"."slug" = 'irl'
+  "podcasts"."slug" = 'test-0'

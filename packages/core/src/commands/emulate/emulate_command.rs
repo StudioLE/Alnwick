@@ -165,13 +165,13 @@ mod tests {
     #[tokio::test]
     pub async fn feeds_command() {
         // Arrange
-        let services = TestServiceProvider::create().await;
+        let services = MockServices::default().create().await;
         let command = services
             .get_service::<EmulateCommand>()
             .await
             .expect("should be able to get command");
         let options = EmulateOptions {
-            podcast_slug: MetadataRepositoryExample::podcast_slug(),
+            podcast_slug: MockFeeds::podcast_slug(),
         };
         let _logger = init_test_logger();
 

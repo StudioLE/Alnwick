@@ -74,12 +74,18 @@ mod tests {
     #[tokio::test]
     pub async fn update_episode_query() {
         // Arrange
-        let metadata = MetadataRepositoryExample::create().await;
+        let metadata = MockServices::default()
+            .create()
+            .await
+            .get_service::<MetadataRepository>()
+            .await
+            .expect("should be able to get metadata repository");
         let file_path = PathBuf::from("path/to/audio.mp3");
         let image_path = Some(PathBuf::from("path/to/image.jpg"));
 
         // Act
-        let statement = metadata.update_episode_query(EPISODE_KEY, file_path, image_path);
+        let statement =
+            metadata.update_episode_query(MockFeeds::EPISODE_KEY, file_path, image_path);
 
         // Assert
         let sql = format_sql(&statement);
@@ -89,21 +95,29 @@ mod tests {
     #[tokio::test]
     pub async fn update_episode() {
         // Arrange
-        let metadata = MetadataRepositoryExample::create().await;
+        let metadata = MockServices::default()
+            .create()
+            .await
+            .get_service::<MetadataRepository>()
+            .await
+            .expect("should be able to get metadata repository");
         let file_path = PathBuf::from("path/to/audio.mp3");
         let image_path = Some(PathBuf::from("path/to/image.jpg"));
         let _logger = init_test_logger();
-        let slug = podcast_slug();
 
         // Act
         let result = metadata
-            .update_episode(EPISODE_KEY, file_path.clone(), image_path.clone())
+            .update_episode(
+                MockFeeds::EPISODE_KEY,
+                file_path.clone(),
+                image_path.clone(),
+            )
             .await;
 
         // Assert
         result.assert_ok_debug();
         let episode = metadata
-            .get_episode(slug, EPISODE_KEY)
+            .get_episode(MockFeeds::podcast_slug(), MockFeeds::EPISODE_KEY)
             .await
             .expect("should be able to get episode")
             .expect("episode should exist");

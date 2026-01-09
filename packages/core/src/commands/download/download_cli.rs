@@ -77,15 +77,15 @@ mod tests {
     #[serial]
     pub async fn download_command() {
         // Arrange
-        let services = TestServiceProvider::create().await;
+        let services = MockServices::default().create().await;
         let command = services
             .get_service::<DownloadCliCommand>()
             .await
             .expect("should be able to get command");
         let options = DownloadOptions {
-            podcast_slug: MetadataRepositoryExample::podcast_slug(),
+            podcast_slug: MockFeeds::podcast_slug(),
             filter: FilterOptions {
-                year: Some(MetadataRepositoryExample::START_YEAR as i32),
+                year: Some(MockFeeds::START_YEAR as i32),
                 season: Some(1),
                 ..FilterOptions::default()
             },

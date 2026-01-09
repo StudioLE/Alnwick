@@ -181,7 +181,7 @@ mod tests {
     #[test]
     fn _get_podcast_key_by_slug_select() {
         // Arrange
-        let slug = MetadataRepositoryExample::podcast_slug();
+        let slug = MockFeeds::podcast_slug();
 
         // Act
         let statement = get_podcast_key_by_slug_select(&slug).build(DB_BACKEND);
@@ -193,13 +193,14 @@ mod tests {
     #[test]
     fn _update_podcast_query() {
         // Arrange
-        let feed = MetadataRepositoryExample::example_feeds()
+        let feed = MockFeeds::default()
+            .feeds
             .into_iter()
             .next()
             .expect("should have at least one feed");
 
         // Act
-        let statement = update_podcast_query(feed.podcast, PODCAST_KEY)
+        let statement = update_podcast_query(feed.podcast, MockFeeds::PODCAST_KEY)
             .validate()
             .expect("query should be valid")
             .build(DB_BACKEND);
@@ -212,7 +213,7 @@ mod tests {
     fn _get_existing_episodes_query() {
         // Arrange
         // Act
-        let statement = get_existing_episodes_query(PODCAST_KEY).build(DB_BACKEND);
+        let statement = get_existing_episodes_query(MockFeeds::PODCAST_KEY).build(DB_BACKEND);
 
         // Assert
         assert_snapshot!(format_sql(&statement));
@@ -224,7 +225,7 @@ mod tests {
         let episode = EpisodeInfo::example();
 
         // Act
-        let statement = update_episode_query(episode, 42, PODCAST_KEY)
+        let statement = update_episode_query(episode, 42, MockFeeds::PODCAST_KEY)
             .validate()
             .expect("query should be valid")
             .build(DB_BACKEND);
@@ -236,8 +237,14 @@ mod tests {
     #[tokio::test]
     pub async fn update_feed() {
         // Arrange
-        let metadata = MetadataRepositoryExample::create().await;
-        let mut feed = MetadataRepositoryExample::example_feeds()
+        let metadata = MockServices::default()
+            .create()
+            .await
+            .get_service::<MetadataRepository>()
+            .await
+            .expect("should be able to get metadata repository");
+        let mut feed = MockFeeds::default()
+            .feeds
             .into_iter()
             .next()
             .expect("should have at least one feed");
@@ -260,8 +267,14 @@ mod tests {
     #[tokio::test]
     pub async fn update_feed__not_found() {
         // Arrange
-        let metadata = MetadataRepositoryExample::create().await;
-        let mut feed = MetadataRepositoryExample::example_feeds()
+        let metadata = MockServices::default()
+            .create()
+            .await
+            .get_service::<MetadataRepository>()
+            .await
+            .expect("should be able to get metadata repository");
+        let mut feed = MockFeeds::default()
+            .feeds
             .into_iter()
             .next()
             .expect("should have at least one feed");

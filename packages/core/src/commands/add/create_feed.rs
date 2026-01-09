@@ -73,7 +73,8 @@ mod tests {
     #[test]
     fn _insert_podcast() {
         // Arrange
-        let feed = MetadataRepositoryExample::example_feeds()
+        let feed = MockFeeds::default()
+            .feeds
             .into_iter()
             .next()
             .expect("should have at least one feed");
@@ -88,7 +89,8 @@ mod tests {
     #[test]
     fn _insert_episodes() {
         // Arrange
-        let feed = MetadataRepositoryExample::example_feeds()
+        let feed = MockFeeds::default()
+            .feeds
             .into_iter()
             .next()
             .expect("should have at least one feed");
@@ -103,8 +105,14 @@ mod tests {
     #[tokio::test]
     pub async fn create_feed() {
         // Arrange
-        let metadata = MetadataRepositoryExample::create().await;
-        let mut feed = MetadataRepositoryExample::example_feeds()
+        let metadata = MockServices::default()
+            .create()
+            .await
+            .get_service::<MetadataRepository>()
+            .await
+            .expect("should be able to get metadata repository");
+        let mut feed = MockFeeds::default()
+            .feeds
             .into_iter()
             .next()
             .expect("should have at least one feed");
@@ -122,8 +130,14 @@ mod tests {
     #[tokio::test]
     pub async fn create_feed__already_exists() {
         // Arrange
-        let metadata = MetadataRepositoryExample::create().await;
-        let feed = MetadataRepositoryExample::example_feeds()
+        let metadata = MockServices::default()
+            .create()
+            .await
+            .get_service::<MetadataRepository>()
+            .await
+            .expect("should be able to get metadata repository");
+        let feed = MockFeeds::default()
+            .feeds
             .into_iter()
             .next()
             .expect("should have at least one feed");
