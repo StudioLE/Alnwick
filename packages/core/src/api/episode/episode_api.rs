@@ -46,10 +46,10 @@ mod tests {
     #[test]
     pub fn _get_episode_query() {
         // Arrange
-        let slug = MetadataRepositoryExample::podcast_slug();
+        let slug = MockFeeds::podcast_slug();
 
         // Act
-        let statement = get_episode_query(slug, EPISODE_KEY).into_statement(DB_BACKEND);
+        let statement = get_episode_query(slug, MockFeeds::EPISODE_KEY).into_statement(DB_BACKEND);
 
         // Assert
         let sql = format_sql(&statement);
@@ -59,12 +59,17 @@ mod tests {
     #[tokio::test]
     pub async fn get_episode() {
         // Arrange
-        let metadata = MetadataRepositoryExample::create().await;
-        let slug = MetadataRepositoryExample::podcast_slug();
+        let metadata = MockServices::default()
+            .create()
+            .await
+            .get_service::<MetadataRepository>()
+            .await
+            .expect("should be able to get metadata repository");
+        let slug = MockFeeds::podcast_slug();
         let _logger = init_test_logger();
 
         // Act
-        let result = metadata.get_episode(slug, EPISODE_KEY).await;
+        let result = metadata.get_episode(slug, MockFeeds::EPISODE_KEY).await;
 
         // Assert
         let episode = result.assert_ok_debug().expect("Episode should exist");

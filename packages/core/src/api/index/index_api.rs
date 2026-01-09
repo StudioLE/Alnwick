@@ -45,7 +45,12 @@ mod tests {
     #[tokio::test]
     pub async fn get_podcasts() {
         // Arrange
-        let metadata = MetadataRepositoryExample::create().await;
+        let metadata = MockServices::default()
+            .create()
+            .await
+            .get_service::<MetadataRepository>()
+            .await
+            .expect("should be able to get metadata repository");
         let _logger = init_test_logger();
 
         // Act

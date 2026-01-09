@@ -101,20 +101,19 @@ mod tests {
 
     #[tokio::test]
     #[serial]
-    #[allow(deprecated)]
     pub async fn fetch_feed_simplecast() {
         // Arrange
-        let _logger = init_test_logger();
-        let metadata = MetadataRepositoryExample::create().await;
-        let handler = ServiceProvider::new()
-            .with_instance(metadata)
+        let handler = MockServices::new()
+            .create()
+            .await
             .get_service::<FetchHandler>()
             .await
             .expect("should be able to get handler");
+        let _logger = init_test_logger();
 
         // Act
         let result = handler
-            .fetch_feed(&example_slug(), &example_simplecast_url())
+            .fetch_feed(&MockFeeds::podcast_slug(), &example_simplecast_url())
             .await;
 
         // Assert
@@ -124,12 +123,11 @@ mod tests {
 
     #[tokio::test]
     #[serial]
-    #[allow(deprecated)]
     pub async fn fetch_feed_rss() {
         // Arrange
-        let metadata = MetadataRepositoryExample::create().await;
-        let handler = ServiceProvider::new()
-            .with_instance(metadata)
+        let handler = MockServices::new()
+            .create()
+            .await
             .get_service::<FetchHandler>()
             .await
             .expect("should be able to get handler");
@@ -137,7 +135,7 @@ mod tests {
 
         // Act
         let result = handler
-            .fetch_feed(&example_slug(), &example_rss_url())
+            .fetch_feed(&MockFeeds::podcast_slug(), &example_rss_url())
             .await;
 
         // Assert

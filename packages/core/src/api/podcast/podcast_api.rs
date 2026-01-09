@@ -61,10 +61,8 @@ mod tests {
     #[test]
     pub fn _get_podcast_query() {
         // Arrange
-        let slug = example_slug();
-
         // Act
-        let statement = get_podcast_query(slug).into_statement(DB_BACKEND);
+        let statement = get_podcast_query(MockFeeds::podcast_slug()).into_statement(DB_BACKEND);
 
         // Assert
         let sql = format_sql(&statement);
@@ -75,7 +73,7 @@ mod tests {
     pub fn _get_episodes_query() {
         // Arrange
         // Act
-        let statement = get_episodes_query(PODCAST_KEY).into_statement(DB_BACKEND);
+        let statement = get_episodes_query(MockFeeds::PODCAST_KEY).into_statement(DB_BACKEND);
 
         // Assert
         let sql = format_sql(&statement);
@@ -85,8 +83,13 @@ mod tests {
     #[tokio::test]
     pub async fn get_podcast() {
         // Arrange
-        let metadata = MetadataRepositoryExample::create().await;
-        let slug = MetadataRepositoryExample::podcast_slug();
+        let metadata = MockServices::default()
+            .create()
+            .await
+            .get_service::<MetadataRepository>()
+            .await
+            .expect("should be able to get metadata repository");
+        let slug = MockFeeds::podcast_slug();
         let _logger = init_test_logger();
 
         // Act

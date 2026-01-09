@@ -39,29 +39,27 @@ mod tests {
 
     #[tokio::test]
     #[serial]
-    #[allow(deprecated)]
     pub async fn fetch_handler() {
         // Arrange
-        let services = TestServiceProvider::create().await;
+        let services = MockServices::new().create().await;
         let add_handler = services
             .get_service::<AddHandler>()
             .await
             .expect("should be able to get add handler");
         let add_request = AddRequest {
-            slug: example_slug(),
+            slug: MockFeeds::podcast_slug(),
             feed_url: example_rss_url(),
         };
         add_handler
             .execute(&add_request)
             .await
             .expect("should be able to add podcast");
-
         let handler = services
             .get_service::<FetchHandler>()
             .await
             .expect("should be able to get fetch handler");
         let request = FetchRequest {
-            slug: example_slug(),
+            slug: MockFeeds::podcast_slug(),
         };
         let _logger = init_test_logger();
 
