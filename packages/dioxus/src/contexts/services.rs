@@ -8,6 +8,7 @@ static SERVICES: OnceCell<Arc<ServiceProvider>> = OnceCell::const_new();
 static RUNNER: OnceCell<Arc<CommandRunner<CommandInfo>>> = OnceCell::const_new();
 static MEDIATOR: OnceCell<Arc<CommandMediator<CommandInfo>>> = OnceCell::const_new();
 static METADATA: OnceCell<Arc<MetadataRepository>> = OnceCell::const_new();
+static ADD_HANDLER: OnceCell<Arc<AddHandler>> = OnceCell::const_new();
 
 async fn init_services() -> Arc<ServiceProvider> {
     Arc::new(
@@ -62,4 +63,16 @@ pub async fn subscribe_to_events() -> Receiver<CommandEvent> {
 
 pub async fn get_metadata() -> &'static Arc<MetadataRepository> {
     METADATA.get_or_init(init_metadata).await
+}
+
+async fn init_add_handler() -> Arc<AddHandler> {
+    let services = get_services().await;
+    services
+        .get_service::<AddHandler>()
+        .await
+        .expect("should be able to get add handler")
+}
+
+pub async fn get_add_handler() -> &'static Arc<AddHandler> {
+    ADD_HANDLER.get_or_init(init_add_handler).await
 }

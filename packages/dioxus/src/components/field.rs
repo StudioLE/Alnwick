@@ -7,37 +7,39 @@ const NBSP: char = '\u{00A0}';
 #[derive(Props, Clone, PartialEq)]
 pub struct FieldProps<T>
 where
-    T: 'static + Clone + Copy + PartialEq,
+    T: 'static + Clone + PartialEq,
 {
-    /// Label displayed above the field
-    label: String,
-    /// Unit displayed at the end of the field
-    unit: String,
-    /// Placeholder text when the field is empty
-    placeholder: String,
-    /// Global value
-    global_value: Signal<Option<T>>,
-    /// Convert from input text to a value value to a
-    from_string: fn(String) -> Result<T, String>,
-    /// Convert from a value to input text
-    to_string: fn(Option<T>) -> String,
+    /// Label displayed above the field.
+    pub label: String,
+    /// Placeholder text when the field is empty.
+    pub placeholder: String,
+    /// Global value.
+    pub global_value: Signal<Option<T>>,
+    /// Convert from input text to a value.
+    pub from_string: fn(String) -> Result<T, String>,
+    /// Convert from a value to input text.
+    pub to_string: fn(Option<T>) -> String,
+    /// Unit displayed at the end of the field.
+    #[props(default)]
+    pub unit: Option<String>,
 }
 
 #[component]
 pub fn Field<T>(mut props: FieldProps<T>) -> Element
 where
-    T: 'static + Clone + Copy + PartialEq,
+    T: 'static + Clone + PartialEq,
 {
     let initial_value = (props.to_string)(props.global_value.cloned());
     let mut field_value = use_signal(|| initial_value);
-    let mut message = use_signal(|| None);
-    use_effect(move || {
-        let field_value = field_value.cloned();
-        if field_value.is_empty() {
+    let mut message: Signal<Option<String>> = use_signal(|| None);
+    let from_string = props.from_string;
+    let mut validate = move |input: String| {
+        if input.is_empty() {
             props.global_value.set(None);
+            message.set(None);
             return;
         }
-        match (props.from_string)(field_value) {
+        match from_string(input) {
             Ok(value) => {
                 props.global_value.set(Some(value));
                 message.set(None);
@@ -47,17 +49,19 @@ where
                 message.set(Some(e));
             }
         }
-    });
+    };
+    let has_unit = props.unit.is_some();
     rsx! {
         div { class: "field",
             label { class: "label", "{props.label}" }
-            div { class: "field has-addons",
+            div { class: if has_unit { "field has-addons" } else { "control" },
                 p { class: "control",
                     input {
                         oninput: move |event| {
                             event.prevent_default();
                             let input_value = event.value();
                             field_value.set(input_value.clone());
+                            validate(input_value);
                         },
                         class: get_class(message),
                         r#type: "text",
@@ -65,8 +69,10 @@ where
                         value: field_value,
                     }
                 }
-                p { class: "control",
-                    a { class: "button is-static", "{props.unit}" }
+                if let Some(unit) = &props.unit {
+                    p { class: "control",
+                        a { class: "button is-static", "{unit}" }
+                    }
                 }
             }
             if let Some(m) = message.read().deref() {
