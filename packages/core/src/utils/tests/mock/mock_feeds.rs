@@ -38,7 +38,7 @@ impl MockFeeds {
     /// Slug for the first podcast.
     ///
     /// The key will be [`MockFeeds::PODCAST_KEY`].
-    const PODCAST_SLUG: &str = "test-0";
+    pub const PODCAST_SLUG: &str = "test-0";
 
     /// Get the slug for the first podcast.
     ///

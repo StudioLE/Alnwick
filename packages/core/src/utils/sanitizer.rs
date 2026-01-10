@@ -14,7 +14,7 @@ const RIGHT_TO_LEFT_OVERRIDE: char = '\u{202E}';
 const ZERO_WIDTH_NO_BREAK_SPACE: char = '\u{FEFF}';
 const EN_DASH: char = '\u{2013}';
 const EM_DASH: char = '\u{2014}';
-const RESTRICTED: [char; 16] = [
+const RESTRICTED: [char; 18] = [
     NON_BREAKING_SPACE,
     ZERO_WIDTH_SPACE,
     LEFT_TO_RIGHT_MARK,
@@ -31,6 +31,8 @@ const RESTRICTED: [char; 16] = [
     '"',
     '?',
     '*',
+    '#',
+    '%',
 ];
 const RESTRICTED_DIVIDERS: [char; 5] = ['/', '\\', '|', EN_DASH, EM_DASH];
 const DIVIDER_REPLACEMENT: char = '-';
@@ -38,6 +40,10 @@ const DIVIDER_REPLACEMENT: char = '-';
 pub struct Sanitizer;
 
 impl Sanitizer {
+    /// Sanitize a string for use as a file name.
+    ///
+    /// - Removes restricted characters (Unicode control characters, Windows-forbidden characters, URL-problematic characters)
+    /// - Replaces path dividers with dashes
     #[must_use]
     pub fn execute(input: &str) -> String {
         input
@@ -51,5 +57,34 @@ impl Sanitizer {
                 }
             })
             .collect()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn removes_hash_character() {
+        assert_eq!(Sanitizer::execute("Episode #1"), "Episode 1");
+    }
+
+    #[test]
+    fn removes_percent_character() {
+        assert_eq!(Sanitizer::execute("100% Complete"), "100 Complete");
+    }
+
+    #[test]
+    fn removes_multiple_restricted_characters() {
+        assert_eq!(
+            Sanitizer::execute("Episode #1: 100% Done?"),
+            "Episode 1 100 Done"
+        );
+    }
+
+    #[test]
+    fn replaces_path_dividers_with_dash() {
+        assert_eq!(Sanitizer::execute("Part 1/2"), "Part 1-2");
+        assert_eq!(Sanitizer::execute("A|B"), "A-B");
     }
 }

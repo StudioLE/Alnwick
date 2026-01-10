@@ -13,5 +13,7 @@ mod schema;
 pub use filter_options::*;
 pub use metadata_error::*;
 #[cfg(feature = "server")]
+pub(crate) use migration::*;
+#[cfg(feature = "server")]
 pub use repository::*;
 pub use schema::*;

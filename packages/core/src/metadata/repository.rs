@@ -1,4 +1,3 @@
-use super::migration::Migrator;
 use crate::prelude::*;
 use sea_orm::*;
 use sea_orm_migration::MigratorTrait;
@@ -17,7 +16,7 @@ impl Service for MetadataRepository {
             .await
             .expect("PathProvider should be available");
         let metadata = MetadataRepository::new(paths.get_metadata_db_path()).await?;
-        metadata.migrate().await?;
+        metadata.migrate(paths).await?;
         Ok(metadata)
     }
 }
@@ -27,6 +26,8 @@ impl Service for MetadataRepository {
 pub enum MetadataRepositoryCreateError {
     #[error("Unable to connect to database")]
     DatabaseConnection,
+    #[error("PATH_PROVIDER already set")]
+    MigrationPathProvider,
     #[error("Unable to migrate database")]
     DatabaseMigration,
 }
@@ -40,7 +41,11 @@ impl MetadataRepository {
         Ok(Self { db })
     }
 
-    pub async fn migrate(&self) -> Result<(), Report<MetadataRepositoryCreateError>> {
+    pub async fn migrate(
+        &self,
+        paths: Arc<PathProvider>,
+    ) -> Result<(), Report<MetadataRepositoryCreateError>> {
+        set_path_provider(paths)?;
         Migrator::up(&self.db, None)
             .await
             .change_context(MetadataRepositoryCreateError::DatabaseMigration)
@@ -55,16 +60,18 @@ mod tests {
     #[tokio::test]
     pub async fn migrate() {
         // Arrange
-        let path = TempDirectory::default()
-            .create()
-            .expect("Should be able to create a temp dir")
-            .join(METADATA_DB);
-        let metadata = MetadataRepository::new(path)
+        let services = MockServices::new().create().await;
+        let paths = services
+            .get_service::<PathProvider>()
             .await
-            .expect("Should be able to create a repository");
+            .expect("PathProvider should be available");
+        let metadata = services
+            .get_service::<MetadataRepository>()
+            .await
+            .expect("MetadataRepository should be available");
 
         // Act
-        metadata.migrate().await.assert_ok_debug();
+        metadata.migrate(paths).await.assert_ok_debug();
 
         // Assert
         assert_snapshot!(get_db_structure(&metadata).await);
