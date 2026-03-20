@@ -1,5 +1,13 @@
 import { defineConfig, devices } from "@playwright/test";
 
+/** Timeouts in milliseconds, shared across all test files. */
+export const TIMEOUTS = {
+  /** Wait for WASM hydration to complete before interacting with the page. */
+  hydration: 2000,
+  /** Short wait for client-side UI updates such as validation or navigation. */
+  ui: 3000,
+};
+
 export default defineConfig({
   testDir: "./tests",
   fullyParallel: true,
@@ -23,7 +31,6 @@ export default defineConfig({
     : {
         command: "cd ../docker/dioxus && docker compose up dev",
         url: "http://localhost:8080",
-        reuseExistingServer: !process.env.CI,
-        timeout: 120 * 1000,
+        reuseExistingServer: true,
       },
 });

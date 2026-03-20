@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { TIMEOUTS } from "../playwright.config";
 
 // Use a stable podcast RSS feed for testing
 const TEST_FEED_URL = "https://feeds.simplecast.com/lP7owBq8";
@@ -64,7 +65,7 @@ test.describe("Add Podcast Page", () => {
 
     // Add a podcast
     await page.goto("/add");
-    await page.waitForTimeout(2000); // Wait for WASM hydration
+    await page.waitForTimeout(TIMEOUTS.hydration);
     const slugInput = page.locator("input").first();
     const urlInput = page.locator("input").nth(1);
     await slugInput.fill(testSlug);
@@ -72,16 +73,20 @@ test.describe("Add Podcast Page", () => {
 
     // Wait for validation to enable submit button
     const submitButton = page.getByRole("button", { name: "Add Podcast" });
-    await expect(submitButton).toBeEnabled({ timeout: 10000 });
+    await expect(submitButton).toBeEnabled({ timeout: TIMEOUTS.ui });
 
     // Submit the form
     await submitButton.click();
 
     // Should navigate to the podcast page after success
-    await expect(page).toHaveURL(`/podcasts/${testSlug}`, { timeout: 30000 });
+    await expect(page).toHaveURL(`/podcasts/${testSlug}`, {
+      timeout: 15000, // Fetches external RSS feed and saves to database
+    });
 
     // Navigate to index and verify podcast appears
     await page.goto("/");
-    await expect(page.getByText(testSlug)).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText(testSlug)).toBeVisible({
+      timeout: TIMEOUTS.ui,
+    });
   });
 });
