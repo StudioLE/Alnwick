@@ -54,8 +54,10 @@ impl MigrationTrait for Migration {
             .query_all_raw(Statement::from_string(
                 DbBackend::Sqlite,
                 "SELECT file_sub_path, image_sub_path FROM episodes
-                 WHERE file_sub_path LIKE '%#%' OR file_sub_path LIKE '%%%'
-                    OR image_sub_path LIKE '%#%' OR image_sub_path LIKE '%%%'",
+                 WHERE file_sub_path LIKE '%#%'
+                    OR file_sub_path LIKE '%!%%' ESCAPE '!'
+                    OR image_sub_path LIKE '%#%'
+                    OR image_sub_path LIKE '%!%%' ESCAPE '!'",
             ))
             .await?;
         for row in affected {
@@ -68,12 +70,17 @@ impl MigrationTrait for Migration {
         }
 
         for char in RESTRICTED_CHARS {
+            let like_clause = if char == '%' {
+                "LIKE '%!%%' ESCAPE '!'".to_owned()
+            } else {
+                format!("LIKE '%{char}%'")
+            };
             let sql = format!(
-                "UPDATE episodes SET file_sub_path = REPLACE(file_sub_path, '{char}', '') WHERE file_sub_path LIKE '%{char}%'"
+                "UPDATE episodes SET file_sub_path = REPLACE(file_sub_path, '{char}', '') WHERE file_sub_path {like_clause}"
             );
             db.execute_unprepared(&sql).await?;
             let sql = format!(
-                "UPDATE episodes SET image_sub_path = REPLACE(image_sub_path, '{char}', '') WHERE image_sub_path LIKE '%{char}%'"
+                "UPDATE episodes SET image_sub_path = REPLACE(image_sub_path, '{char}', '') WHERE image_sub_path {like_clause}"
             );
             db.execute_unprepared(&sql).await?;
         }
@@ -126,19 +133,29 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn up_renames_files_and_updates_database() {
+    async fn up_renames_dirty_files_and_skips_clean_files() {
         // Arrange
-        const FILE_NAME_BEFORE: &str = "Episode #1 100%.mp3";
-        const IMAGE_NAME_BEFORE: &str = "Cover #1 100%.jpg";
-        const FILE_NAME_AFTER: &str = "Episode 1 100.mp3";
-        const IMAGE_NAME_AFTER: &str = "Cover 1 100.jpg";
+        const DIRTY_FILE: &str = "Episode #1 100%.mp3";
+        const DIRTY_IMAGE: &str = "Cover #1 100%.jpg";
+        const DIRTY_FILE_AFTER: &str = "Episode 1 100.mp3";
+        const DIRTY_IMAGE_AFTER: &str = "Cover 1 100.jpg";
+        const CLEAN_FILE: &str = "Episode 2.mp3";
+        const CLEAN_IMAGE: &str = "Cover 2.jpg";
         let services = MockServices::new()
             .with_metadata_factory(MockFeedsFactory {
+                episodes_per_season: 2,
                 edit_episode: Some(|episode| {
-                    episode.file_sub_path =
-                        Some(PathWrapper::from_str(FILE_NAME_BEFORE).expect("Valid path"));
-                    episode.image_sub_path =
-                        Some(PathWrapper::from_str(IMAGE_NAME_BEFORE).expect("Valid path"));
+                    if episode.episode == Some(1) {
+                        episode.file_sub_path =
+                            Some(PathWrapper::from_str(DIRTY_FILE).expect("Valid path"));
+                        episode.image_sub_path =
+                            Some(PathWrapper::from_str(DIRTY_IMAGE).expect("Valid path"));
+                    } else {
+                        episode.file_sub_path =
+                            Some(PathWrapper::from_str(CLEAN_FILE).expect("Valid path"));
+                        episode.image_sub_path =
+                            Some(PathWrapper::from_str(CLEAN_IMAGE).expect("Valid path"));
+                    }
                 }),
                 ..MockFeedsFactory::default()
             })
@@ -153,8 +170,10 @@ mod tests {
             .await
             .expect("Should get MetadataRepository");
         let podcasts_dir = paths.get_podcasts_dir();
-        write(podcasts_dir.join(FILE_NAME_BEFORE), b"audio").expect("Should write audio file");
-        write(podcasts_dir.join(IMAGE_NAME_BEFORE), b"image").expect("Should write image file");
+        write(podcasts_dir.join(DIRTY_FILE), b"audio").expect("Should write audio file");
+        write(podcasts_dir.join(DIRTY_IMAGE), b"image").expect("Should write image file");
+        write(podcasts_dir.join(CLEAN_FILE), b"audio").expect("Should write audio file");
+        write(podcasts_dir.join(CLEAN_IMAGE), b"image").expect("Should write image file");
         let migration = Migration {
             paths: paths.clone(),
         };
@@ -166,23 +185,39 @@ mod tests {
             .await
             .expect("Migration should succeed");
 
-        // Assert
-        assert!(!podcasts_dir.join(FILE_NAME_BEFORE).exists());
-        assert!(!podcasts_dir.join(IMAGE_NAME_BEFORE).exists());
-        assert!(podcasts_dir.join(FILE_NAME_AFTER).exists());
-        assert!(podcasts_dir.join(IMAGE_NAME_AFTER).exists());
-        let episode = metadata
-            .get_episode(MockFeeds::podcast_slug(), MockFeeds::EPISODE_KEY)
+        // Assert - dirty episode files renamed and database updated
+        assert!(!podcasts_dir.join(DIRTY_FILE).exists());
+        assert!(!podcasts_dir.join(DIRTY_IMAGE).exists());
+        assert!(podcasts_dir.join(DIRTY_FILE_AFTER).exists());
+        assert!(podcasts_dir.join(DIRTY_IMAGE_AFTER).exists());
+        let dirty_episode = metadata
+            .get_episode(MockFeeds::podcast_slug(), 1)
             .await
-            .expect("should be able to get all feeds")
+            .expect("should query episode")
             .expect("episode should exist");
         assert_eq!(
-            episode.file_sub_path,
-            Some(PathWrapper::from_str(FILE_NAME_AFTER).expect("Valid path"))
+            dirty_episode.file_sub_path,
+            Some(PathWrapper::from_str(DIRTY_FILE_AFTER).expect("Valid path"))
         );
         assert_eq!(
-            episode.image_sub_path,
-            Some(PathWrapper::from_str(IMAGE_NAME_AFTER).expect("Valid path"))
+            dirty_episode.image_sub_path,
+            Some(PathWrapper::from_str(DIRTY_IMAGE_AFTER).expect("Valid path"))
+        );
+        // Assert - clean episode files and database unchanged
+        assert!(podcasts_dir.join(CLEAN_FILE).exists());
+        assert!(podcasts_dir.join(CLEAN_IMAGE).exists());
+        let clean_episode = metadata
+            .get_episode(MockFeeds::podcast_slug(), 2)
+            .await
+            .expect("should query episode")
+            .expect("episode should exist");
+        assert_eq!(
+            clean_episode.file_sub_path,
+            Some(PathWrapper::from_str(CLEAN_FILE).expect("Valid path"))
+        );
+        assert_eq!(
+            clean_episode.image_sub_path,
+            Some(PathWrapper::from_str(CLEAN_IMAGE).expect("Valid path"))
         );
     }
 }
