@@ -1,16 +1,3 @@
-pub use actions::*;
-pub use appbar::*;
-pub use button::*;
-pub use drawer::*;
-pub use field::*;
-pub use icon::*;
-pub use image::*;
-pub use media_object::*;
-pub use menu::*;
-pub use navbar::*;
-pub use page::*;
-pub use tabs::*;
-
 mod actions;
 mod appbar;
 mod breadcrumbs;
@@ -24,3 +11,16 @@ mod menu;
 mod navbar;
 mod page;
 mod tabs;
+
+pub use actions::*;
+pub use appbar::*;
+pub use button::*;
+pub use drawer::*;
+pub use field::*;
+pub use icon::*;
+pub use image::*;
+pub use media_object::*;
+pub use menu::*;
+pub use navbar::*;
+pub use page::*;
+pub use tabs::*;

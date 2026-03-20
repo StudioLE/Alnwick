@@ -8,19 +8,19 @@ pub fn PlayerSettingsPage() -> Element {
             title: "Player Settings",
             Field::<u32> {
                 label: "Skip forward time",
-                unit: "s",
                 placeholder: "20",
                 global_value: context.skip_forward,
                 from_string: from_string,
                 to_string: to_string,
+                unit: Some("s".to_owned()),
             },
             Field::<u32> {
                 label: "Skip back time",
-                unit: "s",
                 placeholder: "20",
                 global_value: context.skip_back,
                 from_string: from_string,
                 to_string: to_string,
+                unit: Some("s".to_owned()),
             },
         }
     }
