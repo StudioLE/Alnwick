@@ -1,6 +1,5 @@
 use super::to_rss::PodcastToRss;
 use crate::prelude::*;
-use error_stack::bail;
 use rss::Item as RssItem;
 
 #[derive(Service)]
@@ -68,11 +67,9 @@ impl EmulateCommand {
             match self.replace_enclosure(feed, item) {
                 Ok(item) => channel.items.push(item),
                 Err(report) => {
-                    let error = report
-                        .downcast_ref::<EmulateError>()
-                        .expect("Report should have an EmulateError");
+                    let error = report.current_context();
                     if error != &EmulateError::NoPath {
-                        bail!(report)
+                        return Err(report);
                     }
                     trace!(episode, "Skipping episode as it has not been downloaded");
                 }
@@ -114,7 +111,7 @@ impl EmulateCommand {
             .find(|episode| episode.source_id == guid.value)
             .ok_or(EmulateError::NoMatch)?;
         let Some(enclosure) = item.enclosure.as_mut() else {
-            bail!(EmulateError::NoEnclosure);
+            return Err(Report::new(EmulateError::NoEnclosure));
         };
         enclosure.url = self.get_audio_url(episode)?.to_string();
         Ok(item)
@@ -129,7 +126,7 @@ impl EmulateCommand {
     /// - `file://$HOME/.local/share/alnwick/podcasts/irl/S00/1970/1970-01-01 001 Hello World.mp3`
     fn get_audio_url(&self, episode: &EpisodeInfo) -> Result<Url, Report<EmulateError>> {
         let Some(sub_path) = &episode.file_sub_path else {
-            return Err(Report::new(EmulateError::NoPath).attach(format!("Episode: {episode}")));
+            return Err(Report::new(EmulateError::NoPath).attach_episode(episode));
         };
         let Some(base) = &self.options.server_base else {
             return Err(Report::new(EmulateError::NoServerBase));

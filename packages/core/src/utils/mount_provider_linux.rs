@@ -33,7 +33,7 @@ impl MountProvider {
                 best_len = mount_point.len();
             }
         }
-        best_match.ok_or_else(|| Report::new(MountIdError::NoMatch))
+        best_match.ok_or(Report::new(MountIdError::NoMatch))
     }
 }
 

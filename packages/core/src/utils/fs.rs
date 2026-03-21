@@ -8,7 +8,9 @@ pub async fn create_parent_dir_if_not_exist(path: &Path) -> Result<(), Report<Er
     };
     if !dir.exists() {
         trace!(dir = %dir.display(), "Creating directory");
-        create_dir_all(&dir).await.attach_path(dir)?;
+        create_dir_all(&dir)
+            .await
+            .map_err(|e| Report::new(e).attach_path(dir))?;
     }
     Ok(())
 }

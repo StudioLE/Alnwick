@@ -1,39 +1,56 @@
 use crate::prelude::*;
 use core::result::Result;
-use error_stack::{IntoReport, ResultExt as DefaultResultExt};
 
-pub trait CustomResultExt {
-    type Context: ?Sized;
-    type Ok;
+pub trait CustomReportExt<E> {
+    fn attach_episode(self, episode: &EpisodeInfo) -> Report<E>;
 
-    fn attach_episode(self, episode: &EpisodeInfo) -> Result<Self::Ok, Report<Self::Context>>;
-
-    fn attach_path<P>(self, path: P) -> Result<Self::Ok, Report<Self::Context>>
+    fn attach_path<P>(self, path: P) -> Report<E>
     where
         P: AsRef<Path>;
 
-    fn attach_url(self, url: &UrlWrapper) -> Result<Self::Ok, Report<Self::Context>>;
+    fn attach_url(self, url: &UrlWrapper) -> Report<E>;
 }
 
-impl<T, E> CustomResultExt for Result<T, E>
-where
-    E: IntoReport,
-{
-    type Context = E::Context;
-    type Ok = T;
+pub trait CustomResultExt<T, E> {
+    fn attach_episode(self, episode: &EpisodeInfo) -> Result<T, Report<E>>;
 
-    fn attach_episode(self, episode: &EpisodeInfo) -> Result<T, Report<E::Context>> {
-        self.attach_with(|| format!("Episode: {episode}"))
+    fn attach_path<P>(self, path: P) -> Result<T, Report<E>>
+    where
+        P: AsRef<Path>;
+
+    fn attach_url(self, url: &UrlWrapper) -> Result<T, Report<E>>;
+}
+
+impl<E: Error + Send + Sync + 'static> CustomReportExt<E> for Report<E> {
+    fn attach_episode(self, episode: &EpisodeInfo) -> Report<E> {
+        self.attach("Episode", episode)
     }
 
-    fn attach_path<P>(self, path: P) -> Result<T, Report<E::Context>>
+    fn attach_path<P>(self, path: P) -> Report<E>
     where
         P: AsRef<Path>,
     {
-        self.attach_with(|| format!("Path: {}", path.as_ref().display()))
+        self.attach("Path", path.as_ref().display())
     }
 
-    fn attach_url(self, url: &UrlWrapper) -> Result<T, Report<E::Context>> {
-        self.attach_with(|| format!("URL: {url}"))
+    fn attach_url(self, url: &UrlWrapper) -> Report<E> {
+        self.attach("URL", url)
+    }
+}
+
+impl<T, E: Error + Send + Sync + 'static> CustomResultExt<T, E> for Result<T, Report<E>> {
+    fn attach_episode(self, episode: &EpisodeInfo) -> Result<T, Report<E>> {
+        self.attach_with("Episode", || episode)
+    }
+
+    fn attach_path<P>(self, path: P) -> Result<T, Report<E>>
+    where
+        P: AsRef<Path>,
+    {
+        self.attach_with("Path", || path.as_ref().display())
+    }
+
+    fn attach_url(self, url: &UrlWrapper) -> Result<T, Report<E>> {
+        self.attach_with("URL", || url)
     }
 }

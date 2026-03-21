@@ -6,7 +6,7 @@ impl FetchHandler {
     pub(super) async fn get_feed_url(&self, slug: &Slug) -> Result<UrlWrapper, Report<FetchError>> {
         self.get_feed_url_internal(slug)
             .await
-            .attach(format!("Podcast: {slug}"))
+            .attach_with("Podcast", || slug)
     }
 
     async fn get_feed_url_internal(&self, slug: &Slug) -> Result<UrlWrapper, Report<FetchError>> {

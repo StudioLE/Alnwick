@@ -30,10 +30,10 @@ impl DownloadHandler {
         write_tag(&context.file_path, tag)
             .change_context(DownloadError::TagEpisode)
             .attach_path(&context.file_path)
-            .attach(format!(
-                "File size: {:?}",
-                get_file_size(&context.file_path)
-            ))?;
+            .attach(
+                "File size",
+                format!("{:?}", get_file_size(&context.file_path)),
+            )?;
         Ok(())
     }
 }

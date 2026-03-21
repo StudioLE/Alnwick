@@ -1,5 +1,6 @@
 use crate::prelude::*;
 use rss::{Channel as RssChannel, Item as RssItem};
+use std::fmt::Debug;
 
 pub struct PodcastFromRss;
 
@@ -11,7 +12,7 @@ impl PodcastFromRss {
         let items = take(&mut channel.items);
         let podcast = podcast_from_rss(channel, slug)?;
         let mut episodes = Vec::new();
-        let mut report: Option<Report<[EpisodeFromRssError]>> = None;
+        let mut errors: Vec<Report<EpisodeFromRssError>> = Vec::new();
         for item in items {
             let name = item
                 .title
@@ -20,17 +21,17 @@ impl PodcastFromRss {
             match episode_from_rss(item) {
                 Ok(episode) => episodes.push(episode),
                 Err(error) => {
-                    let error = error.attach(format!("Episode: {name}",));
-                    if let Some(report) = report.as_mut() {
-                        report.push(error);
-                    } else {
-                        report = Some(error.expand());
-                    }
+                    let error = error.attach("Episode", &name);
+                    errors.push(error);
                 }
             }
         }
-        if let Some(report) = report {
-            return Err(report.change_context(PodcastFromRssError::ParseEpisodes));
+        if !errors.is_empty() {
+            let report = errors.into_iter().fold(
+                Report::new(PodcastFromRssError::ParseEpisodes),
+                |report, error| report.attach("Error", error),
+            );
+            return Err(report);
         }
         let feed = PodcastFeed { podcast, episodes };
         Ok(feed)
@@ -149,9 +150,7 @@ fn try_parse_duration(duration: &str) -> Result<Duration, Report<EpisodeFromRssE
             let seconds: Duration = try_parse(parts[2], EpisodeFromRssError::ParseDuration)?;
             Ok(hours * 60 * 60 + minutes * 60 + seconds)
         }
-        count => {
-            Err(Report::new(EpisodeFromRssError::ParseDuration).attach(format!("Parts: {count}")))
-        }
+        count => Err(Report::new(EpisodeFromRssError::ParseDuration).attach("Parts", count)),
     }
 }
 
@@ -174,10 +173,13 @@ fn try_parse_url<E: Error + Send + Sync + 'static>(
 fn try_parse<T: FromStr, E: Error + Send + Sync + 'static>(
     value: &str,
     error: E,
-) -> Result<T, Report<E>> {
+) -> Result<T, Report<E>>
+where
+    <T as FromStr>::Err: Display,
+{
     match value.parse::<T>() {
         Ok(parsed) => Ok(parsed),
-        Err(_) => Err(Report::new(error).attach(format!("Value: {value}"))),
+        Err(e) => Err(Report::new(error).attach("Value", value).attach("Error", e)),
     }
 }
 

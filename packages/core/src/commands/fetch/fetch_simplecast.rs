@@ -19,8 +19,7 @@ impl FetchHandler {
         if let Some(url) = podcast.external_feed_url {
             return Ok(url);
         }
-        let report =
-            Report::new(FetchSimplecastError::NoFeed).attach(format!("Podcast ID: {}", podcast.id));
+        let report = Report::new(FetchSimplecastError::NoFeed).attach("Podcast ID", &podcast.id);
         Err(report)
     }
 
@@ -34,9 +33,8 @@ impl FetchHandler {
             .await
             .change_context(FetchSimplecastError::GetPage)
             .attach_url(url)?;
-        let episode_guid = get_simplecast_episode_guid(&html).ok_or_else(|| {
-            Report::new(FetchSimplecastError::PlayerNotFound).attach(format!("URL: {url}"))
-        })?;
+        let episode_guid = get_simplecast_episode_guid(&html)
+            .ok_or_else(|| Report::new(FetchSimplecastError::PlayerNotFound).attach_url(url))?;
         trace!("Found Simplecast player with episode id: {episode_guid}",);
         Ok(episode_guid)
     }
@@ -52,7 +50,7 @@ impl FetchHandler {
             .get_json(&url)
             .await
             .change_context(FetchSimplecastError::GetEpisode)
-            .attach_with(|| format!("Episode ID: {id}"))?;
+            .attach_with("Episode ID", || id)?;
         Ok(episode)
     }
 
@@ -70,7 +68,7 @@ impl FetchHandler {
             .get_json(&url)
             .await
             .change_context(FetchSimplecastError::GetPodcast)
-            .attach_with(|| format!("Podcast ID: {}", episode.podcast.id))
+            .attach_with("Podcast ID", || &episode.podcast.id)
     }
 
     #[allow(dead_code)]
@@ -91,7 +89,7 @@ impl FetchHandler {
                 .get_json(&playlist_url)
                 .await
                 .change_context(FetchSimplecastError::GetPlaylist)
-                .attach_with(|| format!("Podcast ID: {}", episode.podcast.id))?;
+                .attach_with("Podcast ID", || &episode.podcast.id)?;
             let next = playlist.episodes.pages.next.clone();
             episodes.append(&mut playlist.episodes.collection);
             let Some(link) = next else {

@@ -19,7 +19,7 @@ impl IpInfoProvider {
         let report = validation
             .into_iter()
             .fold(Report::new(IpInfoError::ValidateIp), |report, error| {
-                report.attach(error)
+                report.attach("Validation", error)
             });
         Err(report)
     }
@@ -32,10 +32,10 @@ impl IpInfoProvider {
             .send()
             .await
             .change_context(HttpError::Request)
-            .attach_with(|| format!("URL: {url}"))?;
+            .attach_with("URL", || url)?;
         if !response.status().is_success() {
-            let report = Report::new(HttpError::Status(response.status().as_u16()))
-                .attach(format!("URL: {url}"));
+            let report =
+                Report::new(HttpError::Status(response.status().as_u16())).attach("URL", url);
             return Err(report);
         }
         response.json().await.change_context(HttpError::Deserialize)

@@ -1,5 +1,4 @@
 use crate::prelude::*;
-use error_stack::bail;
 
 pub struct MountProvider;
 
@@ -7,7 +6,7 @@ impl Service for MountProvider {
     type Error = ServiceError;
 
     async fn from_services(_services: &ServiceProvider) -> Result<Self, Report<Self::Error>> {
-        bail!(ServiceError::NoService)
+        Err(Report::new(ServiceError::NoService))
     }
 }
 

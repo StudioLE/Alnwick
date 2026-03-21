@@ -122,8 +122,7 @@ impl HttpClient {
             .change_context(HttpError::Request)
             .attach_url(url)?;
         if !response.status().is_success() {
-            let report = Report::new(HttpError::Status(response.status().as_u16()))
-                .attach(format!("URL: {url}"));
+            let report = Report::new(HttpError::Status(response.status().as_u16())).attach_url(url);
             return Err(report);
         }
         let path = self
@@ -191,13 +190,10 @@ pub async fn hardlink_or_copy(
         );
         copy(&source, &destination).await.map(|_| ())
     };
-    result.change_context(HttpError::Copy).attach_with(|| {
-        format!(
-            "Source: {}\nDestination: {}",
-            source.display(),
-            destination.display()
-        )
-    })
+    result
+        .change_context(HttpError::Copy)
+        .attach_with("Source", || source.display())
+        .attach_with("Destination", || destination.display())
 }
 
 #[cfg(test)]

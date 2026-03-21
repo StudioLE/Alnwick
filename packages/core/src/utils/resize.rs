@@ -87,7 +87,8 @@ impl Resize {
                 self.color_type,
             ),
             format => {
-                let report = Report::new(ResizeError::Format).attach(format!("Format: {format:?}"));
+                let report =
+                    Report::new(ResizeError::Format).attach("Format", format!("{format:?}"));
                 return Err(report);
             }
         };

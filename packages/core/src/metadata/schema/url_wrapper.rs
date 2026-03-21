@@ -26,7 +26,7 @@ impl FromStr for UrlWrapper {
 
     fn from_str(value: &str) -> Result<Self, Self::Err> {
         let url = Url::parse(value).change_context(UrlError::Parse)?;
-        validate_url(&url).attach(format!("URL: {url}"))?;
+        validate_url(&url).attach_with("URL", || &url)?;
         Ok(UrlWrapper(url))
     }
 }
@@ -126,7 +126,7 @@ fn validate_url(url: &Url) -> Result<(), Report<UrlError>> {
 fn validate_scheme(url: &Url) -> Result<(), Report<UrlError>> {
     let scheme = url.scheme();
     if !ALLOWED_SCHEMES.contains(&scheme) {
-        return Err(Report::new(UrlError::NotHttp).attach(format!("Scheme: {scheme}")));
+        return Err(Report::new(UrlError::NotHttp).attach("Scheme", scheme));
     }
     Ok(())
 }
@@ -135,7 +135,7 @@ fn validate_domain(url: &Url) -> Result<(), Report<UrlError>> {
     if let Some(domain) = url.domain()
         && (domain.contains('/') || domain.contains('\\') || domain.contains('\0'))
     {
-        return Err(Report::new(UrlError::InvalidDomain).attach(format!("Domain: {domain}")));
+        return Err(Report::new(UrlError::InvalidDomain).attach("Domain", domain));
     }
     Ok(())
 }
@@ -145,7 +145,7 @@ fn validate_path_segments(url: &Url) -> Result<(), Report<UrlError>> {
         return Ok(());
     };
     for segment in segments {
-        validate_segment(segment).attach(format!("Segment: {segment}"))?;
+        validate_segment(segment).attach("Segment", segment)?;
     }
     Ok(())
 }
@@ -161,9 +161,7 @@ fn validate_segment(segment: &str) -> Result<(), Report<UrlError>> {
         return Err(Report::new(UrlError::ControlCharacter));
     }
     if segment.len() > MAX_SEGMENT_LENGTH {
-        return Err(
-            Report::new(UrlError::SegmentTooLong).attach(format!("Length: {}", segment.len()))
-        );
+        return Err(Report::new(UrlError::SegmentTooLong).attach("Length", segment.len()));
     }
     Ok(())
 }

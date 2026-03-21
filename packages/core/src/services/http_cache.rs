@@ -164,7 +164,7 @@ impl HttpCache {
             "Finished writing response to cache"
         );
         if bytes_written == 0 {
-            let report = Report::new(HttpError::Size).attach(format!("Path: {}", path.display()));
+            let report = Report::new(HttpError::Size).attach_path(&path);
             warn!(%url, path = %path.display(), "Response body was empty. Removing the cache file");
             self.remove(url, extension).await;
             return Err(report);

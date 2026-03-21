@@ -43,11 +43,12 @@ impl FetchHandler {
                 return Ok((feed, current));
             }
             if visited.contains(next) {
-                return Err(Report::new(FetchError::RedirectLoop).attach(format!("URL: {next}")));
+                return Err(Report::new(FetchError::RedirectLoop).attach_url(next));
             }
             if i >= MAX_FEED_REDIRECTS {
-                return Err(Report::new(FetchError::TooManyRedirects)
-                    .attach(format!("Limit: {MAX_FEED_REDIRECTS}")));
+                return Err(
+                    Report::new(FetchError::TooManyRedirects).attach("Limit", MAX_FEED_REDIRECTS)
+                );
             }
             trace!(%current, new_feed_url = %next, redirects = i, "Feed includes a `new_feed_url`");
             current = next.clone();
