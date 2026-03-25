@@ -5,6 +5,7 @@ use lofty::id3::v2::Id3v2Tag;
 use lofty::picture::{Picture, PictureType};
 use lofty::prelude::{Accessor, TagExt, TaggedFileExt};
 use lofty::probe::Probe;
+use lofty::tag::items::Timestamp;
 use lofty::tag::{Tag, TagType};
 
 impl DownloadHandler {
@@ -55,8 +56,13 @@ fn create_tag(
         tag.set_album(format!("Season {season}"));
     }
     tag.set_disk(episode.season.unwrap_or_default());
-    let year = episode.published_at.year() as u32;
-    tag.set_year(year);
+    let published = episode.published_at;
+    tag.set_date(Timestamp {
+        year: published.year() as u16,
+        month: Some(published.month() as u8),
+        day: Some(published.day() as u8),
+        ..Timestamp::default()
+    });
     if let Some(number) = episode.episode {
         tag.set_track(number);
     }

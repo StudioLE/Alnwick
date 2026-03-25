@@ -17,7 +17,7 @@ RUN cargo chef prepare --recipe-path recipe.json
 
 # Build dependencies
 FROM rust:latest AS builder
-ARG DX_VERSION=0.7.2
+ARG DX_VERSION=0.7.3
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt update \
     && apt install -y \

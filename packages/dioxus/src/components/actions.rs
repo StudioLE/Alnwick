@@ -31,7 +31,7 @@ pub fn FloatingAction(route: Route, is_large: bool) -> Element {
         Button { style: "width: fit-content;",
             route: route,
             color: ButtonColor::Primary,
-            size: if is_large { Some(ButtonSize::Large) } else { None },
+            size: is_large.then_some(ButtonSize::Large),
             Icon { class: info.icon }
         }
     }
