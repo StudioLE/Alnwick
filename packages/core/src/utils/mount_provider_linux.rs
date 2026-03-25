@@ -37,10 +37,10 @@ impl MountProvider {
     }
 }
 
-impl Service for MountProvider {
+impl FromServices for MountProvider {
     type Error = Infallible;
 
-    async fn from_services(_services: &ServiceProvider) -> Result<Self, Report<Self::Error>> {
+    fn from_services(_services: &ServiceProvider) -> Result<Self, Report<Self::Error>> {
         Ok(Self::new())
     }
 }

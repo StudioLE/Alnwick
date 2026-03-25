@@ -2,7 +2,7 @@ use super::to_rss::PodcastToRss;
 use crate::prelude::*;
 use rss::Item as RssItem;
 
-#[derive(Service)]
+#[derive(FromServicesAsync)]
 pub struct EmulateCommand {
     options: Arc<AppOptions>,
     paths: Arc<PathProvider>,
@@ -164,7 +164,7 @@ mod tests {
         // Arrange
         let services = MockServices::default().create().await;
         let command = services
-            .get_service::<EmulateCommand>()
+            .get_async::<EmulateCommand>()
             .await
             .expect("should be able to get command");
         let options = EmulateOptions {

@@ -5,14 +5,11 @@ use std::process::exit;
 async fn main() {
     init_logger().expect("should be able to init logger");
     let cli = Cli::parse();
-    let services = ServiceProvider::new()
-        .with_commands()
-        .await
-        .expect("should be able to create services with commands");
+    let services = ServiceBuilder::new().with_core().with_commands().build();
     match cli.command {
         Command::Add(options) => {
             let command = services
-                .get_service::<AddCliCommand>()
+                .get_async::<AddCliCommand>()
                 .await
                 .expect("should be able to get command");
             if let Err(e) = command.execute(options).await {
@@ -23,7 +20,7 @@ async fn main() {
         }
         Command::Fetch(options) => {
             let command = services
-                .get_service::<FetchCliCommand>()
+                .get_async::<FetchCliCommand>()
                 .await
                 .expect("should be able to get command");
             if let Err(e) = command.execute(options).await {
@@ -34,7 +31,7 @@ async fn main() {
         }
         Command::Download(options) => {
             let command = services
-                .get_service::<DownloadCliCommand>()
+                .get_async::<DownloadCliCommand>()
                 .await
                 .expect("should be able to get command");
             if let Err(e) = command.execute(options).await {
@@ -45,7 +42,7 @@ async fn main() {
         }
         Command::Emulate(options) => {
             let command = services
-                .get_service::<EmulateCommand>()
+                .get_async::<EmulateCommand>()
                 .await
                 .expect("should be able to get command");
             if let Err(e) = command.execute(options).await {
@@ -56,7 +53,7 @@ async fn main() {
         }
         Command::Cover(options) => {
             let command = services
-                .get_service::<CoverCommand>()
+                .get_async::<CoverCommand>()
                 .await
                 .expect("should be able to get command");
             if let Err(e) = command.execute(options).await {

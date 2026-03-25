@@ -7,14 +7,11 @@ pub struct MetadataRepository {
     pub(crate) db: DatabaseConnection,
 }
 
-impl Service for MetadataRepository {
+impl FromServicesAsync for MetadataRepository {
     type Error = MetadataRepositoryCreateError;
 
-    async fn from_services(services: &ServiceProvider) -> Result<Self, Report<Self::Error>> {
-        let paths: Arc<PathProvider> = services
-            .get_service()
-            .await
-            .expect("PathProvider should be available");
+    async fn from_services_async(services: &ServiceProvider) -> Result<Self, Report<Self::Error>> {
+        let paths: Arc<PathProvider> = services.get().expect("PathProvider should be available");
         let metadata = MetadataRepository::new(paths.get_metadata_db_path()).await?;
         metadata.migrate(paths).await?;
         Ok(metadata)
@@ -62,11 +59,11 @@ mod tests {
         // Arrange
         let services = MockServices::new().create().await;
         let paths = services
-            .get_service::<PathProvider>()
+            .get_async::<PathProvider>()
             .await
             .expect("PathProvider should be available");
         let metadata = services
-            .get_service::<MetadataRepository>()
+            .get_async::<MetadataRepository>()
             .await
             .expect("MetadataRepository should be available");
 

@@ -4,7 +4,7 @@ const BANNER_WIDTH: u32 = 960;
 const BANNER_HEIGHT: u32 = 540;
 const COVER_SIZE: u32 = 720;
 
-#[derive(Service)]
+#[derive(FromServicesAsync)]
 pub struct CoverCommand {
     paths: Arc<PathProvider>,
     http: Arc<HttpClient>,
@@ -55,7 +55,7 @@ mod tests {
         // Arrange
         let services = MockServices::default().create().await;
         let command = services
-            .get_service::<CoverCommand>()
+            .get_async::<CoverCommand>()
             .await
             .expect("should be able to get command");
         let options = CoverOptions {

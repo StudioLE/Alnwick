@@ -9,11 +9,11 @@ pub struct HttpCache {
     cache_dir: PathBuf,
 }
 
-impl Service for HttpCache {
-    type Error = ServiceError;
+impl FromServices for HttpCache {
+    type Error = ResolveError;
 
-    async fn from_services(services: &ServiceProvider) -> Result<Self, Report<ServiceError>> {
-        let paths: Arc<PathProvider> = services.get_service().await?;
+    fn from_services(services: &ServiceProvider) -> Result<Self, Report<ResolveError>> {
+        let paths: Arc<PathProvider> = services.get()?;
         Ok(Self {
             cache_dir: paths.get_http_dir(),
         })

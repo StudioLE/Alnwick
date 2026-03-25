@@ -104,9 +104,9 @@ mod tests {
     #[tokio::test]
     #[ignore = "uses httpbin.org"]
     pub async fn resize_jpeg() {
-        let services = ServiceProvider::new();
+        let services = ServiceBuilder::new().with_core().build();
         let http = services
-            .get_service::<HttpClient>()
+            .get_async::<HttpClient>()
             .await
             .expect("should be able to get HttpClient");
         let formats = vec!["jpeg", "png", "webp"];

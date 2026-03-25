@@ -32,10 +32,10 @@ pub struct AppOptions {
     pub hard_link_from_cache: Option<bool>,
 }
 
-impl Service for AppOptions {
+impl FromServices for AppOptions {
     type Error = AppOptionsError;
 
-    async fn from_services(_services: &ServiceProvider) -> Result<Self, Report<AppOptionsError>> {
+    fn from_services(_services: &ServiceProvider) -> Result<Self, Report<AppOptionsError>> {
         envy::from_env().change_context(AppOptionsError::EnvConfig)
     }
 }

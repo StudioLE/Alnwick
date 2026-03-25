@@ -3981,9 +3981,9 @@ dependencies = [
 
 [[package]]
 name = "proc-macro2"
-version = "1.0.103"
+version = "1.0.106"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5ee95bc4ef87b8d5ba32e8b7714ccc834865276eab0aed5c9958d00ec45f49e8"
+checksum = "8fd00f0bb2e90d81d1044c2b32617f68fcb9fa3bb7640c23e9c748e53fb30934"
 dependencies = [
  "unicode-ident",
 ]
@@ -5519,9 +5519,9 @@ dependencies = [
 
 [[package]]
 name = "studiole-command"
-version = "0.1.1"
+version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "65dd8aa1812cd2d0d8cb358adf655a965419a9f80988f86019b9d783fca645ab"
+checksum = "b7b5d3a5b18654403404b486da6873b1d634c1a406a7edbe069bb039f4c94404"
 dependencies = [
  "async-trait",
  "indicatif",
@@ -5535,9 +5535,9 @@ dependencies = [
 
 [[package]]
 name = "studiole-di"
-version = "0.2.1"
+version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "75cc73eaddf7177a6e85787f88e1cf0a4354ec6ae721125328c9460f2e1fa375"
+checksum = "ccab75320f1fce77171c802de4d59546bf5d1c2cb9839a48434ea866caa68e9d"
 dependencies = [
  "studiole-di-macros",
  "studiole-report",
@@ -5547,19 +5547,20 @@ dependencies = [
 
 [[package]]
 name = "studiole-di-macros"
-version = "0.2.1"
+version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "84faaf44357055321011d4401c1af69edac0ae8a31023c0234fa116e5a1885d5"
+checksum = "2f70345ba7e9c7ee8ff43668a0d79557f0091034b633f34fd120278dafe41236"
 dependencies = [
+ "proc-macro2",
  "quote",
  "syn 2.0.117",
 ]
 
 [[package]]
 name = "studiole-report"
-version = "0.2.1"
+version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6717bbe00e89905fba6a91038d6d7569e9e52a221219810d3c184a0b2b304005"
+checksum = "566024aec4bd8707304a220900f3eb5c1387c6b7bc344e4a1e4887b9481fd4bf"
 dependencies = [
  "miette",
 ]

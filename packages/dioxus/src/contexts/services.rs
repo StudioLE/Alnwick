@@ -11,18 +11,13 @@ static METADATA: OnceCell<Arc<MetadataRepository>> = OnceCell::const_new();
 static ADD_HANDLER: OnceCell<Arc<AddHandler>> = OnceCell::const_new();
 
 async fn init_services() -> Arc<ServiceProvider> {
-    Arc::new(
-        ServiceProvider::new()
-            .with_commands()
-            .await
-            .expect("should be able to create provider with commands"),
-    )
+    Arc::new(ServiceBuilder::new().with_core().with_commands().build())
 }
 
 async fn init_runner() -> Arc<CommandRunner<CommandInfo>> {
     let services = get_services().await;
     let runner = services
-        .get_service::<CommandRunner<CommandInfo>>()
+        .get_async::<CommandRunner<CommandInfo>>()
         .await
         .expect("should be able to get command runner");
     runner.start(WORKERS).await;
@@ -32,7 +27,7 @@ async fn init_runner() -> Arc<CommandRunner<CommandInfo>> {
 async fn init_mediator() -> Arc<CommandMediator<CommandInfo>> {
     let services = get_services().await;
     services
-        .get_service::<CommandMediator<CommandInfo>>()
+        .get_async::<CommandMediator<CommandInfo>>()
         .await
         .expect("should be able to get command mediator")
 }
@@ -40,7 +35,7 @@ async fn init_mediator() -> Arc<CommandMediator<CommandInfo>> {
 async fn init_metadata() -> Arc<MetadataRepository> {
     let services = get_services().await;
     services
-        .get_service::<MetadataRepository>()
+        .get_async::<MetadataRepository>()
         .await
         .expect("should be able to get metadata repository")
 }
@@ -68,7 +63,7 @@ pub async fn get_metadata() -> &'static Arc<MetadataRepository> {
 async fn init_add_handler() -> Arc<AddHandler> {
     let services = get_services().await;
     services
-        .get_service::<AddHandler>()
+        .get_async::<AddHandler>()
         .await
         .expect("should be able to get add handler")
 }

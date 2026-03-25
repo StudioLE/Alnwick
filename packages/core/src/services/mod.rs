@@ -11,6 +11,8 @@ mod ipinfo;
 mod options;
 #[cfg(feature = "server")]
 mod paths;
+#[cfg(feature = "server")]
+mod with_core;
 
 #[cfg(feature = "server")]
 pub use http_cache::*;
@@ -20,6 +22,10 @@ pub use http_error::*;
 #[cfg(feature = "server")]
 pub use http_rate_limiter::*;
 #[cfg(feature = "server")]
+pub use ipinfo::*;
+#[cfg(feature = "server")]
 pub use options::*;
 #[cfg(feature = "server")]
 pub use paths::*;
+#[cfg(feature = "server")]
+pub use with_core::*;

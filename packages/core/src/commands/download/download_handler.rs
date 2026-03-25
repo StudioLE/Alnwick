@@ -6,7 +6,7 @@ use crate::prelude::*;
 /// - Fetch and resize artwork
 /// - Add ID3 tags
 /// - Save file paths to database
-#[derive(Service)]
+#[derive(FromServicesAsync)]
 pub struct DownloadHandler {
     pub(super) paths: Arc<PathProvider>,
     pub(super) http: Arc<HttpClient>,
@@ -54,7 +54,7 @@ mod tests {
         // Arrange
         let services = MockServices::default().create().await;
         let download = services
-            .get_service::<DownloadHandler>()
+            .get_async::<DownloadHandler>()
             .await
             .expect("should be able to get command");
         let request = DownloadRequest::new(MockFeeds::PODCAST_KEY, MockFeeds::EPISODE_KEY);

@@ -26,14 +26,14 @@ pub struct PathProvider {
     hard_link_from_cache: bool,
 }
 
-impl Service for PathProvider {
-    type Error = ServiceError;
+impl FromServices for PathProvider {
+    type Error = ResolveError;
 
-    async fn from_services(services: &ServiceProvider) -> Result<Self, Report<ServiceError>> {
-        let options = services.get_service::<AppOptions>().await?;
-        let mounts = services.get_service::<MountProvider>().await.ok();
+    fn from_services(services: &ServiceProvider) -> Result<Self, Report<ResolveError>> {
+        let options = services.get::<AppOptions>()?;
+        let mounts = services.get::<MountProvider>().ok();
         let paths = Self::new(options, mounts);
-        paths.create_dirs().change_context(ServiceError::Create)?;
+        paths.create_dirs().change_context(ResolveError::Factory)?;
         Ok(paths)
     }
 }
@@ -223,9 +223,9 @@ mod tests {
     async fn _get_hard_link_from_cache() {
         // Arrange
         let _logger = init_test_logger();
-        let services = ServiceProvider::new();
+        let services = ServiceBuilder::new().with_core().build();
         let paths = services
-            .get_service::<PathProvider>()
+            .get_async::<PathProvider>()
             .await
             .expect("should be able to get path provider");
 

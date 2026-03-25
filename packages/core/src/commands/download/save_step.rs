@@ -77,7 +77,7 @@ mod tests {
         let metadata = MockServices::default()
             .create()
             .await
-            .get_service::<MetadataRepository>()
+            .get_async::<MetadataRepository>()
             .await
             .expect("should be able to get metadata repository");
         let file_path = PathBuf::from("path/to/audio.mp3");
@@ -98,7 +98,7 @@ mod tests {
         let metadata = MockServices::default()
             .create()
             .await
-            .get_service::<MetadataRepository>()
+            .get_async::<MetadataRepository>()
             .await
             .expect("should be able to get metadata repository");
         let file_path = PathBuf::from("path/to/audio.mp3");

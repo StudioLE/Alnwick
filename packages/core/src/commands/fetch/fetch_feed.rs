@@ -107,7 +107,7 @@ mod tests {
         let handler = MockServices::new()
             .create()
             .await
-            .get_service::<FetchHandler>()
+            .get_async::<FetchHandler>()
             .await
             .expect("should be able to get handler");
         let url = UrlWrapper::from_str("https://irlpodcast.org").expect("URL should parse");
@@ -129,7 +129,7 @@ mod tests {
             .with_rss_feed()
             .create()
             .await
-            .get_service::<FetchHandler>()
+            .get_async::<FetchHandler>()
             .await
             .expect("should be able to get handler");
         let _logger = init_test_logger();

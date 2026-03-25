@@ -7,7 +7,7 @@ const CONCURRENCY: usize = 8;
 ///
 /// Queues multiple [`FetchRequest`] and executes them concurrently
 /// with a progress bar.
-#[derive(Service)]
+#[derive(FromServicesAsync)]
 pub struct FetchCliCommand {
     metadata: Arc<MetadataRepository>,
     runner: Arc<CommandRunner<CommandInfo>>,

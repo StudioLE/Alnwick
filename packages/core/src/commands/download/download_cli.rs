@@ -7,7 +7,7 @@ const CONCURRENCY: usize = 8;
 ///
 /// Queues multiple [`DownloadRequest`]s based on filter criteria and
 /// executes them concurrently with a progress bar.
-#[derive(Service)]
+#[derive(FromServicesAsync)]
 pub struct DownloadCliCommand {
     metadata: Arc<MetadataRepository>,
     runner: Arc<CommandRunner<CommandInfo>>,
@@ -79,7 +79,7 @@ mod tests {
         // Arrange
         let services = MockServices::default().create().await;
         let command = services
-            .get_service::<DownloadCliCommand>()
+            .get_async::<DownloadCliCommand>()
             .await
             .expect("should be able to get command");
         let options = DownloadOptions {

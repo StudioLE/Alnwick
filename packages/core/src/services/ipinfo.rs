@@ -1,7 +1,7 @@
 use crate::prelude::*;
 use reqwest::Client as ReqwestClient;
 
-#[derive(Service)]
+#[derive(FromServices)]
 pub struct IpInfoProvider {
     options: Arc<AppOptions>,
 }
@@ -110,9 +110,9 @@ mod tests {
     #[ignore = "uses ipinfo.io"]
     async fn validate_env() {
         // Arrange
-        let services = ServiceProvider::new();
+        let services = ServiceBuilder::new().with_core().build();
         let ipinfo = services
-            .get_service::<IpInfoProvider>()
+            .get_async::<IpInfoProvider>()
             .await
             .expect("should be able to get ipinfo");
 
@@ -132,9 +132,11 @@ mod tests {
             expect_country: None,
             ..AppOptions::default()
         };
-        let ipinfo = ServiceProvider::new()
+        let ipinfo = ServiceBuilder::new()
             .with_instance(options)
-            .get_service::<IpInfoProvider>()
+            .with_core()
+            .build()
+            .get_async::<IpInfoProvider>()
             .await
             .expect("should be able to get ipinfo");
 
@@ -154,9 +156,11 @@ mod tests {
             expect_country: Some("INVALID".to_owned()),
             ..AppOptions::default()
         };
-        let ipinfo = ServiceProvider::new()
+        let ipinfo = ServiceBuilder::new()
             .with_instance(options)
-            .get_service::<IpInfoProvider>()
+            .with_core()
+            .build()
+            .get_async::<IpInfoProvider>()
             .await
             .expect("should be able to get ipinfo");
 

@@ -108,7 +108,7 @@ mod tests {
         let metadata = MockServices::default()
             .create()
             .await
-            .get_service::<MetadataRepository>()
+            .get_async::<MetadataRepository>()
             .await
             .expect("should be able to get metadata repository");
         let mut feed = MockFeeds::default()
@@ -133,7 +133,7 @@ mod tests {
         let metadata = MockServices::default()
             .create()
             .await
-            .get_service::<MetadataRepository>()
+            .get_async::<MetadataRepository>()
             .await
             .expect("should be able to get metadata repository");
         let feed = MockFeeds::default()

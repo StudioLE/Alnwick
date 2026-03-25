@@ -161,12 +161,9 @@ mod tests {
             })
             .create()
             .await;
-        let paths: Arc<PathProvider> = services
-            .get_service()
-            .await
-            .expect("Should get PathProvider");
+        let paths: Arc<PathProvider> = services.get_async().await.expect("Should get PathProvider");
         let metadata: Arc<MetadataRepository> = services
-            .get_service()
+            .get_async()
             .await
             .expect("Should get MetadataRepository");
         let podcasts_dir = paths.get_podcasts_dir();

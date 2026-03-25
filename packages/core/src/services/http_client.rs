@@ -21,18 +21,18 @@ pub struct HttpClient {
     client: ReqwestClient,
 }
 
-impl Service for HttpClient {
-    type Error = ServiceError;
+impl FromServicesAsync for HttpClient {
+    type Error = ResolveError;
 
-    async fn from_services(services: &ServiceProvider) -> Result<Self, Report<ServiceError>> {
-        let ipinfo = services.get_service::<IpInfoProvider>().await?;
+    async fn from_services_async(services: &ServiceProvider) -> Result<Self, Report<ResolveError>> {
+        let ipinfo = services.get::<IpInfoProvider>()?;
         ipinfo
             .validate()
             .await
-            .change_context(ServiceError::Create)?;
+            .change_context(ResolveError::Factory)?;
         Ok(Self {
-            cache: services.get_service().await?,
-            rate_limiter: services.get_service().await?,
+            cache: services.get()?,
+            rate_limiter: services.get()?,
             client: ReqwestClient::new(),
         })
     }
@@ -206,9 +206,9 @@ mod tests {
     #[ignore = "uses example.com"]
     pub async fn head() {
         // Arrange
-        let services = ServiceProvider::new();
+        let services = ServiceBuilder::new().with_core().build();
         let http = services
-            .get_service::<HttpClient>()
+            .get_async::<HttpClient>()
             .await
             .expect("should be able to get HttpClient");
         let url =
@@ -228,9 +228,9 @@ mod tests {
     #[ignore = "uses simplecast.com"]
     pub async fn head_xml() {
         // Arrange
-        let services = ServiceProvider::new();
+        let services = ServiceBuilder::new().with_core().build();
         let http = services
-            .get_service::<HttpClient>()
+            .get_async::<HttpClient>()
             .await
             .expect("should be able to get HttpClient");
         let url = UrlWrapper::from_str("https://feeds.simplecast.com/lP7owBq8")
@@ -250,9 +250,9 @@ mod tests {
     #[ignore = "uses example.com"]
     pub async fn get() {
         // Arrange
-        let services = ServiceProvider::new();
+        let services = ServiceBuilder::new().with_core().build();
         let http = services
-            .get_service::<HttpClient>()
+            .get_async::<HttpClient>()
             .await
             .expect("should be able to get HttpClient");
         let url =
@@ -274,9 +274,9 @@ mod tests {
     #[ignore = "uses example.com"]
     pub async fn get_html() {
         // Arrange
-        let services = ServiceProvider::new();
+        let services = ServiceBuilder::new().with_core().build();
         let http = services
-            .get_service::<HttpClient>()
+            .get_async::<HttpClient>()
             .await
             .expect("should be able to get HttpClient");
         let url = UrlWrapper::from_str("https://example.com").expect("valid test URL");
@@ -294,9 +294,9 @@ mod tests {
     #[ignore = "uses ipinfo.io"]
     pub async fn get_json() {
         // Arrange
-        let services = ServiceProvider::new();
+        let services = ServiceBuilder::new().with_core().build();
         let http = services
-            .get_service::<HttpClient>()
+            .get_async::<HttpClient>()
             .await
             .expect("should be able to get HttpClient");
         let url = UrlWrapper::from_str("https://ipinfo.io/json").expect("valid test URL");
@@ -314,9 +314,9 @@ mod tests {
     #[ignore = "requires network to prime cache"]
     async fn cache_hits_not_rate_limited() {
         // Arrange
-        let services = ServiceProvider::new();
+        let services = ServiceBuilder::new().with_core().build();
         let http = services
-            .get_service::<HttpClient>()
+            .get_async::<HttpClient>()
             .await
             .expect("should be able to get HttpClient");
         let url = UrlWrapper::from_str("https://example.com").expect("valid test URL");
@@ -343,9 +343,9 @@ mod tests {
     #[ignore = "requires network"]
     async fn domains_isolated() {
         // Arrange
-        let services = ServiceProvider::new();
+        let services = ServiceBuilder::new().with_core().build();
         let http = services
-            .get_service::<HttpClient>()
+            .get_async::<HttpClient>()
             .await
             .expect("should be able to get HttpClient");
         let _logger = init_test_logger();

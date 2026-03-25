@@ -5,7 +5,7 @@ use crate::prelude::*;
 /// - Fetches and parses the RSS feed
 /// - Stores the feed URL for future fetching
 /// - Saves the podcast and episodes to the database
-#[derive(Service)]
+#[derive(FromServicesAsync)]
 pub struct AddHandler {
     fetch: Arc<FetchHandler>,
     metadata: Arc<MetadataRepository>,
@@ -46,7 +46,7 @@ mod tests {
         // Arrange
         let services = MockServices::new().with_rss_feed().create().await;
         let handler = services
-            .get_service::<AddHandler>()
+            .get_async::<AddHandler>()
             .await
             .expect("should be able to get handler");
         let request = AddRequest {

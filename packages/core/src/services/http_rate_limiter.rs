@@ -18,10 +18,10 @@ pub struct HttpRateLimiter {
     quota: Quota,
 }
 
-impl Service for HttpRateLimiter {
+impl FromServices for HttpRateLimiter {
     type Error = Infallible;
 
-    async fn from_services(_services: &ServiceProvider) -> Result<Self, Report<Infallible>> {
+    fn from_services(_services: &ServiceProvider) -> Result<Self, Report<Infallible>> {
         Ok(Self::default())
     }
 }

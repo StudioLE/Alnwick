@@ -1,8 +1,11 @@
 pub use crate::commands::*;
 pub use crate::r#const::*;
 pub use crate::metadata::*;
+#[cfg(feature = "server")]
+pub use crate::server_prelude::*;
 pub use crate::services::*;
 pub use crate::utils::*;
+
 pub use chrono::{DateTime, Datelike, FixedOffset, NaiveDateTime, Utc};
 pub use clap::{Args, Parser, Subcommand};
 pub use serde::de::DeserializeOwned;
@@ -19,10 +22,7 @@ pub use std::str::FromStr;
 pub use std::sync::{Arc, Mutex as StdMutex};
 pub use strum_macros::{AsRefStr, Display};
 pub use studiole_command::prelude::*;
-pub use studiole_report::prelude::{Report, ReportResultExt, ResultExt};
+pub use studiole_report::prelude::*;
 pub use thiserror::Error;
 pub use tracing::{debug, error, info, trace, warn};
 pub use url::Url;
-
-#[cfg(feature = "server")]
-pub use crate::server_prelude::*;

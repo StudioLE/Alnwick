@@ -53,11 +53,11 @@ impl MockServices {
         trace!("Creating mock services");
         let options = mock_app_options();
         create_data_dir(&options).await;
-        let services = ServiceProvider::new()
+        let services = ServiceBuilder::new()
             .with_instance(options)
+            .with_core()
             .with_commands()
-            .await
-            .expect("should be able to create services with commands");
+            .build();
         if let Some(factory) = self.metadata {
             insert_db_feeds(&services, factory).await;
         } else {
@@ -81,7 +81,7 @@ async fn create_data_dir(options: &AppOptions) {
 async fn insert_db_feeds(services: &ServiceProvider, factory: MockFeedsFactory) {
     trace!(podcasts = ?factory.podcast_count, "Inserting mock feeds to database");
     let metadata = services
-        .get_service::<MetadataRepository>()
+        .get_async::<MetadataRepository>()
         .await
         .expect("should be able to get MetadataRepository");
     let mock = factory.create();
@@ -96,7 +96,7 @@ async fn insert_db_feeds(services: &ServiceProvider, factory: MockFeedsFactory) 
 async fn write_mock_rss_feed(services: &ServiceProvider) {
     trace!("Writing mock rss feed to HttpCache");
     let cache = services
-        .get_service::<HttpCache>()
+        .get_async::<HttpCache>()
         .await
         .expect("should be able to get HttpCache");
     let factory = MockFeedsFactory {
@@ -146,7 +146,7 @@ mod tests {
 
         // Act
         let options = services
-            .get_service::<AppOptions>()
+            .get_async::<AppOptions>()
             .await
             .expect("should be able to get options");
 

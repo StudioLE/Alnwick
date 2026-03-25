@@ -1,7 +1,7 @@
 use crate::prelude::*;
 
 /// CLI command for adding a new podcast.
-#[derive(Service)]
+#[derive(FromServicesAsync)]
 pub struct AddCliCommand {
     handler: Arc<AddHandler>,
 }
