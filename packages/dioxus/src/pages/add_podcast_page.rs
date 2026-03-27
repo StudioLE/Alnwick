@@ -97,7 +97,7 @@ async fn add_podcast(slug: Slug, feed_url: UrlWrapper) -> Result<AddResponse, Se
     match handler.execute(&request).await {
         Ok(response) => Ok(response),
         Err(e) => {
-            error!("{e:?}");
+            error!("{}", e.render());
             Err(ServerFnError::new(e.to_string()))
         }
     }

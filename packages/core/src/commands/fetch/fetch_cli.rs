@@ -66,7 +66,7 @@ impl FetchCliCommand {
         if !errors.is_empty() {
             warn!("Failed to fetch {} podcasts", errors.len());
             for error in errors {
-                warn!("{error:?}");
+                warn!("{}", error.render());
             }
         }
         Ok(())

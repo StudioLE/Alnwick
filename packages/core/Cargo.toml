@@ -26,6 +26,7 @@ server = [
   "dep:studiole-di",
   "dep:tokio",
   "dep:urlencoding",
+  "studiole-report/render",
 ]
 
 [dependencies]

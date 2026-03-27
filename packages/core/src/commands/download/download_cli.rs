@@ -52,7 +52,7 @@ impl DownloadCliCommand {
         if !errors.is_empty() {
             warn!("Skipped {} episodes due to failures", errors.len());
             for error in errors {
-                warn!("{error:?}");
+                warn!("{}", error.render());
             }
         }
         Ok(())

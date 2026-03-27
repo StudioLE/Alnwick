@@ -111,7 +111,7 @@ async fn queue_download(podcast: PodcastKey, episode: EpisodeKey) -> Result<(), 
     trace!("Adding to queue {request}");
     let runner = get_runner().await;
     if let Err(error) = runner.queue_request(request).await {
-        error!("{error:?}");
+        error!("{}", error.render());
         Err(ServerFnError::new(error.to_string()))
     } else {
         Ok(())
