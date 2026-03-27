@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use sea_orm::sqlx::sqlite::SqliteJournalMode;
 use sea_orm::*;
 use sea_orm_migration::MigratorTrait;
 
@@ -31,7 +32,9 @@ pub enum MetadataRepositoryCreateError {
 
 impl MetadataRepository {
     pub async fn new(path: PathBuf) -> Result<Self, Report<MetadataRepositoryCreateError>> {
-        let connect_options = ConnectOptions::new(format!("sqlite://{}?mode=rwc", path.display()));
+        let mut connect_options =
+            ConnectOptions::new(format!("sqlite://{}?mode=rwc", path.display()));
+        connect_options.map_sqlx_sqlite_opts(|opts| opts.journal_mode(SqliteJournalMode::Wal));
         let db = Database::connect(connect_options)
             .await
             .change_context(MetadataRepositoryCreateError::DatabaseConnection)?;
