@@ -135,15 +135,23 @@ impl HttpClient {
     /// Download a file from a URL to a destination path.
     ///
     /// The file is first cached, then either hard-linked or copied to the destination.
+    /// Audio files are removed from the cache after copying to avoid duplication.
     pub async fn download(
         &self,
         url: &UrlWrapper,
         destination_path: PathBuf,
         hardlink: bool,
     ) -> Result<(), Report<HttpError>> {
-        let extension = destination_path.extension().and_then(|e| e.to_str());
+        let extension = destination_path
+            .extension()
+            .and_then(|e| e.to_str())
+            .map(String::from);
+        let extension = extension.as_deref();
         let source_path = self.get(url, extension).await?;
         hardlink_or_copy(source_path, destination_path, hardlink).await?;
+        if extension == Some(MP3_EXTENSION) {
+            self.cache.remove(url, extension).await;
+        }
         Ok(())
     }
 }
