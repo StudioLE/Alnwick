@@ -107,7 +107,7 @@ pub enum DownloadStatus {
 
 #[get("/api/download/:podcast/:episode")]
 async fn queue_download(podcast: PodcastKey, episode: EpisodeKey) -> Result<(), ServerFnError> {
-    let request = DownloadRequest::new(podcast, episode);
+    let request = DownloadRequest::new(podcast, episode, false);
     trace!("Adding to queue {request}");
     let runner = get_runner().await;
     if let Err(error) = runner.queue_request(request).await {

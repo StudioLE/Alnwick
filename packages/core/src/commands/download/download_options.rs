@@ -9,4 +9,7 @@ pub struct DownloadOptions {
     pub podcast_slug: Slug,
     #[command(flatten)]
     pub filter: FilterOptions,
+    /// Replace existing downloads by re-downloading and re-processing
+    #[arg(long)]
+    pub replace: bool,
 }

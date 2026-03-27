@@ -5,13 +5,19 @@ use crate::prelude::*;
 pub struct DownloadRequest {
     pub podcast: PodcastKey,
     pub episode: EpisodeKey,
+    /// Replace existing downloads by re-downloading and re-processing.
+    pub replace: bool,
 }
 
 impl DownloadRequest {
     /// Create a new [`DownloadRequest`] from database keys.
     #[must_use]
-    pub fn new(podcast: PodcastKey, episode: EpisodeKey) -> Self {
-        Self { podcast, episode }
+    pub fn new(podcast: PodcastKey, episode: EpisodeKey, replace: bool) -> Self {
+        Self {
+            podcast,
+            episode,
+            replace,
+        }
     }
 }
 

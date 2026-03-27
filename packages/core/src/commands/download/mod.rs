@@ -1,6 +1,8 @@
 #[cfg(feature = "server")]
 mod context_step;
 #[cfg(feature = "server")]
+mod delete_existing_step;
+#[cfg(feature = "server")]
 mod download_cli;
 #[cfg(feature = "server")]
 mod download_context;

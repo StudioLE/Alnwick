@@ -3,7 +3,7 @@ use crate::prelude::*;
 
 #[component]
 pub fn EpisodeButton(podcast: PodcastPartial, episode: EpisodePartial) -> Element {
-    let request = DownloadRequest::new(podcast.primary_key, episode.primary_key);
+    let request = DownloadRequest::new(podcast.primary_key, episode.primary_key, false);
     if let Some(path) = episode.file_sub_path.clone() {
         return rsx! {
             PlayButton { request, path: PathBuf::from(path) }

@@ -27,7 +27,7 @@ impl DownloadCliCommand {
         let podcast = feed.podcast.primary_key;
         self.progress.start().await;
         for episode in feed.episodes.iter() {
-            let request = DownloadRequest::new(podcast, episode.primary_key);
+            let request = DownloadRequest::new(podcast, episode.primary_key, options.replace);
             self.runner
                 .queue_request(request)
                 .await
@@ -89,6 +89,7 @@ mod tests {
                 season: Some(1),
                 ..FilterOptions::default()
             },
+            replace: false,
         };
         let _logger = init_test_logger();
 
