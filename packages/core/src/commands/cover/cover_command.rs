@@ -7,7 +7,7 @@ const COVER_SIZE: u32 = 720;
 #[derive(FromServicesAsync)]
 pub struct CoverCommand {
     paths: Arc<PathProvider>,
-    http: Arc<HttpClient>,
+    http: Arc<dyn HttpFetch>,
     metadata: Arc<MetadataRepository>,
 }
 
@@ -20,26 +20,29 @@ impl CoverCommand {
             .change_context(CoverError::Repository)?
             .ok_or(CoverError::NoPodcast)?;
         let url = feed.podcast.image.clone().ok_or(CoverError::NoImage)?;
-        let src = self
-            .http
-            .get(&url, None)
+        let cover = self.paths.get_cover_path(&options.podcast_slug);
+        let temp_path = temp_path(&cover);
+        self.http
+            .download(&url, temp_path.clone())
             .await
             .change_context(CoverError::GetImage)
             .attach_url(&url)?;
         let banner = self.paths.get_banner_path(&options.podcast_slug);
-        let cover = self.paths.get_cover_path(&options.podcast_slug);
         create_parent_dir_if_not_exist(&banner)
             .await
             .change_context(CoverError::CreateDirectory)?;
-        let resize = Resize::new(&src)
+        let resize = Resize::new(&temp_path)
             .change_context(CoverError::CreateImage)
-            .attach_path(src)?;
+            .attach_path(&temp_path)?;
         resize
             .to_file(&banner, BANNER_WIDTH, BANNER_HEIGHT)
             .change_context(CoverError::CreateImage)?;
         resize
             .to_file(&cover, COVER_SIZE, COVER_SIZE)
             .change_context(CoverError::CreateImage)?;
+        if let Err(error) = remove_file(&temp_path).await {
+            warn!(%error, path = %temp_path.display(), "Failed to remove temp cover file");
+        }
         info!("Created images");
         trace!(banner = %banner.display(), cover = %cover.display(), "Created images");
         Ok(())

@@ -12,9 +12,8 @@ impl DownloadHandler {
         let Some(path) = &context.image_path else {
             return Ok(());
         };
-        let hardlink = self.paths.get_hard_link_from_cache();
         self.http
-            .download(url, path.clone(), hardlink)
+            .download(url, path.clone())
             .await
             .change_context(DownloadError::DownloadImage)
     }

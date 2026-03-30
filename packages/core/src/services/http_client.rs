@@ -1,24 +1,40 @@
 use crate::prelude::*;
+use crate::services::HttpRateLimiter;
 use crate::services::ipinfo::IpInfoProvider;
-use crate::services::{HttpCache, HttpRateLimiter};
 use reqwest::Client as ReqwestClient;
 use reqwest::Response;
 use reqwest::header::CONTENT_TYPE;
 
-const HEAD_EXTENSION: &str = "head";
 const DEFAULT_DOMAIN: &str = "__unknown";
 
-/// A client for making HTTP requests and caching responses.
+/// A client for making HTTP requests with rate limiting.
 ///
-/// `HttpClient` orchestrates HTTP requests with caching and rate limiting:
-/// - Uses `HttpCache` for file-based response caching
 /// - Uses `HttpRateLimiter` for per-domain rate limiting
 /// - Uses `reqwest::Client` for actual HTTP requests
 #[derive(Clone)]
 pub struct HttpClient {
-    cache: Arc<HttpCache>,
     rate_limiter: Arc<HttpRateLimiter>,
     client: ReqwestClient,
+}
+
+impl HttpClient {
+    /// Send a rate-limited GET request and check the response status.
+    async fn send_get(&self, url: &UrlWrapper) -> Result<Response, Report<HttpError>> {
+        let domain = url.domain().unwrap_or(DEFAULT_DOMAIN);
+        self.rate_limiter.wait_for_permit(domain).await;
+        let response = self
+            .client
+            .get(url.as_str())
+            .send()
+            .await
+            .change_context(HttpError::Request)
+            .attach_url(url)?;
+        if !response.status().is_success() {
+            let report = Report::new(HttpError::Status(response.status().as_u16())).attach_url(url);
+            return Err(report);
+        }
+        Ok(response)
+    }
 }
 
 impl FromServicesAsync for HttpClient {
@@ -31,57 +47,29 @@ impl FromServicesAsync for HttpClient {
             .await
             .change_context(ResolveError::Factory)?;
         Ok(Self {
-            cache: services.get()?,
             rate_limiter: services.get()?,
             client: ReqwestClient::new(),
         })
     }
 }
 
-impl HttpClient {
-    /// Fetch HTML content from a URL.
-    ///
-    /// Returns the parsed HTML document. The response is cached for future requests.
-    pub async fn get_html(&self, url: &UrlWrapper) -> Result<Html, Report<HttpError>> {
-        let path = self.get(url, Some(HTML_EXTENSION)).await?;
-        let contents = read_to_string(&path)
+#[async_trait]
+impl HttpFetch for HttpClient {
+    async fn get_html(&self, url: &UrlWrapper) -> Result<Html, Report<HttpError>> {
+        let body = self.get_string(url).await?;
+        Ok(Html::parse_document(&body))
+    }
+
+    async fn get_string(&self, url: &UrlWrapper) -> Result<String, Report<HttpError>> {
+        let response = self.send_get(url).await?;
+        response
+            .text()
             .await
-            .change_context(HttpError::ReadCache)
-            .attach_path(path)?;
-        Ok(Html::parse_document(&contents))
+            .change_context(HttpError::Request)
+            .attach_url(url)
     }
 
-    /// Fetch JSON content from a URL and deserialize it.
-    ///
-    /// The response is cached. If deserialization fails, the cache entry is removed.
-    pub async fn get_json<T: DeserializeOwned>(
-        &self,
-        url: &UrlWrapper,
-    ) -> Result<T, Report<HttpError>> {
-        let path = self.get(url, Some(JSON_EXTENSION)).await?;
-        let file = File::open(&path)
-            .change_context(HttpError::OpenCache)
-            .attach_path(&path)?;
-        let reader = BufReader::new(file);
-        let result = serde_json::from_reader(reader)
-            .change_context(HttpError::Deserialize)
-            .attach_path(path);
-        if result.is_err() {
-            self.cache.remove(url, Some(JSON_EXTENSION)).await;
-        }
-        result
-    }
-
-    /// Perform a HEAD request to get the Content-Type of a URL.
-    ///
-    /// The Content-Type is cached for future requests.
-    pub async fn head(&self, url: &UrlWrapper) -> Result<String, Report<HttpError>> {
-        let extension = Some(HEAD_EXTENSION);
-        if self.cache.exists(url, extension) {
-            trace!("HEAD cache HIT: {url}");
-            return self.cache.read_string(url, extension).await;
-        }
-        trace!("HEAD cache MISS: {url}");
+    async fn head(&self, url: &UrlWrapper) -> Result<String, Report<HttpError>> {
         let domain = url.domain().unwrap_or(DEFAULT_DOMAIN);
         self.rate_limiter.wait_for_permit(domain).await;
         let response = self
@@ -92,68 +80,64 @@ impl HttpClient {
             .change_context(HttpError::Request)
             .attach_url(url)?;
         let content_type = get_content_type(response).unwrap_or_default();
-        self.cache
-            .write_string(url, extension, &content_type)
-            .await?;
         Ok(content_type)
     }
 
-    /// Fetch content from a URL and cache it.
-    ///
-    /// Returns the path to the cached file. If the content is already cached,
-    /// returns immediately without making a network request.
-    pub async fn get(
+    async fn download(
         &self,
         url: &UrlWrapper,
-        extension: Option<&str>,
-    ) -> Result<PathBuf, Report<HttpError>> {
-        if self.cache.exists(url, extension) {
-            trace!(%url, "Cache HIT");
-            return Ok(self.cache.get_path(url, extension));
-        }
-        trace!(%url, "Cache MISS");
-        let domain = url.domain().unwrap_or(DEFAULT_DOMAIN);
-        self.rate_limiter.wait_for_permit(domain).await;
-        let mut response = self
-            .client
-            .get(url.as_str())
-            .send()
-            .await
-            .change_context(HttpError::Request)
-            .attach_url(url)?;
-        if !response.status().is_success() {
-            let report = Report::new(HttpError::Status(response.status().as_u16())).attach_url(url);
-            return Err(report);
-        }
-        let path = self
-            .cache
-            .write_response(url, extension, &mut response)
-            .await?;
-        Ok(path)
-    }
-
-    /// Download a file from a URL to a destination path.
-    ///
-    /// The file is first cached, then either hard-linked or copied to the destination.
-    /// Audio files are removed from the cache after copying to avoid duplication.
-    pub async fn download(
-        &self,
-        url: &UrlWrapper,
-        destination_path: PathBuf,
-        hardlink: bool,
+        destination: PathBuf,
     ) -> Result<(), Report<HttpError>> {
-        let extension = destination_path
-            .extension()
-            .and_then(|e| e.to_str())
-            .map(String::from);
-        let extension = extension.as_deref();
-        let source_path = self.get(url, extension).await?;
-        hardlink_or_copy(source_path, destination_path, hardlink).await?;
-        if extension == Some(MP3_EXTENSION) {
-            self.cache.remove(url, extension).await;
-        }
+        let mut response = self.send_get(url).await?;
+        write_response_to_file(&mut response, &destination).await?;
         Ok(())
     }
+}
+
+/// Stream a response body to a file on disk.
+///
+/// - Creates parent directories if needed
+/// - Removes any existing file at the destination
+/// - Writes chunks incrementally and syncs
+/// - Errors if zero bytes are written
+async fn write_response_to_file(
+    response: &mut Response,
+    destination: &Path,
+) -> Result<(), Report<HttpError>> {
+    create_parent_dir_if_not_exist(destination)
+        .await
+        .change_context(HttpError::CreateDestinationDirectory)?;
+    if destination.exists() {
+        remove_file(destination)
+            .await
+            .change_context(HttpError::RemoveExisting)?;
+    }
+    let mut file = AsyncFile::create(destination)
+        .await
+        .change_context(HttpError::WriteDestination)
+        .attach_path(destination)?;
+    let mut bytes_written: usize = 0;
+    while let Some(chunk) = response
+        .chunk()
+        .await
+        .change_context(HttpError::Chunk)
+        .attach_path(destination)?
+    {
+        bytes_written += chunk.len();
+        file.write_all(&chunk)
+            .await
+            .change_context(HttpError::WriteDestination)
+            .attach_path(destination)?;
+    }
+    file.sync_all()
+        .await
+        .change_context(HttpError::WriteDestination)
+        .attach_path(destination)?;
+    if bytes_written == 0 {
+        let report = Report::new(HttpError::Size).attach_path(destination);
+        return Err(report);
+    }
+    Ok(())
 }
 
 fn get_content_type(response: Response) -> Option<String> {
@@ -168,40 +152,6 @@ fn get_content_type(response: Response) -> Option<String> {
         .trim()
         .to_lowercase();
     Some(content_type)
-}
-
-pub async fn hardlink_or_copy(
-    source: PathBuf,
-    destination: PathBuf,
-    hardlink: bool,
-) -> Result<(), Report<HttpError>> {
-    create_parent_dir_if_not_exist(&destination)
-        .await
-        .change_context(HttpError::CreateDestinationDirectory)?;
-    if destination.exists() {
-        remove_file(&destination)
-            .await
-            .change_context(HttpError::RemoveExisting)?;
-    }
-    let result = if hardlink {
-        trace!(
-            source = %source.display(),
-            destination = %destination.display(),
-            "Hard linking file"
-        );
-        hard_link(&source, &destination).await
-    } else {
-        trace!(
-            source = %source.display(),
-            destination = %destination.display(),
-            "Copying file"
-        );
-        copy(&source, &destination).await.map(|_| ())
-    };
-    result
-        .change_context(HttpError::Copy)
-        .attach_with("Source", || source.display())
-        .attach_with("Destination", || destination.display())
 }
 
 #[cfg(test)]
@@ -221,7 +171,6 @@ mod tests {
             .expect("should be able to get HttpClient");
         let url =
             UrlWrapper::from_str("https://example.com/?abc=123&def=456").expect("valid test URL");
-        http.cache.remove(&url, Some(HEAD_EXTENSION)).await;
         let _logger = init_test_logger();
 
         // Act
@@ -243,7 +192,6 @@ mod tests {
             .expect("should be able to get HttpClient");
         let url = UrlWrapper::from_str("https://feeds.simplecast.com/lP7owBq8")
             .expect("URL should parse");
-        http.cache.remove(&url, Some(HEAD_EXTENSION)).await;
         let _logger = init_test_logger();
 
         // Act
@@ -256,7 +204,7 @@ mod tests {
 
     #[tokio::test]
     #[ignore = "uses example.com"]
-    pub async fn get() {
+    pub async fn get_string() {
         // Arrange
         let services = ServiceBuilder::new().with_core().build();
         let http = services
@@ -265,17 +213,14 @@ mod tests {
             .expect("should be able to get HttpClient");
         let url =
             UrlWrapper::from_str("https://example.com/?abc=123&def=456").expect("valid test URL");
-        let expected = http.cache.get_path(&url, Some(HTML_EXTENSION));
-        http.cache.remove(&url, Some(HTML_EXTENSION)).await;
         let _logger = init_test_logger();
 
         // Act
-        let result = http.get(&url, Some(HTML_EXTENSION)).await;
+        let result = http.get_string(&url).await;
 
         // Assert
-        let path = result.assert_ok_debug();
-        assert_eq!(path, expected);
-        assert!(path.exists());
+        let body = result.assert_ok_debug();
+        assert!(!body.is_empty());
     }
 
     #[tokio::test]
@@ -288,7 +233,6 @@ mod tests {
             .await
             .expect("should be able to get HttpClient");
         let url = UrlWrapper::from_str("https://example.com").expect("valid test URL");
-        http.cache.remove(&url, Some(HTML_EXTENSION)).await;
         let _logger = init_test_logger();
 
         // Act
@@ -308,7 +252,6 @@ mod tests {
             .await
             .expect("should be able to get HttpClient");
         let url = UrlWrapper::from_str("https://ipinfo.io/json").expect("valid test URL");
-        http.cache.remove(&url, Some(JSON_EXTENSION)).await;
         let _logger = init_test_logger();
 
         // Act
@@ -316,35 +259,6 @@ mod tests {
 
         // Assert
         let _json = result.assert_ok_debug();
-    }
-
-    #[tokio::test]
-    #[ignore = "requires network to prime cache"]
-    async fn cache_hits_not_rate_limited() {
-        // Arrange
-        let services = ServiceBuilder::new().with_core().build();
-        let http = services
-            .get_async::<HttpClient>()
-            .await
-            .expect("should be able to get HttpClient");
-        let url = UrlWrapper::from_str("https://example.com").expect("valid test URL");
-        let _logger = init_test_logger();
-        let result = http.get(&url, Some(HTML_EXTENSION)).await;
-        assert!(result.is_ok(), "Failed to prime cache");
-
-        // Act
-        let start = Instant::now();
-        for _ in 0..100 {
-            let result = http.get(&url, Some(HTML_EXTENSION)).await;
-            assert!(result.is_ok(), "Cache hit failed");
-        }
-        let elapsed = start.elapsed();
-
-        // Assert
-        assert!(
-            elapsed < Duration::from_millis(500),
-            "Expected cache hits to be instant, elapsed: {elapsed:?}"
-        );
     }
 
     #[tokio::test]
@@ -357,14 +271,6 @@ mod tests {
             .await
             .expect("should be able to get HttpClient");
         let _logger = init_test_logger();
-        for i in 0..10 {
-            let url1 = UrlWrapper::from_str(&format!("https://example.com/isolated-{i}"))
-                .expect("valid test URL");
-            let url2 = UrlWrapper::from_str(&format!("https://httpbin.org/isolated-{i}"))
-                .expect("valid test URL");
-            http.cache.remove(&url1, Some(HTML_EXTENSION)).await;
-            http.cache.remove(&url2, Some(HTML_EXTENSION)).await;
-        }
         let http1 = http.clone();
         let http2 = http.clone();
 
@@ -374,14 +280,14 @@ mod tests {
             for i in 0..6 {
                 let url = UrlWrapper::from_str(&format!("https://example.com/isolated-{i}"))
                     .expect("valid test URL");
-                let _ = http1.get(&url, Some(HTML_EXTENSION)).await;
+                let _ = http1.get_string(&url).await;
             }
         });
         let task2 = tokio::spawn(async move {
             for i in 0..6 {
                 let url = UrlWrapper::from_str(&format!("https://httpbin.org/isolated-{i}"))
                     .expect("valid test URL");
-                let _ = http2.get(&url, Some(HTML_EXTENSION)).await;
+                let _ = http2.get_string(&url).await;
             }
         });
         let _ = tokio::try_join!(task1, task2);

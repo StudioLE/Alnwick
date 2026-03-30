@@ -9,7 +9,7 @@ use crate::prelude::*;
 #[derive(FromServicesAsync)]
 pub struct DownloadHandler {
     pub(super) paths: Arc<PathProvider>,
-    pub(super) http: Arc<HttpClient>,
+    pub(super) http: Arc<dyn HttpFetch>,
     pub(super) metadata: Arc<MetadataRepository>,
 }
 
@@ -99,7 +99,6 @@ mod tests {
         assert!(full_path.exists(), "Downloaded file should exist");
 
         // Delete and recreate the file with a marker to prove it gets replaced.
-        // Must delete first to break any hard link to the cache.
         remove_file(&full_path).await.expect("should remove file");
         write(&full_path, MARKER)
             .await
@@ -156,5 +155,31 @@ mod tests {
         let response = result.assert_ok_debug();
         assert!(!old_full_path.exists(), "Old file should be deleted");
         assert_ne!(response.file_path, PathBuf::from(OLD_SUB_PATH));
+    }
+
+    #[tokio::test]
+    #[serial]
+    pub async fn download_handler_tags() {
+        // Arrange
+        let services = MockServices::default().create().await;
+        let download = services
+            .get_async::<DownloadHandler>()
+            .await
+            .expect("should be able to get command");
+        let paths = services
+            .get_async::<PathProvider>()
+            .await
+            .expect("should be able to get path provider");
+        let request = DownloadRequest::new(MockFeeds::PODCAST_KEY, MockFeeds::EPISODE_KEY, false);
+        let _logger = init_test_logger();
+
+        // Act
+        let response = download.execute(&request).await.assert_ok_debug();
+
+        // Assert
+        let full_path = paths.get_podcasts_dir().join(&response.file_path);
+        assert!(full_path.exists(), "Downloaded file should exist");
+        let snapshot = TagSnapshot::from_path(&full_path);
+        assert_yaml_snapshot!(snapshot);
     }
 }

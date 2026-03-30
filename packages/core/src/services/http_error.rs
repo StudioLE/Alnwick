@@ -1,38 +1,21 @@
 use crate::prelude::*;
 use reqwest::StatusCode;
 
-/// Errors from [`HttpClient`].
-#[allow(clippy::absolute_paths)]
+/// Errors from HTTP operations.
 #[derive(Clone, Copy, Debug, Eq, Error, PartialEq)]
 pub enum HttpError {
     #[error("Unexpected response status: {}", get_reason(&{0}))]
     Status(u16),
-    #[error("A request error occured")]
+    #[error("A request error occurred")]
     Request,
-    #[error("Unable to read cache file")]
-    ReadCache,
-    #[error("Unable to create cache file")]
-    CreateCache,
-    #[error("Unable to write cache file")]
-    WriteCache,
-    #[error("Unable to sync cache file")]
-    SyncCache,
-    #[error("Unable to open cache file")]
-    OpenCache,
-    #[error("Unable to create cache directory")]
-    CreateCacheDirectory,
-    #[error("A request error occured")]
+    #[error("Failed to read response chunk")]
     Chunk,
     #[error("Unable to deserialize")]
     Deserialize,
-    #[error("Response did not contain a Content-Type header")]
-    NoContentType,
-    #[error("Unable to create destiantion directory")]
+    #[error("Unable to create destination directory")]
     CreateDestinationDirectory,
-    #[error("Unable to copy file")]
-    Copy,
-    #[error("Unable to get metadata of file")]
-    Metadata,
+    #[error("Unable to write to destination file")]
+    WriteDestination,
     #[error("File size is zero")]
     Size,
     #[error("Unable to remove existing file")]
