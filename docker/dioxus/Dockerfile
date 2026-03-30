@@ -32,6 +32,7 @@ RUN apt update \
     librsvg2-dev \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
+RUN rustup default nightly
 RUN rustup target add wasm32-unknown-unknown
 RUN curl --location \
     "https://github.com/DioxusLabs/dioxus/releases/download/v${DX_VERSION}/dx-x86_64-unknown-linux-gnu.tar.gz" | \

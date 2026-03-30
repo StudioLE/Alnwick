@@ -31,6 +31,7 @@ indicatif = { version = "0.18.4" }
 insta = { version = "1.46.3", features = ["yaml"] }
 lofty = { version = "0.23.3" }
 procfs = { version = "0.18.0" }
+rand = { version = "0.10.0" }
 # WASM requires the Reqwest version be the same as dioxus-fullstack
 reqwest = { version = "=0.12.28", default-features = false, features = ["blocking", "json", "rustls-tls", "stream"] }
 rss = { version = "2.0.12", features = ["validation"] }
@@ -43,8 +44,8 @@ serde_yaml = { version = "0.9.34" }
 serial_test = { version = "3.4.0" }
 sqlformat = { version = "0.5.0" }
 strum_macros = { version = "0.28.0" }
-studiole-command = { version = "0.2.0", default-features = false }
-studiole-di = { version = "0.3.0", features = ["async"] }
+studiole-command = { version = "0.2.1", default-features = false }
+studiole-di = { version = "0.4.0", features = ["async", "traits"] }
 studiole-report = { version = "0.4.0" }
 thiserror = { version = "2.0.18" }
 tokio = { version = "1.50.0", features = ["macros", "rt-multi-thread", "fs", "io-util"] }

@@ -7,7 +7,7 @@ use crate::prelude::*;
 /// - Saves the updated podcast and episodes to the database
 #[derive(Clone, FromServicesAsync)]
 pub struct FetchHandler {
-    pub(super) http: Arc<HttpClient>,
+    pub(super) http: Arc<dyn HttpFetch>,
     pub(super) metadata: Arc<MetadataRepository>,
 }
 

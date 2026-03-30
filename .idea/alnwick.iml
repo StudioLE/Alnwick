@@ -9,6 +9,7 @@
       <sourceFolder url="file://$MODULE_DIR$/packages/command/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/packages/di/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/packages/di-macros/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/packages/core/tests" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
     <orderEntry type="inheritedJdk" />

@@ -13,6 +13,7 @@ RUN cargo chef prepare --recipe-path recipe.json
 FROM rust:alpine AS builder
 ARG VERSION=0.0.0
 RUN apk add --no-cache cargo-edit libc-dev
+RUN rustup default nightly
 WORKDIR /app
 COPY --from=planner /usr/local/bin/cargo-chef /usr/local/bin/cargo-chef
 COPY --from=planner /app/recipe.json recipe.json
