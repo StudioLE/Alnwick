@@ -81,15 +81,12 @@ impl FetchHandler {
         url: &UrlWrapper,
         slug: &Slug,
     ) -> Result<PodcastFeed, Report<FetchRssError>> {
-        let path = self
+        let xml = self
             .http
-            .get(url, Some(RSS_EXTENSION))
+            .get_string(url)
             .await
             .change_context(FetchRssError::Xml)?;
-        let file = File::open(&path)
-            .change_context(FetchRssError::Open)
-            .attach_path(path)?;
-        let reader = BufReader::new(file);
+        let reader = BufReader::new(xml.as_bytes());
         let channel = RssChannel::read_from(reader).change_context(FetchRssError::Parse)?;
         PodcastFromRss::execute(channel, slug.clone()).change_context(FetchRssError::Convert)
     }
@@ -102,6 +99,7 @@ mod tests {
 
     #[tokio::test]
     #[serial]
+    #[ignore = "uses irlpodcast.org"]
     pub async fn fetch_feed_simplecast() {
         // Arrange
         let handler = MockServices::new()

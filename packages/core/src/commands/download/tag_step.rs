@@ -7,6 +7,7 @@ use lofty::prelude::{Accessor, TagExt, TaggedFileExt};
 use lofty::probe::Probe;
 use lofty::tag::items::Timestamp;
 use lofty::tag::{Tag, TagType};
+use std::fs;
 
 impl DownloadHandler {
     /// Add ID3 tags to MP3 files with podcast and episode metadata.
@@ -87,7 +88,6 @@ fn get_tag_types(path: &Path) -> Result<Vec<TagType>, LoftyError> {
     Ok(tag_types)
 }
 
-#[allow(clippy::absolute_paths)]
 fn get_file_size(path: &Path) -> Option<u64> {
-    Some(std::fs::metadata(path).ok()?.len())
+    Some(fs::metadata(path).ok()?.len())
 }

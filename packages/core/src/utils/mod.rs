@@ -13,6 +13,8 @@ mod path_safety;
 mod resize;
 mod resize_error;
 mod sanitizer;
+#[cfg(feature = "server")]
+mod temp_path;
 #[cfg(test)]
 mod tests;
 mod url;
@@ -34,6 +36,8 @@ pub use path_safety::*;
 pub use resize::*;
 pub use resize_error::*;
 pub use sanitizer::*;
+#[cfg(feature = "server")]
+pub use temp_path::*;
 #[cfg(test)]
 pub use tests::*;
 pub use url::*;

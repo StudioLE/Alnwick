@@ -8,3 +8,13 @@ node_modules
 **/.expect/**/*.actual.txt
 **/.expect/**/*.actual.yaml
 *.snap.new
+*.aac
+*.jpg
+*.m4a
+*.mp3
+*.ogg
+*.opus
+*.png
+!sample.jpg
+!sample.mp3
+!sample.png

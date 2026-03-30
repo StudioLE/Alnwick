@@ -17,7 +17,7 @@ pub struct Resize {
 }
 
 impl Resize {
-    pub fn new(path: &PathBuf) -> Result<Resize, Report<ResizeError>> {
+    pub fn new(path: &Path) -> Result<Resize, Report<ResizeError>> {
         let reader = ImageReader::open(path)
             .change_context(ResizeError::Open)?
             .with_guessed_format()
@@ -106,22 +106,25 @@ mod tests {
     pub async fn resize_jpeg() {
         let services = ServiceBuilder::new().with_core().build();
         let http = services
-            .get_async::<HttpClient>()
+            .get_trait_async::<dyn HttpFetch>()
             .await
-            .expect("should be able to get HttpClient");
+            .expect("should be able to get HttpFetch");
         let formats = vec!["jpeg", "png", "webp"];
         for format in formats {
             eprintln!("format: {format}");
             let url = UrlWrapper::from_str(&format!("https://httpbin.org/image/{format}"))
                 .expect("url should be valid");
-            let path = http
-                .get(&url, None)
+            let temp_dir = TempDirectory::default()
+                .create()
+                .expect("should create temp dir");
+            let temp_path = temp_dir.join(format!("resize_test.{format}"));
+            http.download(&url, temp_path.clone())
                 .await
-                .expect("get image should not fail");
+                .expect("download image should not fail");
             let _logger = init_test_logger();
 
             // Act
-            let result = Resize::new(&path).assert_ok_debug().to_bytes(100, 100);
+            let result = Resize::new(&temp_path).assert_ok_debug().to_bytes(100, 100);
 
             // Assert
             let bytes = result.assert_ok_debug();

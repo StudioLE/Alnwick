@@ -45,13 +45,11 @@ impl FetchHandler {
     ) -> Result<SimplecastEpisode, Report<FetchSimplecastError>> {
         let url = UrlWrapper::from_str(&format!("https://api.simplecast.com/episodes/{id}"))
             .expect("URL should be valid");
-        let episode: SimplecastEpisode = self
-            .http
+        self.http
             .get_json(&url)
             .await
             .change_context(FetchSimplecastError::GetEpisode)
-            .attach_with("Episode ID", || id)?;
-        Ok(episode)
+            .attach_with("Episode ID", || id)
     }
 
     async fn get_podcast(

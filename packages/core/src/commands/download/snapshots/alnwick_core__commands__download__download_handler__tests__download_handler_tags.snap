@@ -1,0 +1,16 @@
+---
+source: packages/core/src/commands/download/download_handler.rs
+expression: snapshot
+---
+tags:
+  Id3v2:
+    AlbumTitle: Season 1
+    DiscNumber: "1"
+    RecordingDate: 2000-04-23
+    TrackArtist: Podcast 0
+    TrackNumber: "2"
+    TrackTitle: S01E02 of test-0
+pictures:
+  - picture_type: CoverFront
+    mime_type: Png
+    data_size: 9571

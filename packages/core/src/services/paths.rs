@@ -2,7 +2,6 @@ use crate::prelude::*;
 use dirs::{cache_dir, data_dir};
 use std::fs::create_dir;
 
-const HTTP_DIR: &str = "http";
 const PODCASTS_DIR: &str = "podcasts";
 const RSS_FILE_NAME: &str = "feed.rss";
 pub const METADATA_DB: &str = "metadata.db";
@@ -20,10 +19,6 @@ pub struct PathProvider {
     ///
     /// Default: `$HOME/.cache/alnwick` (or equivalent)
     cache_dir: PathBuf,
-    /// Should hardlinks be used when copying between cache and data directory?
-    ///
-    /// Defaults to automatically determining
-    hard_link_from_cache: bool,
 }
 
 impl FromServices for PathProvider {
@@ -31,15 +26,14 @@ impl FromServices for PathProvider {
 
     fn from_services(services: &ServiceProvider) -> Result<Self, Report<ResolveError>> {
         let options = services.get::<AppOptions>()?;
-        let mounts = services.get::<MountProvider>().ok();
-        let paths = Self::new(options, mounts);
+        let paths = Self::new(options);
         paths.create_dirs().change_context(ResolveError::Factory)?;
         Ok(paths)
     }
 }
 
 impl PathProvider {
-    fn new(options: Arc<AppOptions>, mounts: Option<Arc<MountProvider>>) -> Self {
+    fn new(options: Arc<AppOptions>) -> Self {
         let data_dir = options.data_dir.clone().unwrap_or_else(|| {
             data_dir()
                 .expect("all platforms should have a data_dir")
@@ -50,26 +44,10 @@ impl PathProvider {
                 .expect("all platforms should have a cache_dir")
                 .join(APP_NAME)
         });
-        let hard_link_from_cache = options
-            .hard_link_from_cache
-            .unwrap_or_else(|| default_for_hard_link_from_cache(mounts, &cache_dir, &data_dir));
         Self {
             data_dir,
             cache_dir,
-            hard_link_from_cache,
         }
-    }
-
-    pub(crate) fn get_hard_link_from_cache(&self) -> bool {
-        self.hard_link_from_cache
-    }
-
-    /// Directory for caching HTTP client responses.
-    ///
-    /// Default: `$HOME/.cache/alnwick/http` (or equivalent)
-    #[must_use]
-    pub fn get_http_dir(&self) -> PathBuf {
-        self.cache_dir.join(HTTP_DIR)
     }
 
     /// Sqlite database for storing podcast metadata.
@@ -135,7 +113,6 @@ impl PathProvider {
         let dirs = vec![
             ("Cache directory", self.cache_dir.clone()),
             ("Data directory", self.data_dir.clone()),
-            ("HTTP cache directory", self.get_http_dir()),
             ("Podcasts directory", self.get_podcasts_dir()),
         ];
         for (name, dir) in dirs {
@@ -147,33 +124,6 @@ impl PathProvider {
         }
         Ok(())
     }
-}
-
-#[cfg(target_os = "linux")]
-fn default_for_hard_link_from_cache(
-    mounts: Option<Arc<MountProvider>>,
-    cache_dir: &Path,
-    data_dir: &Path,
-) -> bool {
-    let mounts = mounts.expect("MountProvider should be available on linux platforms");
-    let cache_mount = mounts
-        .get_mount_id(cache_dir)
-        .expect("should be able to get mount id of cache");
-    let data_mount = mounts
-        .get_mount_id(data_dir)
-        .expect("should be able to get mount id of data");
-    let is_match = cache_mount == data_mount;
-    trace!(is_match, cache_mount = %cache_mount, data_mount = %data_mount, "Determining if cache and data are on the same mount");
-    is_match
-}
-
-#[cfg(not(target_os = "linux"))]
-fn default_for_hard_link_from_cache(
-    mounts: Option<Arc<MountProvider>>,
-    cache_dir: &Path,
-    data_dir: &Path,
-) -> bool {
-    false
 }
 
 /// Errors from [`PathProvider`].
@@ -193,7 +143,6 @@ mod tests {
         let paths = PathProvider {
             data_dir: PathBuf::default(),
             cache_dir: PathBuf::default(),
-            hard_link_from_cache: false,
         };
         let data_dir = paths.data_dir.clone();
         let slug = Slug::from_str("abc").expect("should be valid slug");
@@ -216,25 +165,5 @@ mod tests {
             paths.get_rss_path(&slug, None, Some(1234)),
             data_dir.join("podcasts/abc/S00/1234/feed.rss")
         );
-    }
-
-    #[tokio::test]
-    #[allow(clippy::bool_assert_comparison)]
-    async fn _get_hard_link_from_cache() {
-        // Arrange
-        let _logger = init_test_logger();
-        let services = ServiceBuilder::new().with_core().build();
-        let paths = services
-            .get_async::<PathProvider>()
-            .await
-            .expect("should be able to get path provider");
-
-        // Act
-        let result = paths.get_hard_link_from_cache();
-        // Assert
-        #[cfg(unix)]
-        assert_eq!(result, true);
-        #[cfg(not(unix))]
-        assert_eq!(result, false);
     }
 }

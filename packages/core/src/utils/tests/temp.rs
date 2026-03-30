@@ -3,6 +3,7 @@ use crate::prelude::APP_NAME;
 use chrono::Local;
 use std::env::temp_dir;
 use std::fs::create_dir_all;
+use std::io::Error as IoError;
 use std::path::PathBuf;
 use std::thread::current as current_thread;
 
@@ -39,8 +40,7 @@ impl TempDirectory {
         self.path
     }
 
-    #[allow(clippy::absolute_paths)]
-    pub fn create(self) -> Result<PathBuf, std::io::Error> {
+    pub fn create(self) -> Result<PathBuf, IoError> {
         create_dir_all(&self.path)?;
         Ok(self.path)
     }

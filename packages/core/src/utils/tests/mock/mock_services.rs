@@ -4,8 +4,8 @@ use crate::prelude::*;
 pub struct MockServices {
     /// Mock feeds to insert into the database.
     metadata: Option<MockFeedsFactory>,
-    /// Whether to prime the HTTP cache with mock RSS data.
-    rss_feed: bool,
+    /// Mock HTTP fetch with pre-configured URL mappings.
+    mock_http: MockHttpClient,
 }
 
 impl MockServices {
@@ -15,32 +15,46 @@ impl MockServices {
     }
 
     /// Create a new [`MockServices`] instance with no mock feeds.
+    ///
+    /// Pre-configures the mock HTTP with sample fixture mappings for the
+    /// episode file and image URLs used by [`MockFeedsFactory`].
     #[must_use]
     pub fn new() -> Self {
+        let mock_http = MockHttpClient::new()
+            .with_file(
+                MockFeeds::episode_file_url().as_str(),
+                SampleFixtures::mp3(),
+            )
+            .with_file(MockFeeds::EPISODE_IMAGE_URL, SampleFixtures::png());
         Self {
             metadata: None,
-            rss_feed: false,
+            mock_http,
         }
     }
 
-    /// Prime the HTTP cache with mock RSS feed data.
+    /// Set a custom metadata factory for mock feeds.
     #[must_use]
     pub fn with_metadata_factory(mut self, factory: MockFeedsFactory) -> Self {
         self.metadata = Some(factory);
         self
     }
 
-    /// Prime the HTTP cache with mock RSS feed data.
+    /// Insert default mock feeds into the database.
     #[must_use]
     pub fn with_metadata(mut self) -> Self {
         self.metadata = Some(MockFeedsFactory::default());
         self
     }
 
-    /// Prime the HTTP cache with mock RSS feed data.
+    /// Prime the mock HTTP with RSS feed data.
+    ///
+    /// - Generates RSS XML from the first mock podcast
+    /// - Maps the RSS URL to return `application/xml` for HEAD requests
+    /// - Maps episode file and image URLs to sample fixtures
     #[must_use]
     pub fn with_rss_feed(mut self) -> Self {
-        self.rss_feed = true;
+        let factory = self.metadata.clone().unwrap_or_default();
+        self.mock_http = build_rss_mock(self.mock_http, &factory);
         self
     }
 
@@ -48,23 +62,23 @@ impl MockServices {
     ///
     /// - Creates a temporary data directory and stores it in app options
     /// - Creates a temporary sqlite database
-    /// - Inserts mock feeds into the database.
+    /// - Registers `MockHttpClient` as `dyn HttpFetch` instead of `HttpClient`
+    /// - Inserts mock feeds into the database
     pub async fn create(self) -> ServiceProvider {
         trace!("Creating mock services");
         let options = mock_app_options();
         create_data_dir(&options).await;
+        let http: Arc<dyn HttpFetch> = Arc::new(self.mock_http);
         let services = ServiceBuilder::new()
             .with_instance(options)
             .with_core()
+            .with_instance(http)
             .with_commands()
             .build();
         if let Some(factory) = self.metadata {
             insert_db_feeds(&services, factory).await;
         } else {
             debug!("No mock feeds. Database will be empty");
-        }
-        if self.rss_feed {
-            write_mock_rss_feed(&services).await;
         }
         services
     }
@@ -93,28 +107,19 @@ async fn insert_db_feeds(services: &ServiceProvider, factory: MockFeedsFactory) 
     }
 }
 
-async fn write_mock_rss_feed(services: &ServiceProvider) {
-    trace!("Writing mock rss feed to HttpCache");
-    let cache = services
-        .get_async::<HttpCache>()
-        .await
-        .expect("should be able to get HttpCache");
-    let factory = MockFeedsFactory {
-        podcast_count: 1,
-        ..MockFeedsFactory::default()
-    };
-    let feed = factory.create().feeds.pop().expect("should have one feed");
-    let channel = PodcastToRss::execute(feed);
-    let xml = channel.to_string();
-    let url = MockServices::rss_url();
-    cache
-        .write_string(&url, Some("head"), "application/xml")
-        .await
-        .expect("should write head");
-    cache
-        .write_string(&url, Some(RSS_EXTENSION), &xml)
-        .await
-        .expect("should write rss");
+fn build_rss_mock(mock_http: MockHttpClient, factory: &MockFeedsFactory) -> MockHttpClient {
+    let mock = factory.clone().create();
+    let feed = mock
+        .feeds
+        .into_iter()
+        .next()
+        .expect("mock feeds should have at least one podcast");
+    let channel = PodcastToRss::execute(feed.clone());
+    let rss_xml = channel.to_string();
+    let rss_url = MockServices::rss_url();
+    mock_http
+        .with_string(rss_url.as_str(), rss_xml)
+        .with_content_type(rss_url.as_str(), "application/xml")
 }
 
 impl Default for MockServices {
