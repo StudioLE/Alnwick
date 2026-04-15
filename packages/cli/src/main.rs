@@ -14,7 +14,7 @@ async fn main() {
                 .expect("should be able to get command");
             if let Err(e) = command.execute(options).await {
                 error!("Failed to add podcast");
-                eprintln!("{e:?}");
+                eprintln!("{}", e.render());
                 exit(1);
             }
         }
@@ -25,7 +25,7 @@ async fn main() {
                 .expect("should be able to get command");
             if let Err(e) = command.execute(options).await {
                 error!("Failed to fetch podcast");
-                eprintln!("{e:?}");
+                eprintln!("{}", e.render());
                 exit(1);
             }
         }
@@ -36,7 +36,7 @@ async fn main() {
                 .expect("should be able to get command");
             if let Err(e) = command.execute(options).await {
                 error!("Failed to download podcast");
-                eprintln!("{e:?}");
+                eprintln!("{}", e.render());
                 exit(1);
             }
         }
@@ -47,7 +47,7 @@ async fn main() {
                 .expect("should be able to get command");
             if let Err(e) = command.execute(options).await {
                 error!("Failed to create RSS feeds");
-                eprintln!("{e:?}");
+                eprintln!("{}", e.render());
                 exit(1);
             }
         }
@@ -58,7 +58,7 @@ async fn main() {
                 .expect("should be able to get command");
             if let Err(e) = command.execute(options).await {
                 error!("Failed to create banner and cover images");
-                eprintln!("{e:?}");
+                eprintln!("{}", e.render());
                 exit(1);
             }
         }
