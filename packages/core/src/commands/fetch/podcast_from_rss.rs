@@ -1,6 +1,5 @@
 use crate::prelude::*;
 use rss::{Channel as RssChannel, Item as RssItem};
-use std::fmt::Debug;
 
 pub struct PodcastFromRss;
 
@@ -12,7 +11,6 @@ impl PodcastFromRss {
         let items = take(&mut channel.items);
         let podcast = podcast_from_rss(channel, slug)?;
         let mut episodes = Vec::new();
-        let mut errors: Vec<Report<EpisodeFromRssError>> = Vec::new();
         for item in items {
             let name = item
                 .title
@@ -21,17 +19,10 @@ impl PodcastFromRss {
             match episode_from_rss(item) {
                 Ok(episode) => episodes.push(episode),
                 Err(error) => {
-                    let error = error.attach("Episode", &name);
-                    errors.push(error);
+                    warn!(name, "Skipping unparseable episode");
+                    warn!("{}", error.render());
                 }
             }
-        }
-        if !errors.is_empty() {
-            let report = errors.into_iter().fold(
-                Report::new(PodcastFromRssError::ParseEpisodes),
-                |report, error| report.attach("Error", error),
-            );
-            return Err(report);
         }
         let feed = PodcastFeed { podcast, episodes };
         Ok(feed)
@@ -116,12 +107,18 @@ fn episode_from_rss(item: RssItem) -> Result<EpisodeInfo, Report<EpisodeFromRssE
         explicit: parse_explicit(itunes.explicit),
         itunes_title: itunes.subtitle,
         episode: if let Some(episode) = itunes.episode {
-            Some(try_parse(&episode, EpisodeFromRssError::ParseEpisode)?)
+            Some(try_parse_truncate(
+                &episode,
+                EpisodeFromRssError::ParseEpisode,
+            )?)
         } else {
             None
         },
         season: if let Some(season) = itunes.season {
-            Some(try_parse(&season, EpisodeFromRssError::ParseSeason)?)
+            Some(try_parse_truncate(
+                &season,
+                EpisodeFromRssError::ParseSeason,
+            )?)
         } else {
             None
         },
@@ -170,6 +167,26 @@ fn try_parse_url<E: Error + Send + Sync + 'static>(
     UrlWrapper::from_str(&url).change_context(error)
 }
 
+/// Parse a string as `u32`, tolerating fractional values by truncating.
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    clippy::as_conversions,
+    reason = "truncation is the intended behavior for fractional episode/season numbers"
+)]
+fn try_parse_truncate<E: Error + Send + Sync + 'static>(
+    value: &str,
+    error: E,
+) -> Result<u32, Report<E>> {
+    if let Ok(n) = value.parse::<u32>() {
+        return Ok(n);
+    }
+    match value.parse::<f64>() {
+        Ok(f) => Ok(f as u32),
+        Err(e) => Err(Report::new(error).attach("Value", value).attach("Error", e)),
+    }
+}
+
 fn try_parse<T: FromStr, E: Error + Send + Sync + 'static>(
     value: &str,
     error: E,
@@ -194,8 +211,6 @@ pub enum PodcastFromRssError {
     ParseLink,
     #[error("Unable to parse podcast type")]
     ParseKind,
-    #[error("Unable to parse all episodes")]
-    ParseEpisodes,
     #[error("Unable to parse podcast new feed URL")]
     ParseNewFeedUrl,
 }
@@ -235,6 +250,24 @@ pub enum EpisodeFromRssError {
 mod tests {
     use super::*;
     use crate::prelude::PodcastToRss;
+
+    #[test]
+    fn try_parse_truncate_integer() {
+        let output = try_parse_truncate("42", EpisodeFromRssError::ParseEpisode);
+        assert_eq!(output.assert_ok(), 42);
+    }
+
+    #[test]
+    fn try_parse_truncate_fractional() {
+        let output = try_parse_truncate("4330.5", EpisodeFromRssError::ParseEpisode);
+        assert_eq!(output.assert_ok(), 4330);
+    }
+
+    #[test]
+    fn try_parse_truncate_invalid() {
+        let output = try_parse_truncate("abc", EpisodeFromRssError::ParseEpisode);
+        assert!(output.is_err());
+    }
 
     #[test]
     fn round_trip_conversion() {
