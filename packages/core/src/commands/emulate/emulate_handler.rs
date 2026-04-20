@@ -2,18 +2,24 @@ use super::to_rss::PodcastToRss;
 use crate::prelude::*;
 use rss::Item as RssItem;
 
-#[derive(FromServicesAsync)]
-pub struct EmulateCommand {
+/// Generate emulated RSS feeds for a podcast's downloaded episodes.
+#[derive(Clone, FromServicesAsync)]
+pub struct EmulateHandler {
     options: Arc<AppOptions>,
     paths: Arc<PathProvider>,
     metadata: Arc<MetadataRepository>,
 }
 
-impl EmulateCommand {
-    pub async fn execute(&self, options: EmulateOptions) -> Result<(), Report<EmulateError>> {
+#[async_trait]
+impl Execute<EmulateRequest, EmulateResponse, Report<EmulateError>> for EmulateHandler {
+    /// Execute the emulate handler.
+    async fn execute(
+        &self,
+        request: &EmulateRequest,
+    ) -> Result<EmulateResponse, Report<EmulateError>> {
         let feed = self
             .metadata
-            .get_feed_by_slug(options.podcast_slug, None)
+            .get_feed_by_slug(request.slug.clone(), None)
             .await
             .change_context(EmulateError::Repository)?
             .ok_or(EmulateError::NoPodcast)?;
@@ -23,10 +29,13 @@ impl EmulateCommand {
             .into_iter()
             .flatten()
             .collect();
-        info!("Created {} rss feeds", feeds.len());
-        Ok(())
+        let feed_count = feeds.len();
+        info!(feed_count, "Created rss feeds");
+        Ok(EmulateResponse { feed_count })
     }
+}
 
+impl EmulateHandler {
     async fn save_feeds(
         &self,
         feed: &PodcastFeed,
@@ -160,20 +169,20 @@ mod tests {
     use super::*;
 
     #[tokio::test]
-    pub async fn feeds_command() {
+    pub async fn emulate_handler() {
         // Arrange
         let services = MockServices::default().create().await;
-        let command = services
-            .get_async::<EmulateCommand>()
+        let handler = services
+            .get_async::<EmulateHandler>()
             .await
-            .expect("should be able to get command");
-        let options = EmulateOptions {
-            podcast_slug: MockFeeds::podcast_slug(),
+            .expect("should be able to get handler");
+        let request = EmulateRequest {
+            slug: MockFeeds::podcast_slug(),
         };
         let _logger = init_test_logger();
 
         // Act
-        let result = command.execute(options).await;
+        let result = handler.execute(&request).await;
 
         // Assert
         result.assert_ok_debug();

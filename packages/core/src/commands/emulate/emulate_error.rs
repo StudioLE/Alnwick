@@ -1,6 +1,6 @@
 use crate::prelude::*;
 
-/// Errors from [`EmulateCommand`].
+/// Errors from [`EmulateHandler`].
 #[derive(Clone, Copy, Debug, Eq, Error, PartialEq)]
 pub enum EmulateError {
     #[error("Unable to get podcast")]

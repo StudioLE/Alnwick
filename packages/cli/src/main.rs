@@ -42,7 +42,7 @@ async fn main() {
         }
         Command::Emulate(options) => {
             let command = services
-                .get_async::<EmulateCommand>()
+                .get_async::<EmulateCliCommand>()
                 .await
                 .expect("should be able to get command");
             if let Err(e) = command.execute(options).await {
@@ -53,7 +53,7 @@ async fn main() {
         }
         Command::Cover(options) => {
             let command = services
-                .get_async::<CoverCommand>()
+                .get_async::<CoverCliCommand>()
                 .await
                 .expect("should be able to get command");
             if let Err(e) = command.execute(options).await {
@@ -76,11 +76,11 @@ enum Command {
     /// Add a new podcast from an RSS feed.
     Add(AddOptions),
     /// Fetch an existing podcast using its stored feed URL.
-    Fetch(FetchOptions),
+    Fetch(PodcastOptions),
     /// Download episodes of a podcast.
     Download(DownloadOptions),
     /// Create emulated RSS of a podcast.
-    Emulate(EmulateOptions),
+    Emulate(PodcastOptions),
     /// Download cover and banner images of a podcast.
-    Cover(CoverOptions),
+    Cover(PodcastOptions),
 }

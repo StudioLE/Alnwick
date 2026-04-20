@@ -4,30 +4,33 @@ const BANNER_WIDTH: u32 = 960;
 const BANNER_HEIGHT: u32 = 540;
 const COVER_SIZE: u32 = 720;
 
-#[derive(FromServicesAsync)]
-pub struct CoverCommand {
+/// Download and resize podcast cover and banner images.
+#[derive(Clone, FromServicesAsync)]
+pub struct CoverHandler {
     paths: Arc<PathProvider>,
     http: Arc<dyn HttpFetch>,
     metadata: Arc<MetadataRepository>,
 }
 
-impl CoverCommand {
-    pub async fn execute(&self, options: CoverOptions) -> Result<(), Report<CoverError>> {
+#[async_trait]
+impl Execute<CoverRequest, CoverResponse, Report<CoverError>> for CoverHandler {
+    /// Execute the cover handler.
+    async fn execute(&self, request: &CoverRequest) -> Result<CoverResponse, Report<CoverError>> {
         let feed = self
             .metadata
-            .get_feed_by_slug(options.podcast_slug.clone(), None)
+            .get_feed_by_slug(request.slug.clone(), None)
             .await
             .change_context(CoverError::Repository)?
             .ok_or(CoverError::NoPodcast)?;
         let url = feed.podcast.image.clone().ok_or(CoverError::NoImage)?;
-        let cover = self.paths.get_cover_path(&options.podcast_slug);
+        let cover = self.paths.get_cover_path(&request.slug);
         let temp_path = temp_path(&cover);
         self.http
             .download(&url, temp_path.clone())
             .await
             .change_context(CoverError::GetImage)
             .attach_url(&url)?;
-        let banner = self.paths.get_banner_path(&options.podcast_slug);
+        let banner = self.paths.get_banner_path(&request.slug);
         create_parent_dir_if_not_exist(&banner)
             .await
             .change_context(CoverError::CreateDirectory)?;
@@ -45,7 +48,10 @@ impl CoverCommand {
         }
         info!("Created images");
         trace!(banner = %banner.display(), cover = %cover.display(), "Created images");
-        Ok(())
+        Ok(CoverResponse {
+            banner_path: banner,
+            cover_path: cover,
+        })
     }
 }
 
@@ -54,20 +60,20 @@ mod tests {
     use super::*;
 
     #[tokio::test]
-    pub async fn cover_command() {
+    pub async fn cover_handler() {
         // Arrange
         let services = MockServices::default().create().await;
-        let command = services
-            .get_async::<CoverCommand>()
+        let handler = services
+            .get_async::<CoverHandler>()
             .await
-            .expect("should be able to get command");
-        let options = CoverOptions {
-            podcast_slug: MockFeeds::podcast_slug(),
+            .expect("should be able to get handler");
+        let request = CoverRequest {
+            slug: MockFeeds::podcast_slug(),
         };
         let _logger = init_test_logger();
 
         // Act
-        let result = command.execute(options).await;
+        let result = handler.execute(&request).await;
 
         // Assert
         result.assert_ok_debug();

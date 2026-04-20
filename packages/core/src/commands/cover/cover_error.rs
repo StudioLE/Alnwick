@@ -1,6 +1,6 @@
 use crate::prelude::*;
 
-/// Errors from [`CoverCommand`].
+/// Errors from [`CoverHandler`].
 #[derive(Clone, Copy, Debug, Eq, Error, PartialEq)]
 pub enum CoverError {
     #[error("Unable to get podcast")]

@@ -1,30 +1,30 @@
 use crate::prelude::*;
 
-/// Maximum concurrent fetches.
+/// Maximum concurrent cover operations.
 const CONCURRENCY: usize = 8;
 
-/// CLI command for fetching existing podcasts.
+/// CLI command for downloading and resizing podcast cover images.
 ///
-/// Queues multiple [`FetchRequest`] and executes them concurrently
+/// Queues multiple [`CoverRequest`] and executes them concurrently
 /// with a progress bar.
 #[derive(FromServicesAsync)]
-pub struct FetchCliCommand {
+pub struct CoverCliCommand {
     selector: Arc<PodcastSelector>,
     runner: Arc<CommandRunner<CommandInfo>>,
     progress: Arc<CliProgress<CommandInfo>>,
 }
 
-impl FetchCliCommand {
-    /// Fetch podcasts matching the options.
+impl CoverCliCommand {
+    /// Download and resize cover images for podcasts matching the options.
     pub async fn execute(
         &self,
         options: PodcastOptions,
     ) -> Result<(), Report<PodcastSelectorError>> {
         let slugs = self.selector.execute(&options).await?;
-        trace!(count = slugs.len(), "Fetching podcasts");
+        trace!(count = slugs.len(), "Processing covers");
         self.progress.start().await;
         for slug in slugs {
-            let request = FetchRequest { slug };
+            let request = CoverRequest { slug };
             self.runner
                 .queue_request(request)
                 .await
@@ -38,17 +38,17 @@ impl FetchCliCommand {
         let mut failed = 0_usize;
         for (_request, status) in results.iter() {
             match status {
-                CommandStatus::Succeeded(CommandSuccess::Fetch(_)) => succeeded += 1,
-                CommandStatus::Failed(CommandFailure::Fetch(e)) => {
+                CommandStatus::Succeeded(CommandSuccess::Cover(_)) => succeeded += 1,
+                CommandStatus::Failed(CommandFailure::Cover(e)) => {
                     failed += 1;
                     warn!("{}", e.render());
                 }
-                _ => unreachable!("should only get fetch results"),
+                _ => unreachable!("should only get cover results"),
             }
         }
-        info!("Fetched {succeeded} podcasts");
+        info!("Processed covers for {succeeded} podcasts");
         if failed > 0 {
-            warn!("Failed to fetch {failed} podcasts");
+            warn!("Failed to process covers for {failed} podcasts");
         }
         Ok(())
     }

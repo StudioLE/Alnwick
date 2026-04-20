@@ -1,30 +1,30 @@
 use crate::prelude::*;
 
-/// Maximum concurrent fetches.
+/// Maximum concurrent emulations.
 const CONCURRENCY: usize = 8;
 
-/// CLI command for fetching existing podcasts.
+/// CLI command for generating emulated RSS feeds.
 ///
-/// Queues multiple [`FetchRequest`] and executes them concurrently
+/// Queues multiple [`EmulateRequest`] and executes them concurrently
 /// with a progress bar.
 #[derive(FromServicesAsync)]
-pub struct FetchCliCommand {
+pub struct EmulateCliCommand {
     selector: Arc<PodcastSelector>,
     runner: Arc<CommandRunner<CommandInfo>>,
     progress: Arc<CliProgress<CommandInfo>>,
 }
 
-impl FetchCliCommand {
-    /// Fetch podcasts matching the options.
+impl EmulateCliCommand {
+    /// Generate emulated RSS feeds for podcasts matching the options.
     pub async fn execute(
         &self,
         options: PodcastOptions,
     ) -> Result<(), Report<PodcastSelectorError>> {
         let slugs = self.selector.execute(&options).await?;
-        trace!(count = slugs.len(), "Fetching podcasts");
+        trace!(count = slugs.len(), "Emulating podcasts");
         self.progress.start().await;
         for slug in slugs {
-            let request = FetchRequest { slug };
+            let request = EmulateRequest { slug };
             self.runner
                 .queue_request(request)
                 .await
@@ -38,17 +38,17 @@ impl FetchCliCommand {
         let mut failed = 0_usize;
         for (_request, status) in results.iter() {
             match status {
-                CommandStatus::Succeeded(CommandSuccess::Fetch(_)) => succeeded += 1,
-                CommandStatus::Failed(CommandFailure::Fetch(e)) => {
+                CommandStatus::Succeeded(CommandSuccess::Emulate(_)) => succeeded += 1,
+                CommandStatus::Failed(CommandFailure::Emulate(e)) => {
                     failed += 1;
                     warn!("{}", e.render());
                 }
-                _ => unreachable!("should only get fetch results"),
+                _ => unreachable!("should only get emulate results"),
             }
         }
-        info!("Fetched {succeeded} podcasts");
+        info!("Emulated {succeeded} podcasts");
         if failed > 0 {
-            warn!("Failed to fetch {failed} podcasts");
+            warn!("Failed to emulate {failed} podcasts");
         }
         Ok(())
     }

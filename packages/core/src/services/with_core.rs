@@ -17,11 +17,12 @@ impl WithCore for ServiceBuilder {
             .with_type::<IpInfoProvider>()
             .with_trait_async::<dyn HttpFetch, HttpClient>()
             .with_type_async::<MetadataRepository>()
+            .with_type_async::<PodcastSelector>()
             .with_type_async::<AddHandler>()
             .with_type_async::<AddCliCommand>()
             .with_type_async::<FetchCliCommand>()
             .with_type_async::<DownloadCliCommand>()
-            .with_type_async::<EmulateCommand>()
-            .with_type_async::<CoverCommand>()
+            .with_type_async::<EmulateCliCommand>()
+            .with_type_async::<CoverCliCommand>()
     }
 }
