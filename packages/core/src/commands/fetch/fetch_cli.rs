@@ -1,17 +1,10 @@
 use crate::prelude::*;
 
-/// Maximum concurrent fetches.
-const CONCURRENCY: usize = 8;
-
 /// CLI command for fetching existing podcasts.
-///
-/// Queues multiple [`FetchRequest`] and executes them concurrently
-/// with a progress bar.
 #[derive(FromServicesAsync)]
 pub struct FetchCliCommand {
     selector: Arc<PodcastSelector>,
-    runner: Arc<CommandRunner<CommandInfo>>,
-    progress: Arc<CliProgress<CommandInfo>>,
+    cli_runner: Arc<CliRunner>,
 }
 
 impl FetchCliCommand {
@@ -21,34 +14,14 @@ impl FetchCliCommand {
         options: PodcastOptions,
     ) -> Result<(), Report<PodcastSelectorError>> {
         let slugs = self.selector.execute(&options).await?;
-        trace!(count = slugs.len(), "Fetching podcasts");
-        self.progress.start().await;
-        for slug in slugs {
-            let request = FetchRequest { slug };
-            self.runner
-                .queue_request(request)
-                .await
-                .expect("should be able to queue request");
+        let requests = slugs.into_iter().map(|slug| FetchRequest { slug });
+        let status = self.cli_runner.run(requests).await;
+        for (_request, error) in &status.failed {
+            warn!("{}", error.render());
         }
-        self.runner.start(CONCURRENCY).await;
-        self.runner.drain().await;
-        self.progress.finish().await;
-        let results = self.runner.get_commands().await;
-        let mut succeeded = 0_usize;
-        let mut failed = 0_usize;
-        for (_request, status) in results.iter() {
-            match status {
-                CommandStatus::Succeeded(CommandSuccess::Fetch(_)) => succeeded += 1,
-                CommandStatus::Failed(CommandFailure::Fetch(e)) => {
-                    failed += 1;
-                    warn!("{}", e.render());
-                }
-                _ => unreachable!("should only get fetch results"),
-            }
-        }
-        info!("Fetched {succeeded} podcasts");
-        if failed > 0 {
-            warn!("Failed to fetch {failed} podcasts");
+        info!("Fetched {} podcasts", status.succeeded.len());
+        if !status.failed.is_empty() {
+            warn!("Failed to fetch {} podcasts", status.failed.len());
         }
         Ok(())
     }

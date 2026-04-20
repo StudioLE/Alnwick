@@ -1,8 +1,5 @@
 use crate::prelude::*;
 
-/// Maximum concurrent downloads.
-const CONCURRENCY: usize = 8;
-
 /// CLI command for batch downloading episodes.
 ///
 /// Queues multiple [`DownloadRequest`] based on filter criteria and
@@ -11,8 +8,7 @@ const CONCURRENCY: usize = 8;
 pub struct DownloadCliCommand {
     metadata: Arc<MetadataRepository>,
     selector: Arc<PodcastSelector>,
-    runner: Arc<CommandRunner<CommandInfo>>,
-    progress: Arc<CliProgress<CommandInfo>>,
+    cli_runner: Arc<CliRunner>,
 }
 
 impl DownloadCliCommand {
@@ -23,7 +19,7 @@ impl DownloadCliCommand {
             .execute(&options.selection)
             .await
             .change_context(DownloadCliError::Selection)?;
-        self.progress.start().await;
+        let mut requests = Vec::new();
         for slug in slugs {
             let feed = self
                 .metadata
@@ -33,32 +29,23 @@ impl DownloadCliCommand {
                 .ok_or(DownloadCliError::NoPodcast)?;
             let podcast = feed.podcast.primary_key;
             for episode in feed.episodes.iter() {
-                let request = DownloadRequest::new(podcast, episode.primary_key, options.replace);
-                self.runner
-                    .queue_request(request)
-                    .await
-                    .expect("should be able to queue request");
+                requests.push(DownloadRequest::new(
+                    podcast,
+                    episode.primary_key,
+                    options.replace,
+                ));
             }
         }
-        self.runner.start(CONCURRENCY).await;
-        self.runner.drain().await;
-        self.progress.finish().await;
-        let results = self.runner.get_commands().await;
-        let mut succeeded = 0_usize;
-        let mut failed = 0_usize;
-        for (_request, status) in results.iter() {
-            match status {
-                CommandStatus::Succeeded(CommandSuccess::Download(_)) => succeeded += 1,
-                CommandStatus::Failed(CommandFailure::Download(e)) => {
-                    failed += 1;
-                    warn!("{}", e.render());
-                }
-                _ => unreachable!("should only get download results"),
-            }
+        let status = self.cli_runner.run(requests).await;
+        for (_request, error) in &status.failed {
+            warn!("{}", error.render());
         }
-        info!("Downloaded audio files for {succeeded} episodes");
-        if failed > 0 {
-            warn!("Skipped {failed} episodes due to failures");
+        info!(
+            "Downloaded audio files for {} episodes",
+            status.succeeded.len()
+        );
+        if !status.failed.is_empty() {
+            warn!("Skipped {} episodes due to failures", status.failed.len());
         }
         Ok(())
     }

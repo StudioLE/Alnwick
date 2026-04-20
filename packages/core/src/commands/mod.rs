@@ -1,4 +1,8 @@
+//! Command implementations for the CLI and web interfaces.
+
 mod add;
+#[cfg(feature = "server")]
+mod cli_runner;
 mod cover;
 mod define;
 mod download;
@@ -9,6 +13,8 @@ mod podcast_options;
 mod podcast_selector;
 
 pub use add::*;
+#[cfg(feature = "server")]
+pub use cli_runner::*;
 pub use cover::*;
 pub use define::*;
 pub use download::*;

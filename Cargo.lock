@@ -5923,9 +5923,9 @@ dependencies = [
 
 [[package]]
 name = "studiole-command"
-version = "0.2.1"
+version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8004f6fab3679710d00721d6b932467c2874bb0eb8cd175a57b0fd4f2f186892"
+checksum = "3e92ab3404d1fe884a5a1bed951ffb4f1dfda498adc5a0cce36eb3b7cb344fb6"
 dependencies = [
  "async-trait",
  "indicatif",

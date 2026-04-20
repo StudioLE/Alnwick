@@ -18,6 +18,7 @@ impl WithCore for ServiceBuilder {
             .with_trait_async::<dyn HttpFetch, HttpClient>()
             .with_type_async::<MetadataRepository>()
             .with_type_async::<PodcastSelector>()
+            .with_type_async::<CliRunner>()
             .with_type_async::<AddHandler>()
             .with_type_async::<AddCliCommand>()
             .with_type_async::<FetchCliCommand>()
