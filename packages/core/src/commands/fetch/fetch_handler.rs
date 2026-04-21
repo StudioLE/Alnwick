@@ -25,9 +25,12 @@ impl Execute<FetchRequest, FetchResponse, Report<FetchError>> for FetchHandler {
             .update_feed(feed)
             .await
             .change_context(FetchError::Save)?;
-        info!(
-            response.podcast_key,
-            response.episodes_updated, response.episodes_inserted, "Fetched podcast"
+        trace!(
+            slug = %request.slug,
+            podcast_key = response.podcast_key,
+            episodes_updated = response.episodes_updated,
+            episodes_inserted = response.episodes_inserted,
+            "Fetched podcast"
         );
         Ok(response)
     }

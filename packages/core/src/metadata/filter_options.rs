@@ -82,7 +82,7 @@ impl PodcastFeed {
             true
         });
         let after = self.episodes.len();
-        debug!("Filter includes {after} of {before} episodes");
-        trace!("Options: {options}");
+        debug!(slug = %self.podcast.slug, after, before, "Filter applied");
+        trace!(slug = %self.podcast.slug, %options, "Filter options");
     }
 }

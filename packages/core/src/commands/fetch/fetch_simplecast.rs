@@ -35,7 +35,7 @@ impl FetchHandler {
             .attach_url(url)?;
         let episode_guid = get_simplecast_episode_guid(&html)
             .ok_or_else(|| Report::new(FetchSimplecastError::PlayerNotFound).attach_url(url))?;
-        trace!("Found Simplecast player with episode id: {episode_guid}",);
+        trace!(episode_guid, "Found Simplecast player");
         Ok(episode_guid)
     }
 
@@ -56,7 +56,11 @@ impl FetchHandler {
         &self,
         episode: &SimplecastEpisode,
     ) -> Result<SimplecastPodcast, Report<FetchSimplecastError>> {
-        debug!("Fetching podcast for {}", episode.podcast.title);
+        debug!(
+            podcast_id = episode.podcast.id,
+            title = episode.podcast.title,
+            "Fetching Simplecast podcast"
+        );
         let url = UrlWrapper::from_str(&format!(
             "https://api.simplecast.com/podcasts/{}",
             episode.podcast.id
@@ -74,7 +78,11 @@ impl FetchHandler {
         &self,
         episode: &SimplecastEpisode,
     ) -> Result<Vec<SimplecastPlaylistEpisode>, Report<FetchSimplecastError>> {
-        debug!("Fetching playlist for {}", episode.podcast.title);
+        debug!(
+            podcast_id = episode.podcast.id,
+            title = episode.podcast.title,
+            "Fetching Simplecast playlist"
+        );
         let mut playlist_url = UrlWrapper::from_str(&format!(
             "https://api.simplecast.com/podcasts/{}/playlist",
             episode.podcast.id
@@ -103,7 +111,10 @@ impl FetchHandler {
         &self,
         playlist: &[SimplecastPlaylistEpisode],
     ) -> Result<Vec<SimplecastEpisode>, Report<FetchSimplecastError>> {
-        debug!("Fetching metadata for {} episodes", playlist.len());
+        debug!(
+            count = playlist.len(),
+            "Fetching Simplecast episode metadata"
+        );
         stream::iter(playlist.iter().map(|episode| {
             let this = self;
             async move { this.get_episode(&episode.id).await }
@@ -123,8 +134,8 @@ fn get_simplecast_episode_guid(html: &Html) -> Option<String> {
         }
         let url = match Url::parse(&url) {
             Ok(url) => url,
-            Err(e) => {
-                warn!(url, %e, "Unable to parse URL");
+            Err(error) => {
+                warn!(url, %error, "Unable to parse URL");
                 return None;
             }
         };

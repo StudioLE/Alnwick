@@ -19,8 +19,7 @@ impl PodcastFromRss {
             match episode_from_rss(item) {
                 Ok(episode) => episodes.push(episode),
                 Err(error) => {
-                    warn!(name, "Skipping unparseable episode");
-                    warn!("{}", error.render());
+                    warn!(slug = %podcast.slug, name, error = %error.render(), "Skipping unparseable episode");
                 }
             }
         }

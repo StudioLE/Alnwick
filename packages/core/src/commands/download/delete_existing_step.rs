@@ -13,15 +13,23 @@ impl DownloadHandler {
         if let Some(file_sub_path) = &context.episode.file_sub_path {
             let full_path = podcasts_dir.join(file_sub_path.as_ref());
             match remove_file(&full_path).await {
-                Ok(()) => debug!(?full_path, "Deleted existing audio file"),
-                Err(e) => warn!(?full_path, %e, "Failed to delete existing audio file"),
+                Ok(()) => {
+                    debug!(podcast = %context.podcast, episode = %context.episode, path = %full_path.display(), "Deleted existing audio file");
+                }
+                Err(error) => {
+                    warn!(podcast = %context.podcast, episode = %context.episode, path = %full_path.display(), %error, "Failed to delete existing audio file");
+                }
             }
         }
         if let Some(image_sub_path) = &context.episode.image_sub_path {
             let full_path = podcasts_dir.join(image_sub_path.as_ref());
             match remove_file(&full_path).await {
-                Ok(()) => debug!(?full_path, "Deleted existing image file"),
-                Err(e) => warn!(?full_path, %e, "Failed to delete existing image file"),
+                Ok(()) => {
+                    debug!(podcast = %context.podcast, episode = %context.episode, path = %full_path.display(), "Deleted existing image file");
+                }
+                Err(error) => {
+                    warn!(podcast = %context.podcast, episode = %context.episode, path = %full_path.display(), %error, "Failed to delete existing image file");
+                }
             }
         }
     }

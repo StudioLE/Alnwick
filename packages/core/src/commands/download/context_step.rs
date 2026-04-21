@@ -24,7 +24,11 @@ impl MetadataRepository {
         podcast_key: PodcastKey,
         episode_key: EpisodeKey,
     ) -> Result<(DownloadPodcastPartial, DownloadEpisodePartial), Report<DownloadError>> {
-        trace!(podcast = podcast_key, "Querying DB for podcast");
+        trace!(
+            podcast = podcast_key,
+            episode = episode_key,
+            "Querying DB for podcast"
+        );
         let podcast = get_download_podcast_query(podcast_key)
             .one(&self.db)
             .await

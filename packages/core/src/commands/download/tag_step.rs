@@ -15,7 +15,7 @@ impl DownloadHandler {
     pub(super) fn tag_step(&self, context: &DownloadContext) -> Result<(), Report<DownloadError>> {
         let content_type = context.episode.source_content_type.as_str();
         if content_type != "audio/mpeg" {
-            warn!(%context.episode, content_type, "Skipping file as it's not an MP3");
+            warn!(podcast = %context.podcast, episode = %context.episode, content_type, "Skipping file as it's not an MP3");
             return Ok(());
         }
         let cover = if let Some(image_path) = &context.image_path {
@@ -75,7 +75,7 @@ fn create_tag(
 
 fn write_tag(path: &PathBuf, tag: Id3v2Tag) -> Result<(), LoftyError> {
     for tag_type in get_tag_types(path)? {
-        trace!(?tag_type, "Removing tag");
+        trace!(path = %path.display(), ?tag_type, "Removing tag");
         tag.remove_from_path(path)?;
     }
     tag.save_to_path(path, WriteOptions::default())?;

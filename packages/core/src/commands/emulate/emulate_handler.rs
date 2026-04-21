@@ -30,7 +30,7 @@ impl Execute<EmulateRequest, EmulateResponse, Report<EmulateError>> for EmulateH
             .flatten()
             .collect();
         let feed_count = feeds.len();
-        info!(feed_count, "Created rss feeds");
+        trace!(slug = %request.slug, feed_count, "Created rss feeds");
         Ok(EmulateResponse { feed_count })
     }
 }
@@ -80,12 +80,12 @@ impl EmulateHandler {
                     if error != &EmulateError::NoPath {
                         return Err(report);
                     }
-                    trace!(episode, "Skipping episode as it has not been downloaded");
+                    trace!(slug = %feed.podcast.slug, episode, "Skipping episode as it has not been downloaded");
                 }
             }
         }
         if channel.items.is_empty() {
-            trace!(season, year, "Skipping feed as it contains no episodes");
+            trace!(slug = %feed.podcast.slug, season, year, "Skipping feed as it contains no episodes");
             return Ok(None);
         }
         let xml = channel.to_string();

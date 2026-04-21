@@ -26,12 +26,6 @@ pub fn get_episode_file_stem(
         output.push(' ');
         output.push_str(&kind.to_string().to_uppercase());
     }
-    if episode.is_none() && kind == Some(EpisodeKind::Full) {
-        trace!(
-            "Episode has no number and is not a trailer or bonus: {}",
-            title
-        );
-    }
     output.push(' ');
     output.push_str(Sanitizer::execute(&title).trim());
     output

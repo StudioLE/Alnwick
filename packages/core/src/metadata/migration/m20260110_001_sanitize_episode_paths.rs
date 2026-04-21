@@ -36,10 +36,10 @@ impl Migration {
             .filter(|c| !RESTRICTED_CHARS.contains(c))
             .collect();
         let new = podcast_dir.join(&new_sub_path);
-        if let Err(e) = fs::rename(&old, &new) {
-            warn!("Failed to rename {:?} to {:?}: {}", old, new, e);
+        if let Err(error) = fs::rename(&old, &new) {
+            warn!(old = %old.display(), new = %new.display(), %error, "Failed to rename file");
         } else {
-            info!("Renamed {:?} to {:?}", old, new);
+            info!(old = %old.display(), new = %new.display(), "Renamed file");
         }
     }
 }

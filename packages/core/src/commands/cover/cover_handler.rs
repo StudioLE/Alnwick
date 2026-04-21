@@ -44,10 +44,9 @@ impl Execute<CoverRequest, CoverResponse, Report<CoverError>> for CoverHandler {
             .to_file(&cover, COVER_SIZE, COVER_SIZE)
             .change_context(CoverError::CreateImage)?;
         if let Err(error) = remove_file(&temp_path).await {
-            warn!(%error, path = %temp_path.display(), "Failed to remove temp cover file");
+            warn!(slug = %request.slug, %error, path = %temp_path.display(), "Failed to remove temp cover file");
         }
-        info!("Created images");
-        trace!(banner = %banner.display(), cover = %cover.display(), "Created images");
+        trace!(slug = %request.slug, banner = %banner.display(), cover = %cover.display(), "Created images");
         Ok(CoverResponse {
             banner_path: banner,
             cover_path: cover,

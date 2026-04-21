@@ -30,7 +30,7 @@ impl FetchHandler {
         let mut current = url.clone();
         let mut i = 0;
         loop {
-            trace!(url = %current, "Fetching feed");
+            trace!(%slug, url = %current, "Fetching feed");
             let feed = self
                 .fetch_feed_without_redirect(slug, &current)
                 .await
@@ -50,7 +50,7 @@ impl FetchHandler {
                     Report::new(FetchError::TooManyRedirects).attach("Limit", MAX_FEED_REDIRECTS)
                 );
             }
-            trace!(%current, new_feed_url = %next, redirects = i, "Feed includes a `new_feed_url`");
+            trace!(%slug, %current, new_feed_url = %next, redirects = i, "Feed includes a `new_feed_url`");
             current = next.clone();
             i += 1;
         }

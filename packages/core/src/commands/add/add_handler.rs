@@ -28,7 +28,7 @@ impl Execute<AddRequest, AddResponse, Report<AddError>> for AddHandler {
             .create_feed(feed)
             .await
             .change_context(AddError::Save)?;
-        info!(slug = %feed.podcast.slug, episodes = feed.episodes.len(), "Added podcast");
+        trace!(slug = %feed.podcast.slug, episodes = feed.episodes.len(), "Added podcast");
         Ok(AddResponse {
             podcast_key: feed.podcast.primary_key,
             episode_count: feed.episodes.len(),
