@@ -171,7 +171,7 @@ mod tests {
             .expect("should be able to get HttpClient");
         let url =
             UrlWrapper::from_str("https://example.com/?abc=123&def=456").expect("valid test URL");
-        let _logger = init_test_logger();
+        services.init().expect("services init");
 
         // Act
         let result = http.head(&url).await;
@@ -192,7 +192,7 @@ mod tests {
             .expect("should be able to get HttpClient");
         let url = UrlWrapper::from_str("https://feeds.simplecast.com/lP7owBq8")
             .expect("URL should parse");
-        let _logger = init_test_logger();
+        services.init().expect("services init");
 
         // Act
         let result = http.head(&url).await;
@@ -213,7 +213,7 @@ mod tests {
             .expect("should be able to get HttpClient");
         let url =
             UrlWrapper::from_str("https://example.com/?abc=123&def=456").expect("valid test URL");
-        let _logger = init_test_logger();
+        services.init().expect("services init");
 
         // Act
         let result = http.get_string(&url).await;
@@ -233,7 +233,7 @@ mod tests {
             .await
             .expect("should be able to get HttpClient");
         let url = UrlWrapper::from_str("https://example.com").expect("valid test URL");
-        let _logger = init_test_logger();
+        services.init().expect("services init");
 
         // Act
         let result = http.get_html(&url).await;
@@ -252,7 +252,7 @@ mod tests {
             .await
             .expect("should be able to get HttpClient");
         let url = UrlWrapper::from_str("https://ipinfo.io/json").expect("valid test URL");
-        let _logger = init_test_logger();
+        services.init().expect("services init");
 
         // Act
         let result = http.get_json::<Value>(&url).await;
@@ -270,7 +270,7 @@ mod tests {
             .get_async::<HttpClient>()
             .await
             .expect("should be able to get HttpClient");
-        let _logger = init_test_logger();
+        services.init().expect("services init");
         let http1 = http.clone();
         let http2 = http.clone();
 

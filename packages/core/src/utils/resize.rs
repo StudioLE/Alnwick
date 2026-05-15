@@ -121,7 +121,7 @@ mod tests {
             http.download(&url, temp_path.clone())
                 .await
                 .expect("download image should not fail");
-            let _logger = init_test_logger();
+            services.init().expect("services init");
 
             // Act
             let result = Resize::new(&temp_path).assert_ok_debug().to_bytes(100, 100);

@@ -117,7 +117,6 @@ mod tests {
             .next()
             .expect("should have at least one feed");
         feed.podcast.slug = Slug::from_str("new-podcast").expect("valid slug");
-        let _logger = init_test_logger();
 
         // Act
         let result = metadata.create_feed(feed.clone()).await;
@@ -141,7 +140,6 @@ mod tests {
             .into_iter()
             .next()
             .expect("should have at least one feed");
-        let _logger = init_test_logger();
 
         // Act
         let result = metadata.create_feed(feed).await;

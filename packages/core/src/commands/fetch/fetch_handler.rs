@@ -64,7 +64,6 @@ mod tests {
         let request = FetchRequest {
             slug: MockFeeds::podcast_slug(),
         };
-        let _logger = init_test_logger();
 
         // Act
         let result = handler.execute(&request).await;

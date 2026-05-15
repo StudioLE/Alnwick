@@ -22,6 +22,8 @@ pub use std::str::FromStr;
 pub use std::sync::{Arc, Mutex as StdMutex};
 pub use strum_macros::{AsRefStr, Display};
 pub use studiole_command::prelude::*;
+#[cfg(feature = "server")]
+pub use studiole_logging::prelude::*;
 pub use studiole_report::prelude::*;
 pub use thiserror::Error;
 pub use tracing::{debug, error, info, trace, warn};

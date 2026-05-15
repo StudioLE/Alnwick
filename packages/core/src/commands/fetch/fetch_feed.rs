@@ -109,7 +109,6 @@ mod tests {
             .await
             .expect("should be able to get handler");
         let url = UrlWrapper::from_str("https://irlpodcast.org").expect("URL should parse");
-        let _logger = init_test_logger();
 
         // Act
         let result = handler.fetch_feed(&MockFeeds::podcast_slug(), &url).await;
@@ -130,7 +129,6 @@ mod tests {
             .get_async::<FetchHandler>()
             .await
             .expect("should be able to get handler");
-        let _logger = init_test_logger();
 
         // Act
         let result = handler

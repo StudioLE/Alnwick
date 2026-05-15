@@ -253,7 +253,6 @@ mod tests {
             source_id: "new-episode-source-id".to_owned(),
             ..EpisodeInfo::example()
         });
-        let _logger = init_test_logger();
 
         // Act
         let result = metadata.update_feed(feed).await;
@@ -279,7 +278,6 @@ mod tests {
             .next()
             .expect("should have at least one feed");
         feed.podcast.slug = Slug::from_str("non-existent").expect("valid slug");
-        let _logger = init_test_logger();
 
         // Act
         let result = metadata.update_feed(feed).await;

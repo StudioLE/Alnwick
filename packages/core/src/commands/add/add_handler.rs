@@ -53,7 +53,6 @@ mod tests {
             slug: MockFeeds::podcast_slug(),
             feed_url: MockServices::rss_url(),
         };
-        let _logger = init_test_logger();
 
         // Act
         let result = handler.execute(&request).await;

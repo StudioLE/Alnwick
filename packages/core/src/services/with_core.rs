@@ -10,7 +10,8 @@ pub trait WithCore: Sized {
 
 impl WithCore for ServiceBuilder {
     fn with_core(self) -> Self {
-        self.with_type::<AppOptions>()
+        self.with_logging(logger_factory)
+            .with_type::<AppOptions>()
             .with_type::<MountProvider>()
             .with_type::<PathProvider>()
             .with_type::<HttpRateLimiter>()
@@ -26,4 +27,20 @@ impl WithCore for ServiceBuilder {
             .with_type_async::<EmulateCliCommand>()
             .with_type_async::<CoverCliCommand>()
     }
+}
+
+/// Default [`Logger`] factory used by [`WithCore::with_core`].
+///
+/// - Default level is [`LogLevel::Info`]
+/// - Per-target overrides are drawn from [`LOG_TARGETS`]
+#[expect(
+    clippy::unnecessary_wraps,
+    reason = "signature dictated by WithLogging::with_logging fn pointer bound"
+)]
+fn logger_factory(_services: &ServiceProvider) -> Result<Logger, Report<ResolveError>> {
+    let mut builder = LoggerBuilder::new().with_level(LogLevel::Info);
+    for (target, level) in LOG_TARGETS {
+        builder = builder.with_target(*target, log_level_from(*level));
+    }
+    Ok(builder.build())
 }

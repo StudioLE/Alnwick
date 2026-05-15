@@ -10,13 +10,23 @@ static MEDIATOR: OnceCell<Arc<CommandMediator<CommandInfo>>> = OnceCell::const_n
 static METADATA: OnceCell<Arc<MetadataRepository>> = OnceCell::const_new();
 static ADD_HANDLER: OnceCell<Arc<AddHandler>> = OnceCell::const_new();
 
-async fn init_services() -> Arc<ServiceProvider> {
-    Arc::new(ServiceBuilder::new().with_core().with_commands().build())
+/// Build, initialize, and install the shared [`ServiceProvider`].
+///
+/// - Registers core and command services
+/// - Installs the global tracing subscriber via [`ServiceProvider::init`]
+/// - Stores the container so every later resolution uses the same instance
+/// - Panics if called more than once
+pub fn init_server() {
+    let services = Arc::new(ServiceBuilder::new().with_core().with_commands().build());
+    services.init().expect("services init");
+    assert!(
+        SERVICES.set(services).is_ok(),
+        "services should not already be installed"
+    );
 }
 
 async fn init_runner() -> Arc<CommandRunner<CommandInfo>> {
-    let services = get_services().await;
-    let runner = services
+    let runner = get_services()
         .get_async::<CommandRunner<CommandInfo>>()
         .await
         .expect("should be able to get command runner");
@@ -25,23 +35,23 @@ async fn init_runner() -> Arc<CommandRunner<CommandInfo>> {
 }
 
 async fn init_mediator() -> Arc<CommandMediator<CommandInfo>> {
-    let services = get_services().await;
-    services
+    get_services()
         .get_async::<CommandMediator<CommandInfo>>()
         .await
         .expect("should be able to get command mediator")
 }
 
 async fn init_metadata() -> Arc<MetadataRepository> {
-    let services = get_services().await;
-    services
+    get_services()
         .get_async::<MetadataRepository>()
         .await
         .expect("should be able to get metadata repository")
 }
 
-async fn get_services() -> &'static Arc<ServiceProvider> {
-    SERVICES.get_or_init(init_services).await
+fn get_services() -> &'static Arc<ServiceProvider> {
+    SERVICES
+        .get()
+        .expect("services should be installed via entry::start")
 }
 
 pub async fn get_runner() -> &'static Arc<CommandRunner<CommandInfo>> {
@@ -61,8 +71,7 @@ pub async fn get_metadata() -> &'static Arc<MetadataRepository> {
 }
 
 async fn init_add_handler() -> Arc<AddHandler> {
-    let services = get_services().await;
-    services
+    get_services()
         .get_async::<AddHandler>()
         .await
         .expect("should be able to get add handler")

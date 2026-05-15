@@ -66,7 +66,6 @@ mod tests {
             .await
             .expect("should be able to get metadata repository");
         let slug = MockFeeds::podcast_slug();
-        let _logger = init_test_logger();
 
         // Act
         let result = metadata.get_episode(slug, MockFeeds::EPISODE_KEY).await;

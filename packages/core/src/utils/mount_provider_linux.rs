@@ -63,7 +63,6 @@ mod tests {
     #[test]
     fn _get_mount_id() {
         // Arrange
-        let _logger = init_test_logger();
         let mounts = MountProvider::new();
 
         // Act

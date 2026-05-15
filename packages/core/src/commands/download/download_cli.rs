@@ -91,7 +91,6 @@ mod tests {
             },
             replace: false,
         };
-        let _logger = init_test_logger();
 
         // Act
         let result = command.execute(options).await;

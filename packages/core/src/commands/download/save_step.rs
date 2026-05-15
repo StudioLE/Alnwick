@@ -103,7 +103,6 @@ mod tests {
             .expect("should be able to get metadata repository");
         let file_path = PathBuf::from("path/to/audio.mp3");
         let image_path = Some(PathBuf::from("path/to/image.jpg"));
-        let _logger = init_test_logger();
 
         // Act
         let result = metadata

@@ -68,7 +68,6 @@ mod tests {
             .await
             .expect("should be able to get command");
         let request = DownloadRequest::new(MockFeeds::PODCAST_KEY, MockFeeds::EPISODE_KEY, false);
-        let _logger = init_test_logger();
 
         // Act
         let result = download.execute(&request).await;
@@ -90,7 +89,6 @@ mod tests {
             .get_async::<PathProvider>()
             .await
             .expect("should be able to get path provider");
-        let _logger = init_test_logger();
 
         // Act: first download
         let request = DownloadRequest::new(MockFeeds::PODCAST_KEY, MockFeeds::EPISODE_KEY, false);
@@ -146,7 +144,6 @@ mod tests {
             .await
             .expect("should write fake file");
         let request = DownloadRequest::new(MockFeeds::PODCAST_KEY, MockFeeds::EPISODE_KEY, true);
-        let _logger = init_test_logger();
 
         // Act
         let result = download.execute(&request).await;
@@ -171,7 +168,6 @@ mod tests {
             .await
             .expect("should be able to get path provider");
         let request = DownloadRequest::new(MockFeeds::PODCAST_KEY, MockFeeds::EPISODE_KEY, false);
-        let _logger = init_test_logger();
 
         // Act
         let response = download.execute(&request).await.assert_ok_debug();

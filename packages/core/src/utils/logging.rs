@@ -1,36 +1,31 @@
-use std::io::stderr;
+//! Shared per-target log levels for the application.
+#[cfg(feature = "server")]
+use crate::prelude::*;
 use tracing::Level;
-use tracing::dispatcher::SetGlobalDefaultError;
-use tracing::level_filters::LevelFilter;
-use tracing::subscriber::set_global_default;
-use tracing_subscriber::filter::Targets;
-use tracing_subscriber::fmt::layer;
-use tracing_subscriber::layer::SubscriberExt;
-use tracing_subscriber::{Layer, Registry};
 
-pub const DEFAULT_LOG_LEVEL: Level = Level::INFO;
+/// Per-target log level overrides applied to both server and wasm subscribers.
+///
+/// - Pins noisy dependencies so default `Info` traffic stays readable
+pub const LOG_TARGETS: &[(&str, Level)] = &[
+    ("cookie", Level::INFO),
+    ("dioxus", Level::INFO),
+    ("html5ever", Level::INFO),
+    ("hyper_util", Level::INFO),
+    ("lofty", Level::INFO),
+    ("reqwest", Level::INFO),
+    ("selectors", Level::INFO),
+    ("sqlx", Level::WARN),
+    ("warnings", Level::DEBUG),
+];
 
-pub fn init_logger() -> Result<(), SetGlobalDefaultError> {
-    let targets = get_targets().with_default(LevelFilter::from_level(DEFAULT_LOG_LEVEL));
-    let layer = layer()
-        .compact()
-        .with_writer(stderr)
-        .with_target(false)
-        .with_filter(targets);
-    let registry = Registry::default().with(layer);
-    set_global_default(registry)
-}
-
-#[must_use]
-pub fn get_targets() -> Targets {
-    Targets::new()
-        .with_target("cookie", LevelFilter::INFO)
-        .with_target("dioxus", LevelFilter::INFO)
-        .with_target("html5ever", LevelFilter::INFO)
-        .with_target("hyper_uti", LevelFilter::INFO)
-        .with_target("lofty", LevelFilter::INFO)
-        .with_target("reqwest", LevelFilter::INFO)
-        .with_target("selectors", LevelFilter::INFO)
-        .with_target("sqlx", LevelFilter::WARN)
-        .with_target("warnings", LevelFilter::DEBUG)
+/// Convert a [`tracing::Level`] to a [`LogLevel`].
+#[cfg(feature = "server")]
+pub(crate) fn log_level_from(level: Level) -> LogLevel {
+    match level {
+        Level::ERROR => LogLevel::Error,
+        Level::WARN => LogLevel::Warn,
+        Level::INFO => LogLevel::Info,
+        Level::DEBUG => LogLevel::Debug,
+        Level::TRACE => LogLevel::Trace,
+    }
 }

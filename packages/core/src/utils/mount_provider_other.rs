@@ -18,7 +18,7 @@ mod tests {
     async fn get_service_none() {
         // Arrange
         let services = ServiceBuilder::new().with_core().build();
-        let _logger = init_test_logger();
+        services.init().expect("services init");
 
         // Act
         let result = services.get_async::<MountProvider>().await;

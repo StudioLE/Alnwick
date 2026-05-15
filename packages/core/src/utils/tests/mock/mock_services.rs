@@ -75,6 +75,7 @@ impl MockServices {
             .with_instance(http)
             .with_commands()
             .build();
+        services.init().expect("services init");
         if let Some(factory) = self.metadata {
             insert_db_feeds(&services, factory).await;
         } else {

@@ -3,9 +3,9 @@ use std::process::exit;
 
 #[tokio::main]
 async fn main() {
-    init_logger().expect("should be able to init logger");
     let cli = Cli::parse();
     let services = ServiceBuilder::new().with_core().with_commands().build();
+    services.init().expect("services init");
     match cli.command {
         Command::Add(options) => {
             let command = services

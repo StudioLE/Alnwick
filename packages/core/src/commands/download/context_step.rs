@@ -121,7 +121,6 @@ mod tests {
             .get_async::<MetadataRepository>()
             .await
             .expect("should be able to get metadata repository");
-        let _logger = init_test_logger();
 
         // Act
         let result = metadata
