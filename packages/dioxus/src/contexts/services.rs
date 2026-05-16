@@ -17,8 +17,12 @@ static ADD_HANDLER: OnceCell<Arc<AddHandler>> = OnceCell::const_new();
 /// - Stores the container so every later resolution uses the same instance
 /// - Panics if called more than once
 pub fn init_server() {
-    let services = Arc::new(ServiceBuilder::new().with_core().with_commands().build());
-    services.init().expect("services init");
+    let services = ServiceBuilder::new()
+        .with_core()
+        .with_commands()
+        .build()
+        .expect_init();
+    let services = Arc::new(services);
     assert!(
         SERVICES.set(services).is_ok(),
         "services should not already be installed"
@@ -27,25 +31,20 @@ pub fn init_server() {
 
 async fn init_runner() -> Arc<CommandRunner<CommandInfo>> {
     let runner = get_services()
-        .get_async::<CommandRunner<CommandInfo>>()
-        .await
-        .expect("should be able to get command runner");
+        .expect_async::<CommandRunner<CommandInfo>>()
+        .await;
     runner.start(WORKERS).await;
     runner
 }
 
 async fn init_mediator() -> Arc<CommandMediator<CommandInfo>> {
     get_services()
-        .get_async::<CommandMediator<CommandInfo>>()
+        .expect_async::<CommandMediator<CommandInfo>>()
         .await
-        .expect("should be able to get command mediator")
 }
 
 async fn init_metadata() -> Arc<MetadataRepository> {
-    get_services()
-        .get_async::<MetadataRepository>()
-        .await
-        .expect("should be able to get metadata repository")
+    get_services().expect_async::<MetadataRepository>().await
 }
 
 fn get_services() -> &'static Arc<ServiceProvider> {
@@ -71,10 +70,7 @@ pub async fn get_metadata() -> &'static Arc<MetadataRepository> {
 }
 
 async fn init_add_handler() -> Arc<AddHandler> {
-    get_services()
-        .get_async::<AddHandler>()
-        .await
-        .expect("should be able to get add handler")
+    get_services().expect_async::<AddHandler>().await
 }
 
 pub async fn get_add_handler() -> &'static Arc<AddHandler> {

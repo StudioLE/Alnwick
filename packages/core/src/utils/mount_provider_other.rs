@@ -17,8 +17,7 @@ mod tests {
     #[tokio::test]
     async fn get_service_none() {
         // Arrange
-        let services = ServiceBuilder::new().with_core().build();
-        services.init().expect("services init");
+        let services = ServiceBuilder::new().with_core().build().expect_init();
 
         // Act
         let result = services.get_async::<MountProvider>().await;

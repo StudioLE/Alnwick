@@ -74,8 +74,8 @@ impl MockServices {
             .with_core()
             .with_instance(http)
             .with_commands()
-            .build();
-        services.init().expect("services init");
+            .build()
+            .expect_init();
         if let Some(factory) = self.metadata {
             insert_db_feeds(&services, factory).await;
         } else {
@@ -95,10 +95,7 @@ async fn create_data_dir(options: &AppOptions) {
 
 async fn insert_db_feeds(services: &ServiceProvider, factory: MockFeedsFactory) {
     trace!(podcasts = ?factory.podcast_count, "Inserting mock feeds to database");
-    let metadata = services
-        .get_async::<MetadataRepository>()
-        .await
-        .expect("should be able to get MetadataRepository");
+    let metadata = services.expect_async::<MetadataRepository>().await;
     let mock = factory.create();
     for feed in mock.feeds {
         metadata
@@ -151,10 +148,7 @@ mod tests {
         let services = MockServices::default().create().await;
 
         // Act
-        let options = services
-            .get_async::<AppOptions>()
-            .await
-            .expect("should be able to get options");
+        let options = services.expect_async::<AppOptions>().await;
 
         // Assert
         let data_dir = options

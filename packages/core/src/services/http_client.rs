@@ -164,14 +164,10 @@ mod tests {
     #[ignore = "uses example.com"]
     pub async fn head() {
         // Arrange
-        let services = ServiceBuilder::new().with_core().build();
-        let http = services
-            .get_async::<HttpClient>()
-            .await
-            .expect("should be able to get HttpClient");
+        let services = ServiceBuilder::new().with_core().build().expect_init();
+        let http = services.expect_async::<HttpClient>().await;
         let url =
             UrlWrapper::from_str("https://example.com/?abc=123&def=456").expect("valid test URL");
-        services.init().expect("services init");
 
         // Act
         let result = http.head(&url).await;
@@ -185,14 +181,10 @@ mod tests {
     #[ignore = "uses simplecast.com"]
     pub async fn head_xml() {
         // Arrange
-        let services = ServiceBuilder::new().with_core().build();
-        let http = services
-            .get_async::<HttpClient>()
-            .await
-            .expect("should be able to get HttpClient");
+        let services = ServiceBuilder::new().with_core().build().expect_init();
+        let http = services.expect_async::<HttpClient>().await;
         let url = UrlWrapper::from_str("https://feeds.simplecast.com/lP7owBq8")
             .expect("URL should parse");
-        services.init().expect("services init");
 
         // Act
         let result = http.head(&url).await;
@@ -206,14 +198,10 @@ mod tests {
     #[ignore = "uses example.com"]
     pub async fn get_string() {
         // Arrange
-        let services = ServiceBuilder::new().with_core().build();
-        let http = services
-            .get_async::<HttpClient>()
-            .await
-            .expect("should be able to get HttpClient");
+        let services = ServiceBuilder::new().with_core().build().expect_init();
+        let http = services.expect_async::<HttpClient>().await;
         let url =
             UrlWrapper::from_str("https://example.com/?abc=123&def=456").expect("valid test URL");
-        services.init().expect("services init");
 
         // Act
         let result = http.get_string(&url).await;
@@ -227,13 +215,9 @@ mod tests {
     #[ignore = "uses example.com"]
     pub async fn get_html() {
         // Arrange
-        let services = ServiceBuilder::new().with_core().build();
-        let http = services
-            .get_async::<HttpClient>()
-            .await
-            .expect("should be able to get HttpClient");
+        let services = ServiceBuilder::new().with_core().build().expect_init();
+        let http = services.expect_async::<HttpClient>().await;
         let url = UrlWrapper::from_str("https://example.com").expect("valid test URL");
-        services.init().expect("services init");
 
         // Act
         let result = http.get_html(&url).await;
@@ -246,13 +230,9 @@ mod tests {
     #[ignore = "uses ipinfo.io"]
     pub async fn get_json() {
         // Arrange
-        let services = ServiceBuilder::new().with_core().build();
-        let http = services
-            .get_async::<HttpClient>()
-            .await
-            .expect("should be able to get HttpClient");
+        let services = ServiceBuilder::new().with_core().build().expect_init();
+        let http = services.expect_async::<HttpClient>().await;
         let url = UrlWrapper::from_str("https://ipinfo.io/json").expect("valid test URL");
-        services.init().expect("services init");
 
         // Act
         let result = http.get_json::<Value>(&url).await;
@@ -265,12 +245,8 @@ mod tests {
     #[ignore = "requires network"]
     async fn domains_isolated() {
         // Arrange
-        let services = ServiceBuilder::new().with_core().build();
-        let http = services
-            .get_async::<HttpClient>()
-            .await
-            .expect("should be able to get HttpClient");
-        services.init().expect("services init");
+        let services = ServiceBuilder::new().with_core().build().expect_init();
+        let http = services.expect_async::<HttpClient>().await;
         let http1 = http.clone();
         let http2 = http.clone();
 

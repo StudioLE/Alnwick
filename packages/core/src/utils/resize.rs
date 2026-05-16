@@ -104,11 +104,8 @@ mod tests {
     #[tokio::test]
     #[ignore = "uses httpbin.org"]
     pub async fn resize_jpeg() {
-        let services = ServiceBuilder::new().with_core().build();
-        let http = services
-            .get_trait_async::<dyn HttpFetch>()
-            .await
-            .expect("should be able to get HttpFetch");
+        let services = ServiceBuilder::new().with_core().build().expect_init();
+        let http = services.expect_trait_async::<dyn HttpFetch>().await;
         let formats = vec!["jpeg", "png", "webp"];
         for format in formats {
             eprintln!("format: {format}");
@@ -121,7 +118,6 @@ mod tests {
             http.download(&url, temp_path.clone())
                 .await
                 .expect("download image should not fail");
-            services.init().expect("services init");
 
             // Act
             let result = Resize::new(&temp_path).assert_ok_debug().to_bytes(100, 100);

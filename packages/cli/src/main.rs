@@ -4,14 +4,14 @@ use std::process::exit;
 #[tokio::main]
 async fn main() {
     let cli = Cli::parse();
-    let services = ServiceBuilder::new().with_core().with_commands().build();
-    services.init().expect("services init");
+    let services = ServiceBuilder::new()
+        .with_core()
+        .with_commands()
+        .build()
+        .expect_init();
     match cli.command {
         Command::Add(options) => {
-            let command = services
-                .get_async::<AddCliCommand>()
-                .await
-                .expect("should be able to get command");
+            let command = services.expect_async::<AddCliCommand>().await;
             if let Err(e) = command.execute(options).await {
                 error!("Failed to add podcast");
                 eprintln!("{}", e.render());
@@ -19,10 +19,7 @@ async fn main() {
             }
         }
         Command::Fetch(options) => {
-            let command = services
-                .get_async::<FetchCliCommand>()
-                .await
-                .expect("should be able to get command");
+            let command = services.expect_async::<FetchCliCommand>().await;
             if let Err(e) = command.execute(options).await {
                 error!("Failed to fetch podcast");
                 eprintln!("{}", e.render());
@@ -30,10 +27,7 @@ async fn main() {
             }
         }
         Command::Download(options) => {
-            let command = services
-                .get_async::<DownloadCliCommand>()
-                .await
-                .expect("should be able to get command");
+            let command = services.expect_async::<DownloadCliCommand>().await;
             if let Err(e) = command.execute(options).await {
                 error!("Failed to download podcast");
                 eprintln!("{}", e.render());
@@ -41,10 +35,7 @@ async fn main() {
             }
         }
         Command::Emulate(options) => {
-            let command = services
-                .get_async::<EmulateCliCommand>()
-                .await
-                .expect("should be able to get command");
+            let command = services.expect_async::<EmulateCliCommand>().await;
             if let Err(e) = command.execute(options).await {
                 error!("Failed to create RSS feeds");
                 eprintln!("{}", e.render());
@@ -52,10 +43,7 @@ async fn main() {
             }
         }
         Command::Cover(options) => {
-            let command = services
-                .get_async::<CoverCliCommand>()
-                .await
-                .expect("should be able to get command");
+            let command = services.expect_async::<CoverCliCommand>().await;
             if let Err(e) = command.execute(options).await {
                 error!("Failed to create banner and cover images");
                 eprintln!("{}", e.render());
