@@ -1,4 +1,6 @@
 mod api;
+#[cfg(feature = "server")]
+mod cli;
 mod commands;
 mod r#const;
 mod metadata;

@@ -1,6 +1,9 @@
 //! Registration of all core services on a [`ServiceBuilder`].
 use crate::prelude::*;
 
+/// Default log level when `--log-level` is not specified.
+const DEFAULT_LOG_LEVEL: LogLevel = LogLevel::Info;
+
 /// Register all core services.
 pub trait WithCore: Sized {
     /// Register all core services.
@@ -26,19 +29,25 @@ impl WithCore for ServiceBuilder {
             .with_type_async::<DownloadCliCommand>()
             .with_type_async::<EmulateCliCommand>()
             .with_type_async::<CoverCliCommand>()
+            .with_type_async::<SubcommandHandler>()
     }
 }
 
 /// Default [`Logger`] factory used by [`WithCore::with_core`].
 ///
-/// - Default level is [`LogLevel::Info`]
+/// - Reads `--log-level` from [`CliArgs`] when registered, falls back to [`LogLevel::Info`]
 /// - Per-target overrides are drawn from [`LOG_TARGETS`]
 #[expect(
     clippy::unnecessary_wraps,
     reason = "signature dictated by WithLogging::with_logging fn pointer bound"
 )]
-fn logger_factory(_services: &ServiceProvider) -> Result<Logger, Report<ResolveError>> {
-    let mut builder = LoggerBuilder::new().with_level(LogLevel::Info);
+fn logger_factory(services: &ServiceProvider) -> Result<Logger, Report<ResolveError>> {
+    let level = services
+        .get::<CliArgs>()
+        .ok()
+        .and_then(|args| args.log_level)
+        .unwrap_or(DEFAULT_LOG_LEVEL);
+    let mut builder = LoggerBuilder::new().with_level(level);
     for (target, level) in LOG_TARGETS {
         builder = builder.with_target(*target, log_level_from(*level));
     }

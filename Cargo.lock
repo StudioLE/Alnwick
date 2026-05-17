@@ -86,7 +86,6 @@ name = "alnwick"
 version = "0.0.0"
 dependencies = [
  "alnwick_core",
- "clap",
  "tokio",
 ]
 

@@ -1,7 +1,7 @@
 use crate::prelude::*;
 
 /// CLI options for batch downloading episodes from a podcast.
-#[derive(Debug, Args)]
+#[derive(Clone, Debug, Args)]
 pub struct DownloadOptions {
     /// Podcast selection options.
     #[command(flatten)]

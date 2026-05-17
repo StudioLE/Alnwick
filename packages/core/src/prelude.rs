@@ -1,3 +1,5 @@
+#[cfg(feature = "server")]
+pub use crate::cli::*;
 pub use crate::commands::*;
 pub use crate::r#const::*;
 pub use crate::metadata::*;
