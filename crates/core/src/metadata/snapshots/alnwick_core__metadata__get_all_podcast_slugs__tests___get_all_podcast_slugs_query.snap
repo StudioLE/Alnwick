@@ -1,0 +1,8 @@
+---
+source: crates/core/src/metadata/get_all_podcast_slugs.rs
+expression: format_sql(&statement)
+---
+SELECT
+  "podcasts"."slug"
+FROM
+  "podcasts"

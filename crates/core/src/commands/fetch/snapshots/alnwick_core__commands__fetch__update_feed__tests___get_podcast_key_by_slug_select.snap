@@ -1,0 +1,10 @@
+---
+source: crates/core/src/commands/fetch/update_feed.rs
+expression: format_sql(&statement)
+---
+SELECT
+  "podcasts"."primary_key"
+FROM
+  "podcasts"
+WHERE
+  "podcasts"."slug" = 'test-0'

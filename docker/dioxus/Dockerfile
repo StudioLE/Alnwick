@@ -1,7 +1,7 @@
 # Install Bulma with NPM
 FROM node:24-alpine AS npm
 WORKDIR /app
-COPY packages/dioxus/package.json packages/dioxus/package-lock.json /app
+COPY crates/dioxus/package.json crates/dioxus/package-lock.json /app
 RUN npm install
 
 # Capture the information required to build dependencies
@@ -47,7 +47,7 @@ COPY --from=npm \
     /app/node_modules/@fortawesome/fontawesome-free/webfonts/fa-solid-900.woff2 \
     /app/node_modules/@fontsource/source-sans-pro/files/source-sans-pro-latin-400-normal.woff \
     /app/node_modules/@fontsource/source-sans-pro/files/source-sans-pro-latin-400-normal.woff2 \
-    /app/packages/dioxus/public/assets/fonts/
+    /app/crates/dioxus/public/assets/fonts/
 COPY . /app
 
 # Development target

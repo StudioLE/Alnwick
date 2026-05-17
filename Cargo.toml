@@ -1,9 +1,9 @@
 [workspace]
 resolver = "3"
 members = [
-  "packages/cli",
-  "packages/core",
-  "packages/dioxus",
+  "crates/cli",
+  "crates/core",
+  "crates/dioxus",
 ]
 
 [workspace.package]
