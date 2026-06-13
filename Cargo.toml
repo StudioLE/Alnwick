@@ -16,7 +16,7 @@ documentation = "https://github.com/StudioLE/Alnwick"
 [workspace.dependencies]
 async-trait = { version = "0.1.89" }
 base64 = { version = "0.22.1" }
-chrono = { version = "0.4.44", features = ["serde"] }
+chrono = { version = "0.4.45", features = ["serde"] }
 clap = { version = "4.6.1", features = ["derive"] }
 dioxus = { version = "0.7.9", features = ["fullstack", "router"] }
 dirs = { version = "6.0.0" }
@@ -27,7 +27,7 @@ futures = { version = "0.3.32" }
 html2text = { version = "0.17.1" }
 image = { version = "0.25.10" }
 indicatif = { version = "0.18.4" }
-insta = { version = "1.47.2", features = ["yaml"] }
+insta = { version = "1.48.0", features = ["yaml"] }
 lofty = { version = "0.24.0" }
 procfs = { version = "0.18.0" }
 rand = { version = "0.10.1" }
@@ -35,18 +35,18 @@ rand = { version = "0.10.1" }
 reqwest = { version = "=0.12.28", default-features = false, features = ["blocking", "json", "rustls-tls", "stream"] }
 rss = { version = "2.0.13", features = ["validation"] }
 scraper = { version = "0.27.0" }
-sea-orm = { version = "2.0.0-rc.38", default-features = false, features = ["with-chrono", "with-json"] }
-sea-orm-migration = { version = "2.0.0-rc.38" }
+sea-orm = { version = "2.0.0-rc.40", default-features = false, features = ["with-chrono", "with-json"] }
+sea-orm-migration = { version = "2.0.0-rc.40" }
 serde = { version = "1.0.228", features = ["derive"] }
-serde_json = { version = "1.0.149" }
+serde_json = { version = "1.0.150" }
 serde_yaml = { version = "0.9.34" }
-serial_test = { version = "3.4.0" }
+serial_test = { version = "3.5.0" }
 sqlformat = { version = "0.5.0" }
 strum_macros = { version = "0.28.0" }
 studiole-command = { version = "0.4.1", default-features = false }
 studiole-di = { version = "0.6.0", features = ["async", "traits"] }
 studiole-logging = { version = "0.4.1" }
-studiole-report = { version = "0.4.0" }
+studiole-report = { version = "0.4.1" }
 thiserror = { version = "2.0.18" }
 tokio = { version = "1.52.3", features = ["macros", "rt-multi-thread", "fs", "io-util"] }
 tracing = { version = "0.1.44" }
