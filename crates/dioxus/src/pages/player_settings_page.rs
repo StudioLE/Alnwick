@@ -37,5 +37,5 @@ fn from_string(input: String) -> Result<u32, String> {
 }
 
 fn to_string(value: Option<u32>) -> String {
-    value.map(|value| value.to_string()).unwrap_or_default()
+    value.map_or_default(|value| value.to_string())
 }

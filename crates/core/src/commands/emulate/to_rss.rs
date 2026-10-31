@@ -16,7 +16,7 @@ impl PodcastToRss {
 fn podcast_to_rss(podcast: PodcastInfo) -> RssChannel {
     RssChannel {
         title: podcast.title,
-        link: podcast.link.map(|url| url.to_string()).unwrap_or_default(),
+        link: podcast.link.map_or_default(|url| url.to_string()),
         description: podcast.description.clone(),
         language: podcast.language.clone(),
         copyright: podcast.copyright.clone(),

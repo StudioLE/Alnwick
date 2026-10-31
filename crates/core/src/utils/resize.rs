@@ -103,6 +103,7 @@ mod tests {
 
     #[tokio::test]
     #[ignore = "uses httpbin.org"]
+    #[expect(clippy::assert_is_empty, reason = "empty value adds nothing")]
     pub async fn resize_jpeg() {
         let services = ServiceBuilder::new().with_core().build().expect_init();
         let http = services.expect_trait_async::<dyn HttpFetch>().await;

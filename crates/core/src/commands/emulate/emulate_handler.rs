@@ -72,7 +72,7 @@ impl EmulateHandler {
             let episode = item
                 .title
                 .clone()
-                .unwrap_or_else(|| item.guid.clone().map(|x| x.value).unwrap_or_default());
+                .unwrap_or_else(|| item.guid.clone().map_or_default(|x| x.value));
             match self.replace_enclosure(feed, item) {
                 Ok(item) => channel.items.push(item),
                 Err(report) => {

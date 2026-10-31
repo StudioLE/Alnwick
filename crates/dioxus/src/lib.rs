@@ -1,3 +1,7 @@
+#![cfg_attr(
+    debug_assertions,
+    expect(clippy::useless_format, reason = "dioxus#5635")
+)]
 pub use entry::start;
 
 #[allow(dead_code)]

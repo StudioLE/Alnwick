@@ -84,7 +84,7 @@ impl PathProvider {
             return path.join(RSS_FILE_NAME);
         }
         let season = format!("S{:02}", season.unwrap_or(0));
-        let year = year.map(|s| s.to_string()).unwrap_or_default();
+        let year = year.map_or_default(|s| s.to_string());
         path.join(season).join(year).join(RSS_FILE_NAME)
     }
 

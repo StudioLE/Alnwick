@@ -79,7 +79,7 @@ fn slug_from_string(input: String) -> Result<Slug, String> {
 }
 
 fn slug_to_string(value: Option<Slug>) -> String {
-    value.map(|v| v.to_string()).unwrap_or_default()
+    value.map_or_default(|v| v.to_string())
 }
 
 fn url_from_string(input: String) -> Result<UrlWrapper, String> {
@@ -87,7 +87,7 @@ fn url_from_string(input: String) -> Result<UrlWrapper, String> {
 }
 
 fn url_to_string(value: Option<UrlWrapper>) -> String {
-    value.map(|v| v.to_string()).unwrap_or_default()
+    value.map_or_default(|v| v.to_string())
 }
 
 #[post("/api/podcasts")]

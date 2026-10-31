@@ -196,6 +196,7 @@ mod tests {
 
     #[tokio::test]
     #[ignore = "uses example.com"]
+    #[expect(clippy::assert_is_empty, reason = "empty value adds nothing")]
     pub async fn get_string() {
         // Arrange
         let services = ServiceBuilder::new().with_core().build().expect_init();

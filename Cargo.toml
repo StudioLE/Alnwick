@@ -14,7 +14,6 @@ description = "A self hosted podcast library"
 documentation = "https://github.com/StudioLE/Alnwick"
 
 [workspace.dependencies]
-async-trait = { version = "0.1.89" }
 base64 = { version = "0.22.1" }
 chrono = { version = "0.4.45", features = ["serde"] }
 clap = { version = "4.6.1", features = ["derive"] }
