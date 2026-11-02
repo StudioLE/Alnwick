@@ -11,20 +11,17 @@ RUN cargo chef prepare --recipe-path recipe.json
 
 # Build binary with caching
 FROM rust:alpine AS builder
-ARG VERSION=0.0.0
 RUN apk add --no-cache cargo-edit libc-dev
 RUN rustup default nightly
 WORKDIR /app
 COPY --from=planner /usr/local/bin/cargo-chef /usr/local/bin/cargo-chef
 COPY --from=planner /app/recipe.json recipe.json
 # Build only the dependencies
-RUN cargo chef cook --release --recipe-path recipe.json
-# Build the application with v0.0.0
+RUN cargo chef cook --release --package alnwick --recipe-path recipe.json
 COPY . .
-RUN cargo build --release --locked --package alnwick
-# Set the version
+# Declared after the cook step because a changed ARG invalidates every later RUN
+ARG VERSION=0.0.0
 RUN cargo set-version "${VERSION}"
-# Build the application
 RUN cargo build --release --locked --package alnwick
 
 # Copy binary to minimal image
