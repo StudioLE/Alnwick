@@ -66,12 +66,12 @@ impl FetchHandler {
             .head(url)
             .await
             .change_context(FetchRssError::Xml)?;
-        let resolved_url = match content_type.as_str() {
-            "application/xml" | "text/xml" => url.clone(),
-            _ => self
-                .get_simplecast_rss(slug, url)
+        let resolved_url = if is_rss_content_type(&content_type) {
+            url.clone()
+        } else {
+            self.get_simplecast_rss(slug, url)
                 .await
-                .change_context(FetchRssError::Convert)?,
+                .change_context(FetchRssError::Convert)?
         };
         self.parse_rss(&resolved_url, slug).await
     }
@@ -90,6 +90,16 @@ impl FetchHandler {
         let channel = RssChannel::read_from(reader).change_context(FetchRssError::Parse)?;
         PodcastFromRss::execute(channel, slug.clone()).change_context(FetchRssError::Convert)
     }
+}
+
+/// Whether a response with this content type can be parsed as an RSS feed.
+///
+/// Expects a lowercase media type with parameters such as `charset` removed.
+fn is_rss_content_type(content_type: &str) -> bool {
+    matches!(
+        content_type,
+        "application/rss+xml" | "application/xml" | "text/xml"
+    )
 }
 
 #[cfg(test)]
@@ -138,5 +148,17 @@ mod tests {
         // Assert
         let podcast = result.assert_ok_debug();
         assert_yaml_snapshot!(podcast);
+    }
+
+    /// Megaphone feeds redirected to Amperwave are served as `application/rss+xml`.
+    #[test]
+    fn is_rss_content_type_rss_xml() {
+        assert!(is_rss_content_type("application/rss+xml"));
+    }
+
+    /// Web pages go to the Simplecast scraper instead.
+    #[test]
+    fn is_rss_content_type_html() {
+        assert!(!is_rss_content_type("text/html"));
     }
 }
