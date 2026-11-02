@@ -10,6 +10,10 @@ pub struct AppOptions {
     ///
     /// Default: `$HOME/.local/share/alnwick` (or equivalent)
     pub data_dir: Option<PathBuf>,
+    /// Directory to store podcast episodes and feeds.
+    ///
+    /// Default: `podcasts` inside [`AppOptions::data_dir`]
+    pub podcasts_dir: Option<PathBuf>,
     /// Base URL to use for server.
     ///
     /// Default: None

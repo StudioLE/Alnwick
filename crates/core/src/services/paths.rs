@@ -10,11 +10,16 @@ const COVER_FILE_NAME: &str = "cover.jpg";
 
 /// Service for providing file paths and URL.
 #[derive(Clone)]
+#[expect(clippy::struct_field_names, reason = "mirror AppOptions field names")]
 pub struct PathProvider {
     /// Directory for app data.
     ///
     /// Default: `$HOME/.local/share/alnwick` (or equivalent)
     data_dir: PathBuf,
+    /// Directory for podcast episodes and feeds.
+    ///
+    /// Default: `podcasts` inside [`PathProvider::data_dir`]
+    podcasts_dir: PathBuf,
     /// Directory for app cache.
     ///
     /// Default: `$HOME/.cache/alnwick` (or equivalent)
@@ -39,6 +44,10 @@ impl PathProvider {
                 .expect("all platforms should have a data_dir")
                 .join(APP_NAME)
         });
+        let podcasts_dir = options
+            .podcasts_dir
+            .clone()
+            .unwrap_or_else(|| data_dir.join(PODCASTS_DIR));
         let cache_dir = options.cache_dir.clone().unwrap_or_else(|| {
             cache_dir()
                 .expect("all platforms should have a cache_dir")
@@ -46,6 +55,7 @@ impl PathProvider {
         });
         Self {
             data_dir,
+            podcasts_dir,
             cache_dir,
         }
     }
@@ -63,7 +73,7 @@ impl PathProvider {
     /// Default: `$HOME/.local/share/alnwick/podcasts`
     #[must_use]
     pub fn get_podcasts_dir(&self) -> PathBuf {
-        self.data_dir.join(PODCASTS_DIR)
+        self.podcasts_dir.clone()
     }
 
     /// Path for the RSS feed file.
@@ -142,6 +152,7 @@ mod tests {
         // Arrange
         let paths = PathProvider {
             data_dir: PathBuf::default(),
+            podcasts_dir: PathBuf::from("podcasts"),
             cache_dir: PathBuf::default(),
         };
         let data_dir = paths.data_dir.clone();
@@ -165,5 +176,94 @@ mod tests {
             paths.get_rss_path(&slug, None, Some(1234)),
             data_dir.join("podcasts/abc/S00/1234/feed.rss")
         );
+    }
+
+    /// Podcasts fall back to `podcasts` inside the data directory when `podcasts_dir` is unset.
+    #[test]
+    fn path_provider_get_podcasts_dir_unset() {
+        // Arrange
+        let temp_dir = TempDirectory::default()
+            .create()
+            .expect("should be able to create temp dir");
+        let options = AppOptions {
+            cache_dir: Some(temp_dir.join("cache")),
+            data_dir: Some(temp_dir.join("data")),
+            ..AppOptions::default()
+        };
+        let services = ServiceBuilder::new()
+            .with_instance(options)
+            .with_type::<PathProvider>()
+            .build()
+            .expect_init();
+
+        // Act
+        let paths = services
+            .get::<PathProvider>()
+            .expect("should be able to resolve PathProvider");
+
+        // Assert
+        assert_eq!(paths.get_podcasts_dir(), temp_dir.join("data/podcasts"));
+        assert!(temp_dir.join("data/podcasts").is_dir());
+    }
+
+    /// Podcasts live in `podcasts_dir` on its own while the database stays in the data directory.
+    #[test]
+    fn path_provider_get_podcasts_dir_set() {
+        // Arrange
+        let temp_dir = TempDirectory::default()
+            .create()
+            .expect("should be able to create temp dir");
+        let options = AppOptions {
+            cache_dir: Some(temp_dir.join("cache")),
+            data_dir: Some(temp_dir.join("data")),
+            podcasts_dir: Some(temp_dir.join("podcasts")),
+            ..AppOptions::default()
+        };
+        let services = ServiceBuilder::new()
+            .with_instance(options)
+            .with_type::<PathProvider>()
+            .build()
+            .expect_init();
+
+        // Act
+        let paths = services
+            .get::<PathProvider>()
+            .expect("should be able to resolve PathProvider");
+
+        // Assert
+        assert_eq!(paths.get_podcasts_dir(), temp_dir.join("podcasts"));
+        assert!(temp_dir.join("podcasts").is_dir());
+        assert!(!temp_dir.join("data/podcasts").exists());
+        assert_eq!(
+            paths.get_metadata_db_path(),
+            temp_dir.join("data/metadata.db")
+        );
+    }
+
+    /// A `podcasts_dir` whose parent is missing, e.g. an unmounted volume, fails resolution.
+    #[test]
+    fn path_provider_create_dirs_missing_parent() {
+        // Arrange
+        let temp_dir = TempDirectory::default()
+            .create()
+            .expect("should be able to create temp dir");
+        let options = AppOptions {
+            cache_dir: Some(temp_dir.join("cache")),
+            data_dir: Some(temp_dir.join("data")),
+            podcasts_dir: Some(temp_dir.join("missing/podcasts")),
+            ..AppOptions::default()
+        };
+        let services = ServiceBuilder::new()
+            .with_instance(options)
+            .with_type::<PathProvider>()
+            .build()
+            .expect_init();
+
+        // Act
+        let result = services.get::<PathProvider>();
+
+        // Assert
+        assert!(result.is_err());
+        assert!(!temp_dir.join("missing").exists());
     }
 }

@@ -19,12 +19,14 @@ services:
       dockerfile: docker/cli/Dockerfile
     user: ${UID}:${GID}
     volumes:
-    - /srv/shared/alnwick:/srv/shared/alnwick
+    - /srv/alnwick:/srv/alnwick
+    - ${PODCASTS_DIR:-/srv/shared/alnwick/data/podcasts}:${PODCASTS_DIR:-/srv/shared/alnwick/data/podcasts}
     environment:
       EXPECT_IP: ${EXPECT_IP}
       EXPECT_COUNTRY: ${EXPECT_COUNTRY}
-      CACHE_DIR: /srv/shared/alnwick/cache
-      DATA_DIR: /srv/shared/alnwick/data
+      CACHE_DIR: /srv/alnwick/cache
+      DATA_DIR: /srv/alnwick/data
+      PODCASTS_DIR: ${PODCASTS_DIR:-/srv/shared/alnwick/data/podcasts}
       SERVER_BASE: ${SERVER_BASE}
     network_mode: "service:tunnel"
     depends_on:
@@ -40,6 +42,6 @@ services:
     volumes:
     - /srv/alnwick/caddy/data:/data
     - /srv/alnwick/caddy/config:/config
-    - /srv/shared/alnwick/data/podcasts:/srv:ro
+    - ${PODCASTS_DIR:-/srv/shared/alnwick/data/podcasts}:/srv:ro
     restart: unless-stopped
     command: caddy file-server --browse --root /srv
